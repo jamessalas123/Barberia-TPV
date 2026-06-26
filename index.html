@@ -1,1 +1,461 @@
 
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover" />
+<title>Barbería TPV</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: { extend: { colors: {
+      bg:'#0b0d10', card:'#14181d', border:'#222831', muted:'#8a93a0',
+      primary:'#e11d48', primaryFg:'#fff', success:'#10b981', warn:'#f59e0b'
+    } } }
+  }
+</script>
+<style>
+  html,body,#root{height:100%;background:#0b0d10;color:#e5e7eb;font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto}
+  *{-webkit-tap-highlight-color:transparent}
+  input,button{font-family:inherit}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useMemo, useCallback } = React;
+
+// ===== CONFIG =====
+const SUPABASE_URL = "https://vtmegxkarnofgepqdky.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0bWVneGthcnJub2ZnZXBxZGt5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMjMxNDYsImV4cCI6MjA5Nzg5OTE0Nn0.so3MHuDCky8wCzJOW2hMQChEUf-NgoxwZU13hmG_CiE";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, storage: localStorage }
+});
+
+const SLOT = 30;
+const DEFAULT_START = 9, DEFAULT_END = 21;
+const today = () => new Date().toISOString().slice(0,10);
+const fmtEur = n => (n||0).toLocaleString('es-ES',{style:'currency',currency:'EUR'});
+const toast = (msg, kind='info') => {
+  const el = document.createElement('div');
+  el.className = `fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-5 py-3 rounded-2xl text-sm font-bold shadow-xl ${kind==='error'?'bg-red-600 text-white':kind==='success'?'bg-emerald-600 text-white':'bg-zinc-800 text-white'}`;
+  el.textContent = msg; document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 2400);
+};
+
+// ===== AUTH =====
+function Auth({ onIn }) {
+  const [tab,setTab] = useState('login');
+  const [email,setEmail] = useState(''); const [pass,setPass] = useState('');
+  const [loading,setLoading] = useState(false);
+  const [forgot,setForgot] = useState(false); const [fEmail,setFEmail] = useState('');
+
+  async function login(e){ e.preventDefault(); setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+    setLoading(false);
+    if(error) return toast(error.message,'error');
+    onIn();
+  }
+  async function signup(e){ e.preventDefault(); setLoading(true);
+    const { error } = await supabase.auth.signUp({ email, password: pass, options:{ emailRedirectTo: window.location.origin }});
+    if(error){ setLoading(false); return toast(error.message,'error'); }
+    const { error: e2 } = await supabase.auth.signInWithPassword({ email, password: pass });
+    setLoading(false);
+    if(e2){ toast('Cuenta creada. Inicia sesión.','success'); setTab('login'); return; }
+    toast('Cuenta creada','success'); onIn();
+  }
+
+  return (
+    <div className="min-h-screen grid place-items-center p-4">
+      <div className="w-full max-w-md bg-card border border-border rounded-3xl p-8 shadow-2xl">
+        <div className="text-center mb-6">
+          <div className="mx-auto w-14 h-14 rounded-2xl bg-primary grid place-items-center text-2xl">✂</div>
+          <h1 className="mt-3 text-2xl font-bold">Barbería TPV</h1>
+          <p className="text-sm text-muted">Acceso privado</p>
+        </div>
+        <div className="grid grid-cols-2 gap-2 p-1 bg-zinc-900 rounded-xl mb-6">
+          {['login','signup'].map(t=>(
+            <button key={t} onClick={()=>setTab(t)} className={`h-11 rounded-lg font-bold text-sm ${tab===t?'bg-primary text-white':'text-muted'}`}>
+              {t==='login'?'Iniciar sesión':'Registrarse'}
+            </button>
+          ))}
+        </div>
+        <form onSubmit={tab==='login'?login:signup} className="space-y-3">
+          <input type="email" required placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} className="w-full h-14 px-4 rounded-xl bg-zinc-900 border border-border outline-none focus:border-primary" />
+          <input type="password" required placeholder="Contraseña" value={pass} onChange={e=>setPass(e.target.value)} className="w-full h-14 px-4 rounded-xl bg-zinc-900 border border-border outline-none focus:border-primary" />
+          <button disabled={loading} className="w-full h-14 rounded-2xl bg-primary text-white font-bold text-lg disabled:opacity-50">
+            {loading?'...':(tab==='login'?'Entrar':'Crear cuenta')}
+          </button>
+        </form>
+        {tab==='login' && (
+          <button onClick={()=>setForgot(true)} className="mt-4 w-full text-sm text-muted underline">¿Olvidaste tu contraseña?</button>
+        )}
+      </div>
+      {forgot && (
+        <div className="fixed inset-0 bg-black/70 grid place-items-center p-4 z-50" onClick={()=>setForgot(false)}>
+          <div className="bg-card border border-border rounded-3xl p-6 w-full max-w-sm" onClick={e=>e.stopPropagation()}>
+            <h3 className="font-bold text-lg mb-3">Recuperar contraseña</h3>
+            <input type="email" placeholder="tu@email" value={fEmail} onChange={e=>setFEmail(e.target.value)} className="w-full h-12 px-4 rounded-xl bg-zinc-900 border border-border mb-4" />
+            <button onClick={()=>{ toast('Enlace enviado (simulado)','success'); setForgot(false); }} className="w-full h-12 rounded-xl bg-primary text-white font-bold">Enviar enlace</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ===== AGENDA =====
+function Agenda({ userId }) {
+  const [date,setDate] = useState(today());
+  const [appts,setAppts] = useState([]);
+  const [range,setRange] = useState({s:DEFAULT_START*60, e:DEFAULT_END*60});
+  const [modal,setModal] = useState(null);
+  const [pay,setPay] = useState(null);
+
+  const load = useCallback(async()=>{
+    const { data, error } = await supabase.from('appointments').select('*').eq('appointment_date', date).order('start_time');
+    if(error) return toast(error.message,'error');
+    setAppts(data||[]);
+  },[date]);
+  useEffect(()=>{ load(); },[load]);
+
+  const slots = useMemo(()=>{
+    const r=[]; for(let m=range.s; m<range.e; m+=SLOT){
+      const hh=String(Math.floor(m/60)).padStart(2,'0'), mm=String(m%60).padStart(2,'0');
+      r.push(`${hh}:${mm}`);
+    } return r;
+  },[range]);
+
+  const byTime = useMemo(()=>{
+    const m={}; appts.forEach(a=>{ m[a.start_time.slice(0,5)]=a; }); return m;
+  },[appts]);
+
+  return (
+    <div className="p-6 max-w-4xl mx-auto">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-3xl font-bold">Agenda</h1>
+          <p className="text-muted">{new Date(date).toLocaleDateString('es-ES',{weekday:'long', day:'numeric', month:'long'})}</p>
+        </div>
+        <input type="date" value={date} onChange={e=>setDate(e.target.value)} className="h-12 px-4 rounded-xl bg-card border border-border" />
+      </div>
+
+      <button onClick={()=>setRange(r=>({...r, s:Math.max(0,r.s-SLOT)}))} className="w-full h-12 mb-3 rounded-xl bg-zinc-900 border border-border text-sm font-bold">↑ Adelantar horario</button>
+
+      <div className="space-y-2">
+        {slots.map(t=>{
+          const a = byTime[t];
+          const done = a?.status==='completed';
+          return (
+            <div key={t} className={`flex items-center gap-3 rounded-2xl border p-3 ${a?(done?'bg-red-950/40 border-red-900':'bg-emerald-950/30 border-emerald-900'):'bg-card border-border'}`}>
+              <div className="w-16 text-xl font-bold tabular-nums">{t}</div>
+              <div className="flex-1">
+                {a ? <div className={`font-bold text-lg ${done?'text-red-300 line-through':''}`}>{a.client_name}{done && a.price?<span className="ml-2 text-emerald-400 text-sm">{fmtEur(a.price)}</span>:null}</div>
+                   : <button onClick={()=>setModal({time:t})} className="text-muted text-sm">+ Añadir cliente</button>}
+              </div>
+              {a && !done && <button onClick={()=>setPay(a)} className="h-11 px-4 rounded-xl bg-primary text-white font-bold">Cobrar</button>}
+            </div>
+          );
+        })}
+      </div>
+
+      <button onClick={()=>setRange(r=>({...r, e:Math.min(24*60, r.e+SLOT)}))} className="w-full h-12 mt-3 rounded-xl bg-zinc-900 border border-border text-sm font-bold">↓ Ampliar horario</button>
+
+      {modal && <NewApptModal date={date} time={modal.time} userId={userId} onClose={()=>setModal(null)} onDone={load} />}
+      {pay && <PayModal appt={pay} onClose={()=>setPay(null)} onDone={load} />}
+    </div>
+  );
+}
+
+function NewApptModal({date,time,userId,onClose,onDone}){
+  const [name,setName] = useState(''); const [saving,setSaving] = useState(false);
+  async function save(){
+    if(!name.trim()) return toast('Nombre requerido','error');
+    setSaving(true);
+    const { error } = await supabase.from('appointments').insert({
+      user_id:userId, client_name:name.trim(), appointment_date:date, start_time:time+':00', duration_minutes:30, status:'scheduled'
+    });
+    setSaving(false);
+    if(error) return toast(error.message,'error');
+    toast('Cita creada','success'); onDone(); onClose();
+  }
+  return (
+    <div className="fixed inset-0 bg-black/70 grid place-items-end sm:place-items-center p-0 sm:p-6 z-50" onClick={onClose}>
+      <div className="w-full max-w-md bg-card rounded-t-3xl sm:rounded-3xl p-6" onClick={e=>e.stopPropagation()}>
+        <div className="text-xs text-muted uppercase">Nueva cita</div>
+        <div className="text-3xl font-bold mb-6">{time}</div>
+        <input autoFocus value={name} onChange={e=>setName(e.target.value)} onKeyDown={e=>e.key==='Enter'&&save()} placeholder="Nombre cliente" className="w-full h-14 px-4 rounded-xl bg-zinc-900 border border-border mb-6" />
+        <button disabled={saving} onClick={save} className="w-full h-14 rounded-2xl bg-primary text-white font-bold text-lg">{saving?'...':'Guardar'}</button>
+      </div>
+    </div>
+  );
+}
+
+function PayModal({appt,onClose,onDone}){
+  const [method,setMethod] = useState('efectivo'); const [price,setPrice] = useState(''); const [saving,setSaving] = useState(false);
+  const type = method==='efectivo'?'interno':'oficial';
+  async function save(){
+    const p = parseFloat(price.replace(',','.'));
+    if(!p||p<=0) return toast('Importe inválido','error');
+    setSaving(true);
+    const { error } = await supabase.from('appointments').update({
+      status:'completed', payment_method:method, payment_type:type, price:p, completed_at:new Date().toISOString()
+    }).eq('id',appt.id);
+    setSaving(false);
+    if(error) return toast(error.message,'error');
+    toast('Cobrado','success'); onDone(); onClose();
+  }
+  async function del(){
+    if(!confirm('¿Eliminar cita?')) return;
+    await supabase.from('appointments').delete().eq('id',appt.id);
+    onDone(); onClose();
+  }
+  return (
+    <div className="fixed inset-0 bg-black/70 grid place-items-end sm:place-items-center p-0 sm:p-6 z-50" onClick={onClose}>
+      <div className="w-full max-w-md bg-card rounded-t-3xl sm:rounded-3xl p-6" onClick={e=>e.stopPropagation()}>
+        <div className="text-xs text-muted uppercase">Cobrar</div>
+        <div className="text-2xl font-bold mb-4">{appt.client_name}</div>
+        <input autoFocus inputMode="decimal" value={price} onChange={e=>setPrice(e.target.value)} placeholder="0,00 €" className="w-full h-16 px-4 rounded-xl bg-zinc-900 border border-border text-2xl font-bold mb-4" />
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          {['efectivo','tarjeta','bizum'].map(m=>(
+            <button key={m} onClick={()=>setMethod(m)} className={`h-16 rounded-2xl font-bold capitalize ${method===m?'bg-primary text-white':'bg-zinc-900 border border-border'}`}>{m}</button>
+          ))}
+        </div>
+        <div className={`text-sm font-bold px-4 py-3 rounded-xl mb-4 ${type==='oficial'?'bg-emerald-950 text-emerald-400':'bg-zinc-900 text-muted'}`}>
+          {type==='oficial'?'👁 Oficial / Declarado':'🔒 Interno / Privado'}
+        </div>
+        <div className="flex gap-2">
+          <button onClick={del} className="w-14 h-14 rounded-2xl bg-red-950 text-red-400 text-xl">🗑</button>
+          <button disabled={saving} onClick={save} className="flex-1 h-14 rounded-2xl bg-primary text-white font-bold text-lg">{saving?'...':'Cobrar y cerrar'}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ===== CAJA =====
+function Caja({ userId }){
+  const [tab,setTab] = useState('caja');
+  const [period,setPeriod] = useState('mes');
+  const [appts,setAppts] = useState([]); const [exps,setExps] = useState([]);
+  const [exp,setExp] = useState({category:'material', amount:'', note:''});
+
+  const range = useMemo(()=>{
+    const now = new Date(); let s,e;
+    if(period==='dia'){ s=new Date(now); e=new Date(now); }
+    else if(period==='mes'){ s=new Date(now.getFullYear(),now.getMonth(),1); e=new Date(now.getFullYear(),now.getMonth()+1,0); }
+    else { const q=Math.floor(now.getMonth()/3); s=new Date(now.getFullYear(),q*3,1); e=new Date(now.getFullYear(),q*3+3,0); }
+    return { s:s.toISOString().slice(0,10), e:e.toISOString().slice(0,10) };
+  },[period]);
+
+  const load = useCallback(async()=>{
+    const { data:a } = await supabase.from('appointments').select('*').eq('status','completed').gte('appointment_date',range.s).lte('appointment_date',range.e);
+    setAppts(a||[]);
+    const { data:x } = await supabase.from('expenses').select('*').gte('expense_date',range.s).lte('expense_date',range.e);
+    setExps(x||[]);
+  },[range]);
+  useEffect(()=>{ load(); },[load]);
+
+  const totals = useMemo(()=>{
+    let oficial=0, interno=0; appts.forEach(a=>{ if(a.payment_type==='oficial') oficial+=Number(a.price)||0; else interno+=Number(a.price)||0; });
+    const gastos = exps.reduce((s,x)=>s+Number(x.amount||0),0);
+    return { oficial, interno, total:oficial+interno, gastos, neto:oficial-gastos };
+  },[appts,exps]);
+
+  async function addExp(){
+    const a = parseFloat(String(exp.amount).replace(',','.'));
+    if(!a||a<=0) return toast('Importe inválido','error');
+    const { error } = await supabase.from('expenses').insert({ user_id:userId, category:exp.category, amount:a, note:exp.note, expense_date:today() });
+    if(error) return toast(error.message,'error');
+    setExp({category:'material',amount:'',note:''}); load(); toast('Gasto registrado','success');
+  }
+  async function delExp(id){ await supabase.from('expenses').delete().eq('id',id); load(); }
+
+  function exportCSV(){
+    const rows = [['Concepto','Importe']];
+    rows.push(['Ingresos oficiales', totals.oficial.toFixed(2)]);
+    exps.forEach(x=>rows.push([`Gasto: ${x.category} ${x.note||''}`, `-${Number(x.amount).toFixed(2)}`]));
+    rows.push(['NETO', totals.neto.toFixed(2)]);
+    const csv = rows.map(r=>r.join(';')).join('\n');
+    const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download=`oficial_${period}.csv`; a.click();
+  }
+
+  return (
+    <div className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold mb-4">Caja</h1>
+      <div className="flex gap-2 mb-4">
+        {['caja','gastos'].map(t=>(
+          <button key={t} onClick={()=>setTab(t)} className={`px-5 h-11 rounded-xl font-bold capitalize ${tab===t?'bg-primary text-white':'bg-card border border-border'}`}>{t}</button>
+        ))}
+      </div>
+      <div className="flex gap-2 mb-6">
+        {['dia','mes','trimestre'].map(p=>(
+          <button key={p} onClick={()=>setPeriod(p)} className={`px-4 h-10 rounded-xl text-sm font-bold capitalize ${period===p?'bg-zinc-700 text-white':'bg-card border border-border text-muted'}`}>{p}</button>
+        ))}
+      </div>
+
+      {tab==='caja' ? (
+        <>
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <Card label="Oficial" value={fmtEur(totals.oficial)} tone="success" />
+            <Card label="Interno" value={fmtEur(totals.interno)} tone="muted" />
+            <Card label="Gastos" value={fmtEur(totals.gastos)} tone="warn" />
+            <Card label="Neto declarable" value={fmtEur(totals.neto)} tone="primary" />
+          </div>
+          <button onClick={exportCSV} className="w-full h-12 rounded-xl bg-zinc-900 border border-border font-bold">Exportar CSV oficial</button>
+        </>
+      ) : (
+        <>
+          <div className="bg-card border border-border rounded-2xl p-4 mb-4 space-y-3">
+            <select value={exp.category} onChange={e=>setExp({...exp,category:e.target.value})} className="w-full h-12 px-3 rounded-xl bg-zinc-900 border border-border">
+              <option value="alquiler">Alquiler</option>
+              <option value="suministros">Luz y agua</option>
+              <option value="material">Material</option>
+              <option value="otros">Otros</option>
+            </select>
+            <input inputMode="decimal" placeholder="Importe €" value={exp.amount} onChange={e=>setExp({...exp,amount:e.target.value})} className="w-full h-12 px-3 rounded-xl bg-zinc-900 border border-border" />
+            <input placeholder="Nota (opcional)" value={exp.note} onChange={e=>setExp({...exp,note:e.target.value})} className="w-full h-12 px-3 rounded-xl bg-zinc-900 border border-border" />
+            <button onClick={addExp} className="w-full h-12 rounded-xl bg-primary text-white font-bold">Añadir gasto</button>
+          </div>
+          <div className="space-y-2">
+            {exps.length===0 && <div className="text-muted text-sm text-center py-6">Sin gastos en el periodo</div>}
+            {exps.map(x=>(
+              <div key={x.id} className="flex items-center bg-card border border-border rounded-xl p-3">
+                <div className="flex-1">
+                  <div className="font-bold capitalize">{x.category}</div>
+                  <div className="text-xs text-muted">{x.expense_date} · {x.note||'-'}</div>
+                </div>
+                <div className="font-bold text-warn mr-3">{fmtEur(x.amount)}</div>
+                <button onClick={()=>delExp(x.id)} className="text-muted">✕</button>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function Card({label,value,tone}){
+  const tones={success:'text-emerald-400',warn:'text-warn',primary:'text-primary',muted:'text-muted'};
+  return (
+    <div className="bg-card border border-border rounded-2xl p-4">
+      <div className="text-xs uppercase text-muted">{label}</div>
+      <div className={`text-2xl font-bold mt-1 ${tones[tone]||''}`}>{value}</div>
+    </div>
+  );
+}
+
+// ===== ANALÍTICAS =====
+function Analiticas(){
+  const [data,setData] = useState({thisMonth:[],lastMonth:[]});
+  useEffect(()=>{(async()=>{
+    const now = new Date();
+    const s1 = new Date(now.getFullYear(),now.getMonth(),1).toISOString().slice(0,10);
+    const e1 = new Date(now.getFullYear(),now.getMonth()+1,0).toISOString().slice(0,10);
+    const s0 = new Date(now.getFullYear(),now.getMonth()-1,1).toISOString().slice(0,10);
+    const e0 = new Date(now.getFullYear(),now.getMonth(),0).toISOString().slice(0,10);
+    const [a,b] = await Promise.all([
+      supabase.from('appointments').select('*').eq('status','completed').gte('appointment_date',s1).lte('appointment_date',e1),
+      supabase.from('appointments').select('*').eq('status','completed').gte('appointment_date',s0).lte('appointment_date',e0),
+    ]);
+    setData({thisMonth:a.data||[], lastMonth:b.data||[]});
+  })();},[]);
+
+  const stats = useMemo(()=>{
+    const c1 = data.thisMonth.length, c0 = data.lastMonth.length;
+    const growth = c0===0 ? (c1>0?100:0) : Math.round(((c1-c0)/c0)*100);
+    const minutes = data.thisMonth.reduce((s,a)=>s+(a.duration_minutes||30),0);
+    const dayCounts = {};
+    data.thisMonth.forEach(a=>{
+      const d = new Date(a.appointment_date).toLocaleDateString('es-ES',{weekday:'long'});
+      dayCounts[d] = (dayCounts[d]||0) + (Number(a.price)||0);
+    });
+    const bestDay = Object.entries(dayCounts).sort((a,b)=>b[1]-a[1])[0];
+    return { c1, c0, growth, hours:(minutes/60).toFixed(1), bestDay };
+  },[data]);
+
+  return (
+    <div className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Analíticas del mes</h1>
+      <div className="grid sm:grid-cols-2 gap-3">
+        <div className="bg-card border border-border rounded-2xl p-5">
+          <div className="text-xs uppercase text-muted">Clientes este mes</div>
+          <div className="text-4xl font-bold mt-2">{stats.c1}</div>
+          <div className={`mt-1 text-sm font-bold ${stats.growth>=0?'text-emerald-400':'text-red-400'}`}>
+            {stats.growth>=0?'▲':'▼'} {Math.abs(stats.growth)}% vs mes anterior ({stats.c0})
+          </div>
+        </div>
+        <div className="bg-card border border-border rounded-2xl p-5">
+          <div className="text-xs uppercase text-muted">Horas en la silla</div>
+          <div className="text-4xl font-bold mt-2">{stats.hours}h</div>
+        </div>
+        <div className="bg-card border border-border rounded-2xl p-5 sm:col-span-2">
+          <div className="text-xs uppercase text-muted">Día más rentable</div>
+          <div className="text-3xl font-bold mt-2 capitalize">{stats.bestDay?stats.bestDay[0]:'-'}</div>
+          {stats.bestDay && <div className="text-muted text-sm">{fmtEur(stats.bestDay[1])}</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ===== SHELL =====
+function Shell({ children, page, setPage, onOut }){
+  const nav = [['agenda','📅'],['caja','💰'],['analiticas','📊']];
+  return (
+    <div className="flex h-screen w-screen overflow-hidden">
+      <aside className="w-24 sm:w-28 bg-card border-r border-border flex flex-col items-center py-6 gap-2">
+        <div className="w-14 h-14 rounded-2xl bg-primary grid place-items-center text-2xl mb-4">✂</div>
+        <nav className="flex-1 flex flex-col gap-2">
+          {nav.map(([k,i])=>(
+            <button key={k} onClick={()=>setPage(k)} className={`w-20 h-20 rounded-2xl flex flex-col items-center justify-center gap-1 text-xs font-bold capitalize ${page===k?'bg-primary text-white':'text-muted hover:bg-zinc-800'}`}>
+              <span className="text-2xl">{i}</span>{k}
+            </button>
+          ))}
+        </nav>
+        <button onClick={onOut} className="w-20 h-16 rounded-2xl text-xs text-muted hover:text-red-400 flex flex-col items-center justify-center gap-1">
+          <span className="text-xl">⎋</span>Salir
+        </button>
+      </aside>
+      <main className="flex-1 overflow-auto">{children}</main>
+    </div>
+  );
+}
+
+// ===== APP =====
+function App(){
+  const [session,setSession] = useState(null);
+  const [ready,setReady] = useState(false);
+  const [page,setPage] = useState('agenda');
+
+  useEffect(()=>{
+    supabase.auth.getSession().then(({data})=>{ setSession(data.session); setReady(true); });
+    const { data } = supabase.auth.onAuthStateChange((_,s)=> setSession(s));
+    return ()=>data.subscription.unsubscribe();
+  },[]);
+
+  if(!ready) return <div className="min-h-screen grid place-items-center text-muted">Cargando...</div>;
+  if(!session) return <Auth onIn={()=>{}} />;
+  const userId = session.user.id;
+
+  return (
+    <Shell page={page} setPage={setPage} onOut={async()=>{ await supabase.auth.signOut(); }}>
+      {page==='agenda' && <Agenda userId={userId} />}
+      {page==='caja' && <Caja userId={userId} />}
+      {page==='analiticas' && <Analiticas />}
+    </Shell>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
