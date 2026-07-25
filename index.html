@@ -865,23 +865,48 @@ function toast(m,k='info'){
 }
 
 let recoveryMode=false;
+let initialized=false;
 
-async function init(){
-  const{data:{session}}=await sb.auth.getSession();
-  if(session){
-    user=session.user;sess={email:user.email};
-    if(recoveryMode){authScreen('newpass');}else{await draw();}
-  }else{
-    draw();
-  }
+function init(){
+  /* IMPORTANTE: el listener se registra ANTES de pedir la sesión,
+     para no perder el evento PASSWORD_RECOVERY cuando Supabase
+     procesa el enlace de recuperación desde la URL. */
   sb.auth.onAuthStateChange(async(event,session)=>{
-    if(event==='SIGNED_OUT'){recoveryMode=false;sess=null;user=null;profile=null;draw();}
-    else if(event==='PASSWORD_RECOVERY'){
+    if(event==='PASSWORD_RECOVERY'){
       recoveryMode=true;
       user=session.user;sess={email:user.email};
       authScreen('newpass');
+      initialized=true;
+      return;
+    }
+    if(event==='SIGNED_OUT'){
+      recoveryMode=false;sess=null;user=null;profile=null;draw();
+      return;
+    }
+    /* INITIAL_SESSION llega una sola vez al arrancar, con la sesión
+       actual (o null). La usamos para pintar la app la primera vez,
+       salvo que ya se haya mostrado la pantalla de recuperación. */
+    if(event==='INITIAL_SESSION'&&!initialized){
+      initialized=true;
+      if(recoveryMode)return;
+      if(session){
+        user=session.user;sess={email:user.email};
+        await draw();
+      }else{
+        draw();
+      }
     }
   });
+  /* Salvaguarda: si por algún motivo INITIAL_SESSION no llega en 2s
+     (versión antigua del SDK), pintamos igualmente con getSession(). */
+  setTimeout(async()=>{
+    if(initialized)return;
+    initialized=true;
+    const{data:{session}}=await sb.auth.getSession();
+    if(recoveryMode)return;
+    if(session){user=session.user;sess={email:user.email};await draw();}
+    else draw();
+  },2000);
 }
 
 async function draw(){
