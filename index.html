@@ -864,6 +864,25 @@ function toast(m,k='info'){
   setTimeout(()=>e.remove(),2500);
 }
 
+/* ── TRADUCTOR DE ERRORES DE SUPABASE AUTH ───────────────────── */
+function traducirError(msg){
+  if(!msg)return'Ha ocurrido un error. Inténtalo de nuevo.';
+  const m=msg.toLowerCase();
+  if(m.includes('invalid login credentials'))return'Correo o contraseña incorrectos';
+  if(m.includes('user already registered')||m.includes('already registered'))return'Ese correo ya tiene una cuenta creada';
+  if(m.includes('auth session missing'))return'La sesión aún se está preparando. Espera un segundo e inténtalo de nuevo';
+  if(m.includes('password should be at least')||m.includes('password should contain'))return'La contraseña debe tener al menos 6 caracteres';
+  if(m.includes('new password should be different'))return'La nueva contraseña debe ser distinta a la anterior';
+  if(m.includes('unable to validate email')||m.includes('invalid email'))return'El formato del correo no es válido';
+  if(m.includes('email rate limit') || m.includes('rate limit'))return'Se han pedido demasiados correos seguidos. Espera unos minutos e inténtalo de nuevo';
+  if(m.includes('for security purposes')||m.includes('only request this once every'))return'Por seguridad, espera unos segundos antes de volver a intentarlo';
+  if(m.includes('email not confirmed'))return'Confirma tu correo antes de iniciar sesión (revisa tu bandeja de entrada)';
+  if(m.includes('user not found'))return'No existe ninguna cuenta con ese correo';
+  if(m.includes('network')||m.includes('fetch'))return'Error de conexión. Revisa tu internet e inténtalo de nuevo';
+  if(m.includes('token has expired')||m.includes('invalid or expired'))return'El enlace ha caducado. Pide uno nuevo desde "¿Olvidaste tu contraseña?"';
+  return msg;
+}
+
 /* Detectamos el enlace de recuperación LEYENDO LA URL directamente
    (Supabase añade type=recovery al hash o a la query del enlace del
    correo). Esto es inmediato y no depende del orden en que lleguen
@@ -1076,7 +1095,7 @@ async function doRegister(){
   const btn=document.getElementById('rb');if(btn)btn.disabled=true;
   const{data,error}=await sb.auth.signUp({email,password:pass});
   if(btn)btn.disabled=false;
-  if(error){document.getElementById('err-ru').textContent=error.message;return;}
+  if(error){document.getElementById('err-ru').textContent=traducirError(error.message);return;}
   if(!data.session){toast('Revisa tu correo para confirmar tu cuenta','info');authScreen('login');return;}
 
   const trialEnd=new Date(Date.now()+30*24*60*60*1000).toISOString();
@@ -1094,8 +1113,17 @@ async function doRecover(){
 
   const{error}=await sb.auth.resetPasswordForEmail(email);
   const resultEl=document.getElementById('recover-result');
-  if(error){document.getElementById('err-vu').textContent=error.message;return;}
+  if(error){document.getElementById('err-vu').textContent=traducirError(error.message);return;}
   if(resultEl)resultEl.innerHTML=`<div class="recover-result"><span class="r-label">Listo</span><span style="font-size:.85rem">Revisa tu correo para restablecer tu contraseña.</span></div>`;
+}
+
+async function esperarSesion(maxIntentos=10){
+  for(let i=0;i<maxIntentos;i++){
+    const{data:{session}}=await sb.auth.getSession();
+    if(session)return session;
+    await new Promise(r=>setTimeout(r,300));
+  }
+  return null;
 }
 
 async function doNewPassword(){
@@ -1108,10 +1136,22 @@ async function doNewPassword(){
   else document.getElementById('err-np2').textContent='';
   if(!ok)return;
 
-  const btn=document.getElementById('npb');if(btn)btn.disabled=true;
+  const btn=document.getElementById('npb');if(btn){btn.disabled=true;btn.textContent='Un momento…';}
+  document.getElementById('err-np2').textContent='';
+
+  /* El enlace del correo tarda un instante en establecer la sesión
+     de recuperación por detrás. Esperamos activamente a que esté
+     lista antes de intentar guardar, en vez de fallar de inmediato. */
+  const session=await esperarSesion();
+  if(!session){
+    if(btn){btn.disabled=false;btn.textContent='Guardar contraseña';}
+    document.getElementById('err-np2').textContent='El enlace ha caducado o ya se usó. Vuelve a pedir "¿Olvidaste tu contraseña?" e inténtalo de nuevo.';
+    return;
+  }
+
   const{error}=await sb.auth.updateUser({password:p1});
-  if(btn)btn.disabled=false;
-  if(error){document.getElementById('err-np2').textContent=error.message;return;}
+  if(btn){btn.disabled=false;btn.textContent='Guardar contraseña';}
+  if(error){document.getElementById('err-np2').textContent=traducirError(error.message);return;}
 
   recoveryMode=false;
   toast('Contraseña actualizada ✂️','success');
@@ -1257,7 +1297,7 @@ async function saveAppt(t){
   const name=document.getElementById('nc')?.value?.trim();
   if(!name)return toast('Nombre requerido','error');
   const{error}=await sb.from('appointments').insert({user_id:user.id,client_name:name,appointment_date:dt,start_time:t+':00',duration_minutes:30,status:'scheduled'});
-  if(error)return toast(error.message,'error');
+  if(error)return toast(traducirError(error.message),'error');
   toast('Cita creada ✓','success');closeM();loadPg();
 }
 
@@ -1308,7 +1348,7 @@ async function doPay(id){
   if(!p||p<=0)return toast('Importe inválido','error');
   const type=meth==='efectivo'?'interno':'oficial';
   const{error}=await sb.from('appointments').update({status:'completed',payment_method:meth,payment_type:type,price:p,completed_at:new Date().toISOString()}).eq('id',id);
-  if(error)return toast(error.message,'error');
+  if(error)return toast(traducirError(error.message),'error');
   toast('Cobrado ✓','success');closeM();loadPg();
 }
 
@@ -1471,7 +1511,7 @@ async function addExp(){
   const note=document.getElementById('en')?.value||'';
   if(!amount||amount<=0)return toast('Importe inválido','error');
   const{error}=await sb.from('expenses').insert({user_id:user.id,category:cat,amount,note,expense_date:today()});
-  if(error)return toast(error.message,'error');
+  if(error)return toast(traducirError(error.message),'error');
   toast('Gasto registrado ✓','success');loadPg();
 }
 async function delExp(id){await sb.from('expenses').delete().eq('id',id).eq('user_id',user.id);toast('Eliminado','info');loadPg();}
