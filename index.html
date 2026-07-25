@@ -893,11 +893,21 @@ const _sp=new URLSearchParams(window.location.search);
 let recoveryMode=_hp.get('type')==='recovery'||_sp.get('type')==='recovery';
 let initialized=false;
 
+function limpiarUrlRecovery(){
+  try{
+    const limpio=window.location.pathname+window.location.search.replace(/[?&]?type=recovery/,'');
+    history.replaceState(null,'',limpio);
+  }catch(e){}
+}
+
 function init(){
   if(recoveryMode){
-    /* Limpiamos la URL visible para que un refresco accidental no
-       vuelva a disparar este modo con un token ya usado. */
-    try{history.replaceState(null,'',window.location.pathname+window.location.search.replace(/[?&]?type=recovery/,''));}catch(e){}
+    /* NO tocamos la URL todavía: el token de recuperación sigue en el
+       hash y Supabase aún no lo ha leído. Si la limpiamos ahora,
+       borramos el token antes de que se pueda usar. Solo mostramos
+       la pantalla; la limpieza de URL se hace más adelante, una vez
+       la sesión ya quedó confirmada (ver PASSWORD_RECOVERY abajo y
+       esperarSesion). */
     authScreen('newpass');
   }
   sb.auth.onAuthStateChange(async(event,session)=>{
@@ -906,6 +916,7 @@ function init(){
       user=session.user;sess={email:user.email};
       authScreen('newpass');
       initialized=true;
+      limpiarUrlRecovery();
       return;
     }
     if(event==='SIGNED_OUT'){
@@ -916,7 +927,7 @@ function init(){
       /* Mientras estemos en modo recuperación, ignoramos cualquier
          otro evento (sesión antigua guardada, refresh de token, etc.)
          para no sacar al usuario de la pantalla de nueva contraseña. */
-      if(session&&(!user||user.id!==session.user.id)){user=session.user;sess={email:user.email};authScreen('newpass');}
+      if(session&&(!user||user.id!==session.user.id)){user=session.user;sess={email:user.email};authScreen('newpass');limpiarUrlRecovery();}
       return;
     }
     if(event==='INITIAL_SESSION'&&!initialized){
