@@ -92,7 +92,6 @@ body {
   user-select: none;
   overscroll-behavior: none;
   color-scheme: dark;
-  /* Forzar fondo oscuro en iOS Safari (evita flash blanco) */
   min-height: 100dvh;
   min-height: -webkit-fill-available;
 }
@@ -119,7 +118,6 @@ input, select { font-family: inherit; outline: none; border: none; }
   box-shadow: 2px 0 24px oklch(0 0 0 / 0.45);
 }
 
-/* Logo tijeras — 56×56px, rounded-2xl, bg-primary */
 .logo-wrap {
   width: 56px; height: 56px;
   background: var(--primary);
@@ -131,7 +129,6 @@ input, select { font-family: inherit; outline: none; border: none; }
 }
 .logo-wrap svg { width: 28px; height: 28px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-/* Nav items base */
 .nav-item {
   width: 62px; height: 62px;
   border-radius: var(--radius-2xl);
@@ -154,7 +151,6 @@ input, select { font-family: inherit; outline: none; border: none; }
 .nav-item:hover svg { stroke: oklch(1 0 0 / 0.72); }
 .nav-item:active { transform: scale(.97); }
 
-/* Activo */
 .nav-item.active { color: var(--foreground); background: transparent; }
 .nav-item.active .nav-icon-wrap {
   background: var(--nav-color, var(--primary));
@@ -174,7 +170,6 @@ input, select { font-family: inherit; outline: none; border: none; }
 }
 .nav-spacer { flex: 1; }
 
-/* Salir */
 .nav-out { color: oklch(1 0 0 / 0.22); }
 .nav-out svg { stroke: oklch(1 0 0 / 0.22); }
 .nav-out:hover { background: oklch(0.62 0.22 25 / 0.12); color: var(--destructive); }
@@ -242,9 +237,6 @@ input, select { font-family: inherit; outline: none; border: none; }
 /* ── PAGE ─────────────────────────────────────────────────────── */
 .page {
   padding: 1.5rem; max-width: 900px; margin: 0 auto;
-  /* Padding de seguridad inferior: evita que el último elemento de una lista
-     larga (slots, gastos, etc.) quede pegado al borde de la pantalla o tapado
-     por gestos/indicadores del sistema en móvil */
   padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px) + 4.5rem);
 }
 .pg-tag { font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted-foreground); font-weight: 700; margin-bottom: .2rem; }
@@ -286,11 +278,9 @@ input, select { font-family: inherit; outline: none; border: none; }
   display: flex; align-items: center; gap: .875rem;
   border-radius: var(--radius-2xl); padding: 1.125rem 1.25rem;
   margin-bottom: .5rem; min-height: 80px; transition: all .22s;
-  /* Previene desbordamiento horizontal en pantallas pequeñas */
   width: 100%; overflow: hidden;
 }
 
-/* LIBRE — bg-success/10, border-success/30, texto text-success */
 .slot.free {
   background: oklch(0.68 0.18 145 / 0.08);
   border: 1.5px solid oklch(0.68 0.18 145 / 0.25);
@@ -300,14 +290,12 @@ input, select { font-family: inherit; outline: none; border: none; }
   border-color: oklch(0.68 0.18 145 / 0.42);
   box-shadow: 0 4px 20px var(--success-glow);
 }
-/* OCUPADO — bg-destructive, texto destructive-foreground */
 .slot.busy {
   background: var(--destructive);
   border: 1.5px solid oklch(1 0 0 / 0.18);
   box-shadow: 0 4px 18px var(--destructive-glow);
 }
 .slot.busy:hover { box-shadow: 0 8px 32px oklch(0.62 0.22 25 / 0.52); transform: translateY(-1px); }
-/* COBRADO — bg-primary, texto primary-foreground */
 .slot.paid {
   background: var(--primary);
   border: 1.5px solid oklch(1 0 0 / 0.22);
@@ -315,7 +303,6 @@ input, select { font-family: inherit; outline: none; border: none; }
 }
 .slot.paid:hover { box-shadow: 0 8px 32px oklch(0.78 0.16 75 / 0.52); transform: translateY(-1px); }
 
-/* Textos en slots */
 .slot-time {
   width: 84px; font-size: 1.7rem; font-weight: 900;
   font-variant-numeric: tabular-nums; flex-shrink: 0; line-height: 1;
@@ -331,7 +318,6 @@ input, select { font-family: inherit; outline: none; border: none; }
 .slot-free-txt { font-size: .9rem; color: var(--success); font-weight: 600; }
 .slot-paid-info { font-size: .85rem; margin-top: .2rem; font-weight: 700; color: oklch(0.18 0.02 75 / 0.85); font-variant-numeric: tabular-nums; }
 
-/* slot-actions: flex-wrap para que Cobrar y Eliminar no se solapen en móvil */
 .slot-actions {
   display: flex;
   align-items: center;
@@ -339,16 +325,13 @@ input, select { font-family: inherit; outline: none; border: none; }
   flex-shrink: 0;
   flex-wrap: wrap;
   justify-content: flex-end;
-  /* Sin max-width fijo: se adapta al espacio disponible en cada viewport */
 }
-/* Iconos de acción uniformes a 20×20 — interfaz profesional */
 .slot-actions svg, .btn-plus svg, .btn-del-slot svg, .check-icon svg {
   width: 20px !important;
   height: 20px !important;
   flex-shrink: 0;
 }
 
-/* Botón COBRAR (en slot busy) */
 .btn-cobrar {
   height: 48px; padding: 0 1.25rem; border-radius: var(--radius-xl);
   background: oklch(1 0 0 / 0.22); color: var(--destructive-foreground);
@@ -359,7 +342,6 @@ input, select { font-family: inherit; outline: none; border: none; }
 .btn-cobrar:hover { background: oklch(1 0 0 / 0.38); box-shadow: 0 0 20px oklch(1 0 0 / 0.25); }
 .btn-cobrar:active { transform: scale(.98); }
 
-/* Botón eliminar slot */
 .btn-del-slot {
   width: 44px; height: 44px; border-radius: var(--radius-lg);
   background: oklch(0 0 0 / 0.18); color: oklch(1 0 0 / 0.82); cursor: pointer;
@@ -371,7 +353,6 @@ input, select { font-family: inherit; outline: none; border: none; }
 .btn-del-slot:hover { background: oklch(0 0 0 / 0.36); }
 .btn-del-slot:active { transform: scale(.97); }
 
-/* Botón + (libre) */
 .btn-plus {
   width: 44px; height: 44px; border-radius: var(--radius-lg);
   background: oklch(0.68 0.18 145 / 0.12); color: var(--success);
@@ -382,7 +363,6 @@ input, select { font-family: inherit; outline: none; border: none; }
 .btn-plus:hover { background: var(--success); color: var(--success-foreground); box-shadow: 0 0 18px var(--success-glow); }
 .btn-plus:active { transform: scale(.97); }
 
-/* Check cobrado */
 .check-icon {
   width: 40px; height: 40px; border-radius: 50%;
   background: oklch(0 0 0 / 0.18); border: 2px solid oklch(0.18 0.02 75 / 0.45);
@@ -399,8 +379,6 @@ input, select { font-family: inherit; outline: none; border: none; }
   border-radius: var(--radius-3xl);
   border: 1.5px solid var(--border); position: relative;
   box-shadow: 0 25px 60px oklch(0 0 0 / 0.65), 0 0 0 1px oklch(1 0 0 / 0.04);
-  /* Layout vertical: el cuerpo hace scroll interno si es necesario,
-     la barra de acciones queda sticky abajo y siempre visible (alcance del pulgar) */
   display: flex; flex-direction: column;
   max-height: 88vh; max-height: 88dvh;
   overflow: hidden;
@@ -541,7 +519,6 @@ input, select { font-family: inherit; outline: none; border: none; }
 }
 .caja-tab:active { transform: scale(.99); }
 
-/* Tarjetas Caja */
 .cards3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .75rem; margin-bottom: .875rem; }
 .kard {
   background: var(--card); border: 1.5px solid var(--border);
@@ -554,7 +531,6 @@ input, select { font-family: inherit; outline: none; border: none; }
 .kard-sub { font-size: .72rem; color: var(--muted-foreground); margin-top: .375rem; }
 .sec-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted-foreground); font-weight: 600; margin-bottom: .625rem; }
 
-/* Tarjetas Método */
 .meth3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .75rem; margin-bottom: 1rem; }
 .meth-kard {
   background: var(--card); border: 1.5px solid var(--border);
@@ -564,7 +540,6 @@ input, select { font-family: inherit; outline: none; border: none; }
 .meth-head { font-size: .78rem; color: var(--muted-foreground); font-weight: 600; margin-bottom: .5rem; display: flex; align-items: center; justify-content: space-between; }
 .meth-val { font-size: 1.75rem; font-weight: 900; color: var(--foreground); font-variant-numeric: tabular-nums; }
 
-/* Botones acción caja */
 .export-btn {
   width: 100%; height: 60px; border-radius: var(--radius-2xl);
   background: var(--success); color: var(--success-foreground);
@@ -612,7 +587,6 @@ input, select { font-family: inherit; outline: none; border: none; }
 .gadd-btn:hover { box-shadow: 0 6px 24px var(--primary-glow); opacity: .92; }
 .gadd-btn:active { transform: scale(.98); }
 
-/* Lista gastos */
 .glist {
   background: var(--card); border: 1.5px solid var(--border);
   border-radius: var(--radius-2xl); padding: 1.125rem; margin-bottom: .875rem;
@@ -658,9 +632,7 @@ input, select { font-family: inherit; outline: none; border: none; }
 .chart-wrap { height: 160px; position: relative; }
 
 /* ── BARBERBRAIN ──────────────────────────────────────────────── */
-.bb-section {
-  margin-top: .75rem;
-}
+.bb-section { margin-top: .75rem; }
 .bb-btn {
   width: 100%; height: 64px;
   border-radius: var(--radius-2xl);
@@ -694,7 +666,6 @@ input, select { font-family: inherit; outline: none; border: none; }
   border-radius: 2rem; padding: .15rem .5rem; font-weight: 800; flex-shrink: 0;
 }
 
-/* Panel de resultado */
 .bb-result {
   margin-top: .75rem;
   background: oklch(0.19 0.022 270);
@@ -715,9 +686,7 @@ input, select { font-family: inherit; outline: none; border: none; }
   width: 8px; height: 8px; border-radius: 50%;
   background: oklch(0.70 0.15 240); flex-shrink: 0;
 }
-.bb-result-dot.thinking {
-  animation: bb-pulse 1.1s ease-in-out infinite;
-}
+.bb-result-dot.thinking { animation: bb-pulse 1.1s ease-in-out infinite; }
 @keyframes bb-pulse {
   0%,100% { opacity:1; transform:scale(1); box-shadow: 0 0 0 0 oklch(0.70 0.15 240 / 0.5); }
   50% { opacity:.6; transform:scale(1.3); box-shadow: 0 0 0 5px oklch(0.70 0.15 240 / 0); }
@@ -726,11 +695,8 @@ input, select { font-family: inherit; outline: none; border: none; }
   font-size: .72rem; text-transform: uppercase; letter-spacing: .1em;
   font-weight: 800; color: oklch(0.70 0.15 240); flex: 1;
 }
-.bb-result-ts {
-  font-size: .68rem; color: var(--muted-foreground); font-weight: 600;
-}
+.bb-result-ts { font-size: .68rem; color: var(--muted-foreground); font-weight: 600; }
 
-/* Cuerpo del análisis */
 .bb-result-body { padding: 1.125rem; }
 .bb-thinking {
   display: flex; align-items: center; gap: .75rem;
@@ -749,24 +715,19 @@ input, select { font-family: inherit; outline: none; border: none; }
   40% { transform:translateY(-6px); opacity:1; }
 }
 
-/* Secciones del análisis */
 .bb-analysis { display: flex; flex-direction: column; gap: .875rem; }
 .bb-insight {
   display: flex; gap: .75rem; align-items: flex-start;
   padding: .875rem; border-radius: var(--radius-xl);
   background: oklch(1 0 0 / 0.03); border: 1px solid oklch(1 0 0 / 0.06);
 }
-.bb-insight-icon {
-  font-size: 1.25rem; line-height: 1; flex-shrink: 0; margin-top: .05rem;
-}
+.bb-insight-icon { font-size: 1.25rem; line-height: 1; flex-shrink: 0; margin-top: .05rem; }
 .bb-insight-body { flex: 1; min-width: 0; }
 .bb-insight-label {
   font-size: .65rem; text-transform: uppercase; letter-spacing: .1em;
   font-weight: 800; color: var(--muted-foreground); margin-bottom: .25rem;
 }
-.bb-insight-text {
-  font-size: .88rem; line-height: 1.55; color: var(--foreground); font-weight: 500;
-}
+.bb-insight-text { font-size: .88rem; line-height: 1.55; color: var(--foreground); font-weight: 500; }
 .bb-insight-text strong { color: oklch(0.70 0.15 240); font-weight: 800; }
 .bb-insight-text .pos { color: var(--success); font-weight: 700; }
 .bb-insight-text .neg { color: var(--destructive); font-weight: 700; }
@@ -776,6 +737,39 @@ input, select { font-family: inherit; outline: none; border: none; }
   font-size: .68rem; color: var(--muted-foreground); text-align: center;
   padding-top: .5rem; border-top: 1px solid var(--border);
   line-height: 1.5;
+}
+
+/* ── BLOQUEO POR PLAN (trial vencido / suscripción cancelada) ──── */
+.block-wrap { min-height: 100vh; display: grid; place-items: center; padding: 1rem; background: var(--background); }
+.block-card {
+  width: 100%; max-width: 420px;
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-3xl); padding: 2.25rem;
+  box-shadow: 0 25px 50px oklch(0 0 0 / 0.55);
+  text-align: center;
+}
+.block-icon {
+  width: 64px; height: 64px; margin: 0 auto 1.125rem;
+  background: oklch(0.62 0.22 25 / 0.15);
+  border: 1.5px solid oklch(0.62 0.22 25 / 0.35);
+  border-radius: var(--radius-2xl);
+  display: grid; place-items: center; font-size: 1.75rem;
+}
+.block-title { font-size: 1.4rem; font-weight: 800; margin-bottom: .5rem; color: var(--foreground); }
+.block-sub { font-size: .88rem; color: var(--muted-foreground); margin-bottom: 1.5rem; line-height: 1.5; }
+.block-btn {
+  width: 100%; height: 56px; border-radius: var(--radius-2xl);
+  background: var(--primary); color: var(--primary-foreground);
+  font-weight: 800; font-size: 1rem; margin-bottom: .625rem;
+  transition: all .2s; box-shadow: 0 4px 20px var(--primary-glow); touch-action: manipulation;
+}
+.block-btn:hover { opacity: .92; }
+.block-btn-out {
+  width: 100%; height: 48px; border-radius: var(--radius-lg);
+  background: transparent; color: var(--muted-foreground);
+  font-weight: 600; font-size: .85rem; border: 1.5px solid var(--border);
+  touch-action: manipulation;
 }
 
 /* ── RESPONSIVE ───────────────────────────────────────────────── */
@@ -798,37 +792,11 @@ input, select { font-family: inherit; outline: none; border: none; }
   .pg-title { font-size: 1.75rem; }
   .slot-time { font-size: 1.4rem; width: 70px; }
 
-  /* En móvil: el slot permite que las acciones bajen a una segunda fila
-     si no hay espacio, asegurando botones táctiles de mínimo 44px */
-  .slot {
-    flex-wrap: wrap;
-    gap: .625rem;
-    padding: .875rem 1rem;
-    align-items: center;
-  }
-  .slot-body {
-    /* Ocupa todo el espacio restante disponible en la primera fila */
-    flex: 1 1 auto;
-    min-width: 0;
-  }
-  .slot-actions {
-    /* Se mantiene junto al slot-body en la misma fila si hay espacio;
-       si no, baja automáticamente a una nueva fila */
-    flex: 0 0 auto;
-    gap: .375rem;
-  }
-  /* Botón COBRAR: altura táctil garantizada de 44px en móvil */
-  .btn-cobrar {
-    height: 44px;
-    padding: 0 .875rem;
-    font-size: .82rem;
-    min-width: 72px;
-  }
-  /* Botones icono: 44×44px exactos para área táctil segura */
-  .btn-del-slot, .btn-plus {
-    width: 44px;
-    height: 44px;
-  }
+  .slot { flex-wrap: wrap; gap: .625rem; padding: .875rem 1rem; align-items: center; }
+  .slot-body { flex: 1 1 auto; min-width: 0; }
+  .slot-actions { flex: 0 0 auto; gap: .375rem; }
+  .btn-cobrar { height: 44px; padding: 0 .875rem; font-size: .82rem; min-width: 72px; }
+  .btn-del-slot, .btn-plus { width: 44px; height: 44px; }
 }
 </style>
 </head>
@@ -837,7 +805,7 @@ input, select { font-family: inherit; outline: none; border: none; }
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-/* ── AUTH LOCAL EXTRA STYLES ──────────────────────────────────── */
+/* ── AUTH EXTRA STYLES ────────────────────────────────────────── */
 .auth-link {
   display: block; width: 100%; margin-top: .875rem; height: 44px;
   background: transparent; color: var(--muted-foreground);
@@ -860,68 +828,33 @@ input, select { font-family: inherit; outline: none; border: none; }
   border-radius: var(--radius-xl); padding: 1.25rem 1rem; margin-top: .5rem; text-align: center;
 }
 .recover-result .r-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted-foreground); font-weight: 700; }
-.recover-result .r-pass {
-  font-size: 1.5rem; font-weight: 900; color: var(--primary);
-  letter-spacing: .08em; text-shadow: 0 0 20px var(--primary-glow);
-  font-family: ui-monospace, 'Cascadia Code', monospace;
-}
 .f-err { font-size: .78rem; color: var(--destructive); font-weight: 600; min-height: 1.1em; margin-top: -.5rem; margin-bottom: .5rem; }
 </style>
 <script>
 const SB_URL="https://vtmegxkarrnofgepqdky.supabase.co";
 const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0bWVneGthcnJub2ZnZXBxZGt5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMjMxNDYsImV4cCI6MjA5Nzg5OTE0Nn0.so3MHuDCky8wCzJOW2hMQChEUf-NgoxwZU13hmG_CiE";
-const sb=supabase.createClient(SB_URL,SB_KEY);
+const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
 const SLOT=30,DS=9*60,DE=21*60;
 const today=()=>new Date().toISOString().slice(0,10);
 const eur=n=>(n||0).toLocaleString('es-ES',{style:'currency',currency:'EUR'});
 const DAYS=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
 
-/* SVG inline de Lucide — Scissors */
 const ICON_SCISSORS=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>`;
-/* SVG inline Lucide — Calendar */
 const ICON_CAL=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
-/* SVG — Wallet */
 const ICON_WALLET=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>`;
-/* SVG — BarChart3 */
 const ICON_BAR=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>`;
-/* SVG — LogOut */
 const ICON_OUT=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`;
-/* SVG — CheckCircle2 */
 const ICON_CHECK=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>`;
-/* SVG — Plus */
 const ICON_PLUS=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
-/* SVG — Trash2 */
 const ICON_TRASH=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
 
 /* ══════════════════════════════════════════════════════════════
-   AUTH LOCAL — localStorage, offline, autónomo
-   Estructura: { username, password, securityWord }
-   Clave en localStorage: 'btp_user'
+   AUTH — Supabase Auth real (email + contraseña)
+   Sesión gestionada por Supabase (persistente, multi-dispositivo).
    ══════════════════════════════════════════════════════════════ */
 
-let sess=null,user=null,pg='agenda',dt=today(),rs=DS,re=DE,ctab='caja',cper='mes',meth='efectivo';
+let sess=null,user=null,profile=null,pg='agenda',dt=today(),rs=DS,re=DE,ctab='caja',cper='mes',meth='efectivo';
 let charts={};
-
-/* ── Helpers localStorage ─────────────────────────────────── */
-const LSK='btp_user';
-const lsGet=()=>{try{return JSON.parse(localStorage.getItem(LSK));}catch{return null;}};
-const lsSet=v=>localStorage.setItem(LSK,JSON.stringify(v));
-
-/* Genera (o recupera) un UUID v4 real para usar como user_id en Supabase.
-   Se genera una sola vez y se persiste junto al perfil del usuario.
-   Esto evita el error "invalid input syntax for type uuid" que ocurre
-   cuando se envía el username (texto) a una columna de tipo UUID. */
-function getOrCreateUserUUID(profile){
-  if(profile&&profile.uuid)return profile.uuid;
-  /* Genera UUID v4 usando crypto.randomUUID() (soportado en todos los navegadores modernos) */
-  const uuid=typeof crypto.randomUUID==='function'
-    ?crypto.randomUUID()
-    :'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{
-        const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16);
-      });
-  if(profile){profile.uuid=uuid;lsSet(profile);}
-  return uuid;
-}
 
 function toast(m,k='info'){
   const e=document.createElement('div');e.className='toast';
@@ -931,27 +864,55 @@ function toast(m,k='info'){
   setTimeout(()=>e.remove(),2500);
 }
 
-function init(){
-  /* Sesión en sessionStorage para que cierre al cerrar pestaña */
-  const s=sessionStorage.getItem('btp_sess');
-  if(s){
-    const parsed=JSON.parse(s);
-    sess={username:parsed.username};
-    /* Usa el UUID guardado; si la sesión es antigua (sin uuid), lo regenera desde el perfil */
-    const profile=lsGet();
-    const uuid=parsed.uuid||getOrCreateUserUUID(profile);
-    user={id:uuid,username:parsed.username};
+async function init(){
+  const{data:{session}}=await sb.auth.getSession();
+  if(session){
+    user=session.user;sess={email:user.email};
+    await draw();
+  }else{
+    draw();
   }
-  draw();
+  sb.auth.onAuthStateChange(async(event)=>{
+    if(event==='SIGNED_OUT'){sess=null;user=null;profile=null;draw();}
+  });
 }
-function draw(){if(!sess){authScreen('login');}else{appScreen();}}
 
-/* ── AUTH VIEW STATE ──────────────────────────────────────── */
-/* view: 'login' | 'register' | 'recover' */
+async function draw(){
+  if(!sess){authScreen('login');return;}
+  /* Verificar plan_status antes de mostrar la app */
+  const{data,error}=await sb.from('profiles').select('plan_status,trial_ends_at').eq('id',user.id).single();
+  if(error||!data){
+    /* Si por algún motivo no hay fila de perfil, la crea con trial de 30 días */
+    const trialEnd=new Date(Date.now()+30*24*60*60*1000).toISOString();
+    await sb.from('profiles').insert({id:user.id,trial_ends_at:trialEnd,plan_status:'trial'});
+    profile={plan_status:'trial',trial_ends_at:trialEnd};
+  }else{
+    profile=data;
+  }
+
+  const trialVencido=profile.plan_status==='trial'&&profile.trial_ends_at&&new Date(profile.trial_ends_at)<new Date();
+  const bloqueado=profile.plan_status==='cancelled'||profile.plan_status==='past_due'||trialVencido;
+
+  if(bloqueado){blockScreen(trialVencido);return;}
+  appScreen();
+}
+
+/* ── PANTALLA DE BLOQUEO ──────────────────────────────────────── */
+function blockScreen(trialVencido){
+  document.getElementById('root').innerHTML=`
+  <div class="block-wrap"><div class="block-card">
+    <div class="block-icon">🔒</div>
+    <div class="block-title">${trialVencido?'Tu prueba ha terminado':'Suscripción inactiva'}</div>
+    <p class="block-sub">${trialVencido
+      ?'Tus 30 días de prueba gratuita han finalizado. Suscríbete para seguir usando Barbería TPV sin interrupciones.'
+      :'Tu suscripción no está activa en este momento. Actualiza tu método de pago o contáctanos para reactivar tu cuenta.'}</p>
+    <button class="block-btn" onclick="window.open('https://wa.me/34643668284?text=Hola,%20quiero%20activar%20mi%20suscripci%C3%B3n%20de%20Barber%C3%ADa%20TPV','_blank')">Activar suscripción</button>
+    <button class="block-btn-out" onclick="doOut()">Cerrar sesión</button>
+  </div></div>`;
+}
+
+/* ── AUTH VIEW STATE ──────────────────────────────────────────── */
 function authScreen(view='login'){
-  const ICON_BACK=`<svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>`;
-
-  /* ── LOGIN ── */
   if(view==='login'){
     document.getElementById('root').innerHTML=`
     <div class="auth-wrap"><div class="auth-card">
@@ -962,8 +923,8 @@ function authScreen(view='login'){
         <button class="auth-tab active" onclick="authScreen('login')" ontouchend="event.preventDefault();authScreen('login')">Iniciar sesión</button>
         <button class="auth-tab" onclick="authScreen('register')" ontouchend="event.preventDefault();authScreen('register')">Registrarse</button>
       </div>
-      <label class="f-label">Usuario</label>
-      <input id="au" class="f-input" type="text" placeholder="Tu nombre de usuario" autocomplete="username" autocapitalize="none"/>
+      <label class="f-label">Correo electrónico</label>
+      <input id="au" class="f-input" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" autocapitalize="none"/>
       <div id="err-u" class="f-err"></div>
       <label class="f-label">Contraseña</label>
       <input id="ap" class="f-input" type="password" placeholder="Tu contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
@@ -975,33 +936,28 @@ function authScreen(view='login'){
     return;
   }
 
-  /* ── REGISTRO ── */
   if(view==='register'){
     document.getElementById('root').innerHTML=`
     <div class="auth-wrap"><div class="auth-card">
       <div class="auth-logo">${ICON_SCISSORS}</div>
       <h1 class="auth-h1">Crear cuenta</h1>
-      <p class="auth-sub">Configura tu acceso local</p>
+      <p class="auth-sub">30 días de prueba gratis</p>
       <div class="auth-tabs">
         <button class="auth-tab" onclick="authScreen('login')" ontouchend="event.preventDefault();authScreen('login')">Iniciar sesión</button>
         <button class="auth-tab active" onclick="authScreen('register')" ontouchend="event.preventDefault();authScreen('register')">Registrarse</button>
       </div>
-      <label class="f-label">Nombre de usuario</label>
-      <input id="ru" class="f-input" type="text" placeholder="Ej: antonio" autocomplete="username" autocapitalize="none"/>
+      <label class="f-label">Correo electrónico</label>
+      <input id="ru" class="f-input" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" autocapitalize="none"/>
       <div id="err-ru" class="f-err"></div>
-      <label class="f-label">Contraseña <span style="color:var(--muted-foreground);font-weight:400">(mín. 3 caracteres)</span></label>
-      <input id="rp" class="f-input" type="password" placeholder="Mínimo 3 caracteres" autocomplete="new-password"/>
+      <label class="f-label">Contraseña <span style="color:var(--muted-foreground);font-weight:400">(mín. 6 caracteres)</span></label>
+      <input id="rp" class="f-input" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()"/>
       <div id="err-rp" class="f-err"></div>
-      <label class="f-label">Palabra clave de seguridad</label>
-      <input id="rs2" class="f-input" type="text" placeholder="Para recuperar tu contraseña" autocomplete="off" autocapitalize="none" onkeydown="if(event.key==='Enter')doRegister()"/>
-      <div id="err-rs" class="f-err"></div>
       <button id="rb" class="auth-btn" onclick="doRegister()" ontouchend="event.preventDefault();doRegister()">Crear cuenta</button>
     </div></div>`;
     setTimeout(()=>document.getElementById('ru')?.focus(),50);
     return;
   }
 
-  /* ── RECUPERAR ── */
   if(view==='recover'){
     const ICON_BACK_SVG=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><polyline points="15 18 9 12 15 6"/></svg>`;
     document.getElementById('root').innerHTML=`
@@ -1011,14 +967,11 @@ function authScreen(view='login'){
       </button>
       <div class="auth-logo">${ICON_SCISSORS}</div>
       <h1 class="auth-h1" style="font-size:1.35rem">Recuperar acceso</h1>
-      <p class="auth-sub">Verifica tu identidad para ver tu contraseña</p>
-      <label class="f-label">Usuario</label>
-      <input id="vu" class="f-input" type="text" placeholder="Tu nombre de usuario" autocomplete="username" autocapitalize="none"/>
+      <p class="auth-sub">Te enviaremos un enlace a tu correo</p>
+      <label class="f-label">Correo electrónico</label>
+      <input id="vu" class="f-input" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" onkeydown="if(event.key==='Enter')doRecover()"/>
       <div id="err-vu" class="f-err"></div>
-      <label class="f-label">Palabra clave de seguridad</label>
-      <input id="vw" class="f-input" type="text" placeholder="Tu palabra clave secreta" autocomplete="off" autocapitalize="none" onkeydown="if(event.key==='Enter')doRecover()"/>
-      <div id="err-vw" class="f-err"></div>
-      <button id="vb" class="auth-btn" onclick="doRecover()" ontouchend="event.preventDefault();doRecover()">Verificar y mostrar contraseña</button>
+      <button id="vb" class="auth-btn" onclick="doRecover()" ontouchend="event.preventDefault();doRecover()">Enviar enlace de recuperación</button>
       <div id="recover-result"></div>
     </div></div>`;
     setTimeout(()=>document.getElementById('vu')?.focus(),50);
@@ -1026,105 +979,60 @@ function authScreen(view='login'){
   }
 }
 
-/* ── LÓGICA DE AUTH LOCAL ─────────────────────────────────── */
-function doLogin(){
-  const username=(document.getElementById('au')?.value||'').trim().toLowerCase();
+/* ── LÓGICA DE AUTH (Supabase) ────────────────────────────────── */
+async function doLogin(){
+  const email=(document.getElementById('au')?.value||'').trim();
   const pass=document.getElementById('ap')?.value||'';
   let ok=true;
-  if(!username){document.getElementById('err-u').textContent='Introduce tu usuario';ok=false;}
+  if(!email){document.getElementById('err-u').textContent='Introduce tu correo';ok=false;}
   else document.getElementById('err-u').textContent='';
   if(!pass){document.getElementById('err-p').textContent='Introduce tu contraseña';ok=false;}
   else document.getElementById('err-p').textContent='';
   if(!ok)return;
 
-  const stored=lsGet();
-  if(!stored){
-    document.getElementById('err-u').textContent='No existe ningún usuario registrado';
-    return;
-  }
-  if(stored.username!==username){
-    document.getElementById('err-u').textContent='Usuario no encontrado';
-    return;
-  }
-  if(stored.password!==pass){
-    document.getElementById('err-p').textContent='Contraseña incorrecta';
-    return;
-  }
+  const btn=document.getElementById('ab');if(btn)btn.disabled=true;
+  const{data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(btn)btn.disabled=false;
+  if(error){document.getElementById('err-p').textContent='Correo o contraseña incorrectos';return;}
 
-  /* Éxito */
-  sess={username};
-  const uuid=getOrCreateUserUUID(stored);
-  user={id:uuid,username};
-  sessionStorage.setItem('btp_sess',JSON.stringify({username,uuid}));
-  toast('¡Bienvenido, '+stored.username+'! ✂️','success');
-  setTimeout(()=>appScreen(),300);
+  user=data.user;sess={email:user.email};
+  toast('¡Bienvenido! ✂️','success');
+  setTimeout(()=>draw(),300);
 }
 
-function doRegister(){
-  const username=(document.getElementById('ru')?.value||'').trim().toLowerCase();
+async function doRegister(){
+  const email=(document.getElementById('ru')?.value||'').trim();
   const pass=document.getElementById('rp')?.value||'';
-  const word=(document.getElementById('rs2')?.value||'').trim().toLowerCase();
   let ok=true;
-  if(!username){document.getElementById('err-ru').textContent='El nombre de usuario es obligatorio';ok=false;}
+  if(!email){document.getElementById('err-ru').textContent='El correo es obligatorio';ok=false;}
   else document.getElementById('err-ru').textContent='';
-  if(pass.length<3){document.getElementById('err-rp').textContent='Mínimo 3 caracteres';ok=false;}
+  if(pass.length<6){document.getElementById('err-rp').textContent='Mínimo 6 caracteres';ok=false;}
   else document.getElementById('err-rp').textContent='';
-  if(!word){document.getElementById('err-rs').textContent='La palabra clave es obligatoria';ok=false;}
-  else document.getElementById('err-rs').textContent='';
   if(!ok)return;
 
-  const existing=lsGet();
-  if(existing){
-    document.getElementById('err-ru').textContent='Ya existe una cuenta. Borra los datos para crear una nueva.';
-    return;
-  }
+  const btn=document.getElementById('rb');if(btn)btn.disabled=true;
+  const{data,error}=await sb.auth.signUp({email,password:pass});
+  if(btn)btn.disabled=false;
+  if(error){document.getElementById('err-ru').textContent=error.message;return;}
+  if(!data.session){toast('Revisa tu correo para confirmar tu cuenta','info');authScreen('login');return;}
 
-  lsSet({username,password:pass,securityWord:word});
-  const newProfile=lsGet();
-  const uuid=getOrCreateUserUUID(newProfile);
-  toast('¡Cuenta creada! Iniciando sesión…','success');
-  sess={username};
-  user={id:uuid,username};
-  sessionStorage.setItem('btp_sess',JSON.stringify({username,uuid}));
-  setTimeout(()=>appScreen(),400);
+  const trialEnd=new Date(Date.now()+30*24*60*60*1000).toISOString();
+  await sb.from('profiles').insert({id:data.user.id,trial_ends_at:trialEnd,plan_status:'trial'});
+
+  user=data.user;sess={email:user.email};
+  toast('¡Cuenta creada! 30 días de prueba activados ✂️','success');
+  setTimeout(()=>draw(),400);
 }
 
-function doRecover(){
-  const username=(document.getElementById('vu')?.value||'').trim().toLowerCase();
-  const word=(document.getElementById('vw')?.value||'').trim().toLowerCase();
-  let ok=true;
-  if(!username){document.getElementById('err-vu').textContent='Introduce tu usuario';ok=false;}
-  else document.getElementById('err-vu').textContent='';
-  if(!word){document.getElementById('err-vw').textContent='Introduce tu palabra clave';ok=false;}
-  else document.getElementById('err-vw').textContent='';
-  if(!ok)return;
-
-  const stored=lsGet();
-  const resultEl=document.getElementById('recover-result');
-
-  if(!stored||stored.username!==username){
-    document.getElementById('err-vu').textContent='Usuario no encontrado';
-    if(resultEl)resultEl.innerHTML='';
-    return;
-  }
+async function doRecover(){
+  const email=(document.getElementById('vu')?.value||'').trim();
+  if(!email){document.getElementById('err-vu').textContent='Introduce tu correo';return;}
   document.getElementById('err-vu').textContent='';
 
-  if(stored.securityWord!==word){
-    document.getElementById('err-vw').textContent='Palabra clave incorrecta';
-    if(resultEl)resultEl.innerHTML='';
-    return;
-  }
-  document.getElementById('err-vw').textContent='';
-
-  /* ✅ Mostrar contraseña */
-  if(resultEl){
-    resultEl.innerHTML=`
-    <div class="recover-result">
-      <span class="r-label">Tu contraseña es</span>
-      <span class="r-pass">${stored.password}</span>
-      <button onclick="authScreen('login')" style="margin-top:.5rem;background:var(--primary);color:var(--primary-foreground);border:none;border-radius:var(--radius-lg);padding:.5rem 1.25rem;font-weight:700;font-size:.85rem;cursor:pointer;touch-action:manipulation">← Ir a iniciar sesión</button>
-    </div>`;
-  }
+  const{error}=await sb.auth.resetPasswordForEmail(email);
+  const resultEl=document.getElementById('recover-result');
+  if(error){document.getElementById('err-vu').textContent=error.message;return;}
+  if(resultEl)resultEl.innerHTML=`<div class="recover-result"><span class="r-label">Listo</span><span style="font-size:.85rem">Revisa tu correo para restablecer tu contraseña.</span></div>`;
 }
 
 /* ── APP SHELL ────────────────────────────────────────────────── */
@@ -1157,10 +1065,10 @@ function appScreen(){
   loadPg();
 }
 function goPg(p){pg=p;Object.values(charts).forEach(c=>c.destroy());charts={};appScreen();}
-function doOut(){
+async function doOut(){
   if(!confirm('¿Cerrar sesión?'))return;
-  sess=null;user=null;
-  sessionStorage.removeItem('btp_sess');
+  await sb.auth.signOut();
+  sess=null;user=null;profile=null;
   toast('Sesión cerrada','info');
   setTimeout(()=>authScreen('login'),300);
 }
@@ -1321,17 +1229,8 @@ async function doPay(id){
   toast('Cobrado ✓','success');closeM();loadPg();
 }
 
-/* ── CONFIRMACIÓN DE BORRADO (modal propio, reemplaza window.confirm) ──
-   Estado del modal: confirmState guarda el id de la cita pendiente de
-   eliminar, o null si el modal está cerrado. Equivalente a un useState
-   local, pero como variable de módulo ya que no usamos React. */
 let confirmState=null;
-
-function askDeleteAppt(id){
-  confirmState=id;
-  renderConfirmModal();
-}
-
+function askDeleteAppt(id){confirmState=id;renderConfirmModal();}
 function renderConfirmModal(){
   const existing=document.getElementById('confirm-modal');
   if(existing)existing.remove();
@@ -1355,12 +1254,7 @@ function renderConfirmModal(){
   </div>`;
   document.body.appendChild(div);
 }
-
-function closeConfirmModal(){
-  confirmState=null;
-  renderConfirmModal();
-}
-
+function closeConfirmModal(){confirmState=null;renderConfirmModal();}
 async function confirmDeleteAppt(){
   const id=confirmState;
   if(!id)return;
@@ -1368,10 +1262,7 @@ async function confirmDeleteAppt(){
   await sb.from('appointments').delete().eq('id',id).eq('user_id',user.id);
   toast('Cita eliminada','info');closeM();loadPg();
 }
-
-async function delAppt(id){
-  askDeleteAppt(id);
-}
+async function delAppt(id){askDeleteAppt(id);}
 function closeM(){const m=document.getElementById('mr');if(m)m.innerHTML='';}
 
 /* ── CAJA ─────────────────────────────────────────────────────── */
@@ -1628,25 +1519,13 @@ async function pgAnaliticas(el){
   charts.c=new Chart(document.getElementById('cc'),{type:'bar',data:{labels:DAYS,datasets:[{data:cd,backgroundColor:'oklch(0.78 0.16 75)',borderRadius:8,borderSkipped:false}]},options:cfg});
   charts.i=new Chart(document.getElementById('ci'),{type:'bar',data:{labels:DAYS,datasets:[{data:id2,backgroundColor:'oklch(0.68 0.18 145)',borderRadius:8,borderSkipped:false}]},options:cfg});
 
-  /* Listener del botón BarberBrain: se pasan los datos ya como objetos
-     JS nativos (closure), sin serializar nada a texto/atributo HTML.
-     Esto evita que comillas dentro de JSON.stringify(best) rompan el
-     atributo onclick cuando el día más rentable es una cadena de texto. */
   const bbBtn = document.getElementById('bb-btn');
   if (bbBtn) bbBtn.addEventListener('click', () => lanzarBarberBrain(c1, c0, gr, best, cd, id2));
 }
 
 /* ══════════════════════════════════════════════════════════════
    BARBERBRAIN INSIGHTS — motor de reglas local (sin IA, sin costo)
-   Todo el análisis se calcula en el navegador a partir de los datos
-   reales del TPV. No hay llamadas de red ni dependencias externas.
    ══════════════════════════════════════════════════════════════ */
-
-/**
- * Analiza los datos ya calculados en pgAnaliticas() aplicando un
- * conjunto de reglas de negocio y devuelve el mismo objeto que antes
- * generaba la IA: { tendencia, puntoFuerte, oportunidad, alerta }.
- */
 function generarAnalisisLocal(c1, c0, gr, best, cd, id2) {
   const totIngresos = id2.reduce((s, v) => s + v, 0);
   const totClientes = cd.reduce((s, v) => s + v, 0);
@@ -1658,7 +1537,6 @@ function generarAnalisisLocal(c1, c0, gr, best, cd, id2) {
   const diasActivos = diasConDatos.length;
   const concentracion = best && totIngresos > 0 ? (best[1] / totIngresos) * 100 : 0;
 
-  /* ── TENDENCIA ── */
   let tendencia;
   if (c0 === 0 && c1 > 0) {
     tendencia = `Este es tu primer mes con datos comparables: atendiste ${c1} cliente${c1===1?'':'s'} y generaste ${eur(totIngresos)} en ingresos. A partir de ahora podrás ver la evolución mes a mes.`;
@@ -1676,7 +1554,6 @@ function generarAnalisisLocal(c1, c0, gr, best, cd, id2) {
     tendencia = `Descenso notable: caíste de ${c0} a ${c1} clientes (${gr}%). Conviene revisar qué ha cambiado (agenda, horarios, promociones) antes de que se convierta en tendencia.`;
   }
 
-  /* ── PUNTO FUERTE ── */
   let puntoFuerte;
   if (!best) {
     puntoFuerte = 'Todavía no hay suficientes datos para identificar tu día más fuerte.';
@@ -1686,7 +1563,6 @@ function generarAnalisisLocal(c1, c0, gr, best, cd, id2) {
     puntoFuerte = `${best[0]} es tu día más rentable, con ${eur(best[1])} de ingresos, lo que representa el ${concentracion.toFixed(0)}% de tus ingresos del mes.`;
   }
 
-  /* ── OPORTUNIDAD ── */
   let oportunidad;
   if (peor && best && peor.dia !== best[0]) {
     oportunidad = `${peor.dia} es tu día más flojo (${peor.cli} cliente${peor.cli===1?'':'s'}, ${eur(peor.ing)}). Prueba una promoción puntual o recordatorios a clientes habituales ese día para nivelar la agenda.`;
@@ -1698,7 +1574,6 @@ function generarAnalisisLocal(c1, c0, gr, best, cd, id2) {
     oportunidad = `Tu actividad está bien repartida durante la semana. Mantén la comunicación con tus clientes habituales para consolidar esta regularidad.`;
   }
 
-  /* ── ALERTA ── */
   let alerta = null;
   if (gr <= -15) {
     alerta = `La caída de clientes de este mes (${gr}%) es significativa. Si se repite el próximo mes, conviene actuar cuanto antes.`;
@@ -1711,9 +1586,6 @@ function generarAnalisisLocal(c1, c0, gr, best, cd, id2) {
   return { tendencia, puntoFuerte, oportunidad, alerta };
 }
 
-/**
- * Renderiza el estado de "Analizando..." en el contenedor de resultado.
- */
 function mostrarThinking(container) {
   container.innerHTML = `
   <div class="bb-result">
@@ -1733,9 +1605,6 @@ function mostrarThinking(container) {
   </div>`;
 }
 
-/**
- * Renderiza el análisis recibido de la IA en el contenedor.
- */
 function renderizarAnalisis(container, analisis) {
   const ahora = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
@@ -1788,24 +1657,15 @@ function renderizarAnalisis(container, analisis) {
   </div>`;
 }
 
-/**
- * Función principal — orquesta todo el flujo de BarberBrain.
- * Los parámetros vienen directamente de los datos ya calculados en pgAnaliticas().
- * Todo el análisis se genera con lógica local (generarAnalisisLocal), sin
- * llamadas de red ni dependencias externas.
- */
 function lanzarBarberBrain(c1, c0, gr, best, cd, id2) {
   const btn = document.getElementById('bb-btn');
   const container = document.getElementById('bb-result-container');
   if (!btn || !container) return;
 
   btn.disabled = true;
-
-  /* 1. Estado de carga (breve, solo para dar feedback visual) */
   mostrarThinking(container);
   container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-  /* 2. El cálculo es instantáneo; un pequeño delay da sensación de análisis */
   setTimeout(() => {
     try {
       const analisis = generarAnalisisLocal(c1, c0, gr, best, cd, id2);
