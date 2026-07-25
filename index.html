@@ -864,16 +864,23 @@ function toast(m,k='info'){
   setTimeout(()=>e.remove(),2500);
 }
 
+let recoveryMode=false;
+
 async function init(){
   const{data:{session}}=await sb.auth.getSession();
   if(session){
     user=session.user;sess={email:user.email};
-    await draw();
+    if(recoveryMode){authScreen('newpass');}else{await draw();}
   }else{
     draw();
   }
-  sb.auth.onAuthStateChange(async(event)=>{
-    if(event==='SIGNED_OUT'){sess=null;user=null;profile=null;draw();}
+  sb.auth.onAuthStateChange(async(event,session)=>{
+    if(event==='SIGNED_OUT'){recoveryMode=false;sess=null;user=null;profile=null;draw();}
+    else if(event==='PASSWORD_RECOVERY'){
+      recoveryMode=true;
+      user=session.user;sess={email:user.email};
+      authScreen('newpass');
+    }
   });
 }
 
@@ -958,6 +965,24 @@ function authScreen(view='login'){
     return;
   }
 
+  if(view==='newpass'){
+    document.getElementById('root').innerHTML=`
+    <div class="auth-wrap"><div class="auth-card">
+      <div class="auth-logo">${ICON_SCISSORS}</div>
+      <h1 class="auth-h1" style="font-size:1.35rem">Nueva contraseña</h1>
+      <p class="auth-sub">Escribe tu nueva contraseña para ${sess?.email||'tu cuenta'}</p>
+      <label class="f-label">Nueva contraseña <span style="color:var(--muted-foreground);font-weight:400">(mín. 6 caracteres)</span></label>
+      <input id="np1" class="f-input" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password"/>
+      <div id="err-np1" class="f-err"></div>
+      <label class="f-label">Confirmar contraseña</label>
+      <input id="np2" class="f-input" type="password" placeholder="Repite la contraseña" autocomplete="new-password" onkeydown="if(event.key==='Enter')doNewPassword()"/>
+      <div id="err-np2" class="f-err"></div>
+      <button id="npb" class="auth-btn" onclick="doNewPassword()" ontouchend="event.preventDefault();doNewPassword()">Guardar contraseña</button>
+    </div></div>`;
+    setTimeout(()=>document.getElementById('np1')?.focus(),50);
+    return;
+  }
+
   if(view==='recover'){
     const ICON_BACK_SVG=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><polyline points="15 18 9 12 15 6"/></svg>`;
     document.getElementById('root').innerHTML=`
@@ -1033,6 +1058,26 @@ async function doRecover(){
   const resultEl=document.getElementById('recover-result');
   if(error){document.getElementById('err-vu').textContent=error.message;return;}
   if(resultEl)resultEl.innerHTML=`<div class="recover-result"><span class="r-label">Listo</span><span style="font-size:.85rem">Revisa tu correo para restablecer tu contraseña.</span></div>`;
+}
+
+async function doNewPassword(){
+  const p1=document.getElementById('np1')?.value||'';
+  const p2=document.getElementById('np2')?.value||'';
+  let ok=true;
+  if(p1.length<6){document.getElementById('err-np1').textContent='Mínimo 6 caracteres';ok=false;}
+  else document.getElementById('err-np1').textContent='';
+  if(p1!==p2){document.getElementById('err-np2').textContent='Las contraseñas no coinciden';ok=false;}
+  else document.getElementById('err-np2').textContent='';
+  if(!ok)return;
+
+  const btn=document.getElementById('npb');if(btn)btn.disabled=true;
+  const{error}=await sb.auth.updateUser({password:p1});
+  if(btn)btn.disabled=false;
+  if(error){document.getElementById('err-np2').textContent=error.message;return;}
+
+  recoveryMode=false;
+  toast('Contraseña actualizada ✂️','success');
+  setTimeout(()=>draw(),400);
 }
 
 /* ── APP SHELL ────────────────────────────────────────────────── */
