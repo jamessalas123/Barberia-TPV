@@ -864,13 +864,23 @@ function toast(m,k='info'){
   setTimeout(()=>e.remove(),2500);
 }
 
-let recoveryMode=false;
+/* Detectamos el enlace de recuperación LEYENDO LA URL directamente
+   (Supabase añade type=recovery al hash o a la query del enlace del
+   correo). Esto es inmediato y no depende del orden en que lleguen
+   los eventos de auth — evita que una sesión ya guardada en el
+   navegador "gane la carrera" y nos saque de esta pantalla. */
+const _hp=new URLSearchParams(window.location.hash.replace(/^#/,''));
+const _sp=new URLSearchParams(window.location.search);
+let recoveryMode=_hp.get('type')==='recovery'||_sp.get('type')==='recovery';
 let initialized=false;
 
 function init(){
-  /* IMPORTANTE: el listener se registra ANTES de pedir la sesión,
-     para no perder el evento PASSWORD_RECOVERY cuando Supabase
-     procesa el enlace de recuperación desde la URL. */
+  if(recoveryMode){
+    /* Limpiamos la URL visible para que un refresco accidental no
+       vuelva a disparar este modo con un token ya usado. */
+    try{history.replaceState(null,'',window.location.pathname+window.location.search.replace(/[?&]?type=recovery/,''));}catch(e){}
+    authScreen('newpass');
+  }
   sb.auth.onAuthStateChange(async(event,session)=>{
     if(event==='PASSWORD_RECOVERY'){
       recoveryMode=true;
@@ -883,12 +893,15 @@ function init(){
       recoveryMode=false;sess=null;user=null;profile=null;draw();
       return;
     }
-    /* INITIAL_SESSION llega una sola vez al arrancar, con la sesión
-       actual (o null). La usamos para pintar la app la primera vez,
-       salvo que ya se haya mostrado la pantalla de recuperación. */
+    if(recoveryMode){
+      /* Mientras estemos en modo recuperación, ignoramos cualquier
+         otro evento (sesión antigua guardada, refresh de token, etc.)
+         para no sacar al usuario de la pantalla de nueva contraseña. */
+      if(session&&(!user||user.id!==session.user.id)){user=session.user;sess={email:user.email};authScreen('newpass');}
+      return;
+    }
     if(event==='INITIAL_SESSION'&&!initialized){
       initialized=true;
-      if(recoveryMode)return;
       if(session){
         user=session.user;sess={email:user.email};
         await draw();
@@ -900,7 +913,7 @@ function init(){
   /* Salvaguarda: si por algún motivo INITIAL_SESSION no llega en 2s
      (versión antigua del SDK), pintamos igualmente con getSession(). */
   setTimeout(async()=>{
-    if(initialized)return;
+    if(initialized||recoveryMode)return;
     initialized=true;
     const{data:{session}}=await sb.auth.getSession();
     if(recoveryMode)return;
