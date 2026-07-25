@@ -954,8 +954,24 @@ function init(){
 
 async function draw(){
   if(!sess){authScreen('login');return;}
-  /* Verificar plan_status antes de mostrar la app */
-  const{data,error}=await sb.from('profiles').select('plan_status,trial_ends_at').eq('id',user.id).single();
+
+  /* Si el usuario acaba de volver de pagar en Stripe, el webhook puede
+     tardar uno o dos segundos en activar el perfil. En vez de mostrar
+     el bloqueo de inmediato, reintentamos un par de veces. */
+  const _sp=new URLSearchParams(window.location.search);
+  const vieneDePago=_sp.get('checkout')==='success';
+  if(vieneDePago){
+    try{history.replaceState(null,'',window.location.pathname);}catch(e){}
+  }
+
+  let intentos=vieneDePago?6:1;
+  let data,error;
+  for(let i=0;i<intentos;i++){
+    ({data,error}=await sb.from('profiles').select('plan_status,trial_ends_at').eq('id',user.id).single());
+    if(data&&data.plan_status==='active')break;
+    if(i<intentos-1)await new Promise(r=>setTimeout(r,1000));
+  }
+
   if(error||!data){
     /* Si por algún motivo no hay fila de perfil, la crea con trial de 30 días */
     const trialEnd=new Date(Date.now()+30*24*60*60*1000).toISOString();
@@ -969,7 +985,33 @@ async function draw(){
   const bloqueado=profile.plan_status==='cancelled'||profile.plan_status==='past_due'||trialVencido;
 
   if(bloqueado){blockScreen(trialVencido);return;}
+  if(vieneDePago)toast('¡Pago confirmado! Bienvenido de nuevo ✂️','success');
   appScreen();
+}
+
+/* ── INICIAR PAGO CON STRIPE ──────────────────────────────────── */
+async function irAPagar(){
+  const btn=document.getElementById('pagar-btn');
+  if(btn){btn.disabled=true;btn.textContent='Un momento…';}
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    if(!session){toast('Vuelve a iniciar sesión para continuar','error');if(btn){btn.disabled=false;btn.textContent='Suscribirme ahora';}return;}
+
+    const resp=await fetch('/api/create-checkout-session',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+session.access_token}
+    });
+    const result=await resp.json();
+    if(!resp.ok||!result.url){
+      toast(result.error||'No se pudo iniciar el pago','error');
+      if(btn){btn.disabled=false;btn.textContent='Suscribirme ahora';}
+      return;
+    }
+    window.location.href=result.url;
+  }catch(e){
+    toast('Error de conexión al iniciar el pago','error');
+    if(btn){btn.disabled=false;btn.textContent='Suscribirme ahora';}
+  }
 }
 
 /* ── PANTALLA DE BLOQUEO ──────────────────────────────────────── */
@@ -980,8 +1022,9 @@ function blockScreen(trialVencido){
     <div class="block-title">${trialVencido?'Tu prueba ha terminado':'Suscripción inactiva'}</div>
     <p class="block-sub">${trialVencido
       ?'Tus 30 días de prueba gratuita han finalizado. Suscríbete para seguir usando Barbería TPV sin interrupciones.'
-      :'Tu suscripción no está activa en este momento. Actualiza tu método de pago o contáctanos para reactivar tu cuenta.'}</p>
-    <button class="block-btn" onclick="window.open('https://wa.me/34643668284?text=Hola,%20quiero%20activar%20mi%20suscripci%C3%B3n%20de%20Barber%C3%ADa%20TPV','_blank')">Activar suscripción</button>
+      :'Tu suscripción no está activa en este momento. Suscríbete para reactivar tu cuenta.'}</p>
+    <button id="pagar-btn" class="block-btn" onclick="irAPagar()">Suscribirme ahora — 14,99€/mes</button>
+    <button class="block-btn" style="background:transparent;border:1.5px solid var(--border);color:var(--muted-foreground);margin-top:.5rem" onclick="window.open('https://wa.me/34643668284?text=Hola,%20tengo%20una%20duda%20con%20mi%20suscripci%C3%B3n%20de%20Barber%C3%ADa%20TPV','_blank')">¿Dudas? Escríbenos por WhatsApp</button>
     <button class="block-btn-out" onclick="doOut()">Cerrar sesión</button>
   </div></div>`;
 }
