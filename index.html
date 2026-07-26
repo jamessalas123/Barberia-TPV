@@ -996,8 +996,8 @@ async function draw(){
   }
 
   if(error||!data){
-    /* Si por algún motivo no hay fila de perfil, la crea con trial de 30 días */
-    const trialEnd=new Date(Date.now()+30*24*60*60*1000).toISOString();
+    /* Si por algún motivo no hay fila de perfil, la crea con trial de 20 días */
+    const trialEnd=new Date(Date.now()+20*24*60*60*1000).toISOString();
     await sb.from('profiles').insert({id:user.id,trial_ends_at:trialEnd,plan_status:'trial'});
     profile={plan_status:'trial',trial_ends_at:trialEnd};
   }else{
@@ -1044,7 +1044,7 @@ function blockScreen(trialVencido){
     <div class="block-icon">🔒</div>
     <div class="block-title">${trialVencido?'Tu prueba ha terminado':'Suscripción inactiva'}</div>
     <p class="block-sub">${trialVencido
-      ?'Tus 30 días de prueba gratuita han finalizado. Suscríbete para seguir usando Barbería TPV sin interrupciones.'
+      ?'Tus 20 días de prueba gratuita han finalizado. Suscríbete para seguir usando Barbería TPV sin interrupciones.'
       :'Tu suscripción no está activa en este momento. Suscríbete para reactivar tu cuenta.'}</p>
     <button id="pagar-btn" class="block-btn" onclick="irAPagar()">Suscribirme ahora — 14,99€/mes</button>
     <button class="block-btn" style="background:transparent;border:1.5px solid var(--border);color:var(--muted-foreground);margin-top:.5rem" onclick="window.open('https://wa.me/34643668284?text=Hola,%20tengo%20una%20duda%20con%20mi%20suscripci%C3%B3n%20de%20Barber%C3%ADa%20TPV','_blank')">¿Dudas? Escríbenos por WhatsApp</button>
@@ -1085,7 +1085,7 @@ function authScreen(view='login'){
     <div class="auth-wrap"><div class="auth-card">
       <div class="auth-logo">${ICON_SCISSORS}</div>
       <h1 class="auth-h1">Crear cuenta</h1>
-      <p class="auth-sub">30 días de prueba gratis</p>
+      <p class="auth-sub">20 días de prueba gratis</p>
       <div class="auth-tabs">
         <button class="auth-tab" onclick="authScreen('login')" ontouchend="event.preventDefault();authScreen('login')">Iniciar sesión</button>
         <button class="auth-tab active" onclick="authScreen('register')" ontouchend="event.preventDefault();authScreen('register')">Registrarse</button>
@@ -1187,11 +1187,11 @@ async function doRegister(){
   if(error){document.getElementById('err-ru').textContent=traducirError(error.message);return;}
   if(!data.session){toast('Revisa tu correo para confirmar tu cuenta','info');authScreen('login');return;}
 
-  const trialEnd=new Date(Date.now()+30*24*60*60*1000).toISOString();
+  const trialEnd=new Date(Date.now()+20*24*60*60*1000).toISOString();
   await sb.from('profiles').insert({id:data.user.id,trial_ends_at:trialEnd,plan_status:'trial'});
 
   user=data.user;sess={email:user.email};
-  toast('¡Cuenta creada! 30 días de prueba activados ✂️','success');
+  toast('¡Cuenta creada! 20 días de prueba activados ✂️','success');
   setTimeout(()=>draw(),400);
 }
 
