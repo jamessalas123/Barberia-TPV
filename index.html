@@ -224,6 +224,15 @@ input, select { font-family: inherit; outline: none; border: none; }
   color: var(--foreground); font-size: .95rem; margin-bottom: .75rem; transition: all .2s;
 }
 .f-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); outline: none; }
+.f-pw-wrap { position: relative; }
+.f-pw-wrap .f-input { padding-right: 2.75rem; }
+.f-pw-toggle {
+  position: absolute; right: .5rem; top: 0; height: 52px; width: 2.25rem;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none; color: var(--muted-foreground);
+  cursor: pointer; padding: 0;
+}
+.f-pw-toggle:hover { color: var(--foreground); }
 .auth-btn {
   width: 100%; height: 56px; border-radius: var(--radius-2xl);
   background: var(--secondary); color: var(--muted-foreground);
@@ -840,6 +849,20 @@ const eur=n=>(n||0).toLocaleString('es-ES',{style:'currency',currency:'EUR'});
 const DAYS=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
 
 const ICON_SCISSORS=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>`;
+const ICON_EYE=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const ICON_EYE_OFF=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a17.72 17.72 0 0 1-3.06 3.99M6.61 6.61C3.9 8.28 2 11 2 11s4 8 11 8a10.44 10.44 0 0 0 4.24-.88"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+
+/* Muestra u oculta el texto de una contraseña escrita, para que el
+   usuario pueda verificar exactamente qué está escribiendo antes de
+   enviarla (evita errores por autocorrección o mayúsculas). */
+function togglePw(id,btn){
+  const input=document.getElementById(id);
+  if(!input)return;
+  const showing=input.type==='text';
+  input.type=showing?'password':'text';
+  btn.innerHTML=showing?ICON_EYE:ICON_EYE_OFF;
+  btn.setAttribute('aria-label',showing?'Mostrar contraseña':'Ocultar contraseña');
+}
 const ICON_CAL=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
 const ICON_WALLET=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>`;
 const ICON_BAR=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>`;
@@ -1045,7 +1068,10 @@ function authScreen(view='login'){
       <input id="au" class="f-input" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" autocapitalize="none"/>
       <div id="err-u" class="f-err"></div>
       <label class="f-label">Contraseña</label>
-      <input id="ap" class="f-input" type="password" placeholder="Tu contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <div class="f-pw-wrap">
+        <input id="ap" class="f-input" type="password" placeholder="Tu contraseña" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')doLogin()"/>
+        <button type="button" class="f-pw-toggle" onclick="togglePw('ap',this)" ontouchend="event.preventDefault();togglePw('ap',this)" aria-label="Mostrar contraseña">${ICON_EYE}</button>
+      </div>
       <div id="err-p" class="f-err"></div>
       <button id="ab" class="auth-btn" onclick="doLogin()" ontouchend="event.preventDefault();doLogin()">Entrar</button>
       <button class="auth-link" onclick="authScreen('recover')" ontouchend="event.preventDefault();authScreen('recover')">¿Olvidaste tu contraseña?</button>
@@ -1068,7 +1094,10 @@ function authScreen(view='login'){
       <input id="ru" class="f-input" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" autocapitalize="none"/>
       <div id="err-ru" class="f-err"></div>
       <label class="f-label">Contraseña <span style="color:var(--muted-foreground);font-weight:400">(mín. 6 caracteres)</span></label>
-      <input id="rp" class="f-input" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()"/>
+      <div class="f-pw-wrap">
+        <input id="rp" class="f-input" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" autocapitalize="none" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')doRegister()"/>
+        <button type="button" class="f-pw-toggle" onclick="togglePw('rp',this)" ontouchend="event.preventDefault();togglePw('rp',this)" aria-label="Mostrar contraseña">${ICON_EYE}</button>
+      </div>
       <div id="err-rp" class="f-err"></div>
       <button id="rb" class="auth-btn" onclick="doRegister()" ontouchend="event.preventDefault();doRegister()">Crear cuenta</button>
     </div></div>`;
@@ -1083,10 +1112,16 @@ function authScreen(view='login'){
       <h1 class="auth-h1" style="font-size:1.35rem">Nueva contraseña</h1>
       <p class="auth-sub">Escribe tu nueva contraseña para ${sess?.email||'tu cuenta'}</p>
       <label class="f-label">Nueva contraseña <span style="color:var(--muted-foreground);font-weight:400">(mín. 6 caracteres)</span></label>
-      <input id="np1" class="f-input" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password"/>
+      <div class="f-pw-wrap">
+        <input id="np1" class="f-input" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" autocapitalize="none" autocorrect="off" spellcheck="false"/>
+        <button type="button" class="f-pw-toggle" onclick="togglePw('np1',this)" ontouchend="event.preventDefault();togglePw('np1',this)" aria-label="Mostrar contraseña">${ICON_EYE}</button>
+      </div>
       <div id="err-np1" class="f-err"></div>
       <label class="f-label">Confirmar contraseña</label>
-      <input id="np2" class="f-input" type="password" placeholder="Repite la contraseña" autocomplete="new-password" onkeydown="if(event.key==='Enter')doNewPassword()"/>
+      <div class="f-pw-wrap">
+        <input id="np2" class="f-input" type="password" placeholder="Repite la contraseña" autocomplete="new-password" autocapitalize="none" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')doNewPassword()"/>
+        <button type="button" class="f-pw-toggle" onclick="togglePw('np2',this)" ontouchend="event.preventDefault();togglePw('np2',this)" aria-label="Mostrar contraseña">${ICON_EYE}</button>
+      </div>
       <div id="err-np2" class="f-err"></div>
       <button id="npb" class="auth-btn" onclick="doNewPassword()" ontouchend="event.preventDefault();doNewPassword()">Guardar contraseña</button>
     </div></div>`;
