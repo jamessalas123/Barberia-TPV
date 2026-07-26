@@ -990,7 +990,7 @@ async function draw(){
   let intentos=vieneDePago?6:1;
   let data,error;
   for(let i=0;i<intentos;i++){
-    ({data,error}=await sb.from('profiles').select('plan_status,trial_ends_at').eq('id',user.id).single());
+    ({data,error}=await sb.from('profiles').select('plan_status,trial_ends_at,session_token').eq('id',user.id).single());
     if(data&&data.plan_status==='active')break;
     if(i<intentos-1)await new Promise(r=>setTimeout(r,1000));
   }
@@ -998,10 +998,32 @@ async function draw(){
   if(error||!data){
     /* Si por algún motivo no hay fila de perfil, la crea con trial de 20 días */
     const trialEnd=new Date(Date.now()+20*24*60*60*1000).toISOString();
-    await sb.from('profiles').insert({id:user.id,trial_ends_at:trialEnd,plan_status:'trial'});
-    profile={plan_status:'trial',trial_ends_at:trialEnd};
+    const miToken=crypto.randomUUID();
+    await sb.from('profiles').insert({id:user.id,trial_ends_at:trialEnd,plan_status:'trial',session_token:miToken});
+    guardarSesionLocal(user.id,miToken);
+    profile={plan_status:'trial',trial_ends_at:trialEnd,session_token:miToken};
   }else{
     profile=data;
+  }
+
+  /* Un solo dispositivo a la vez por cuenta: si el token guardado en el
+     perfil no coincide con el de este dispositivo, es que alguien más
+     inició sesión con las mismas credenciales en otro lugar. */
+  const miTokenLocal=leerSesionLocal(user.id);
+  if(profile.session_token&&miTokenLocal&&profile.session_token!==miTokenLocal){
+    await sb.auth.signOut();
+    sess=null;user=null;profile=null;
+    toast('Se ha iniciado sesión en otro dispositivo. Por seguridad, cerramos esta sesión.','error');
+    setTimeout(()=>authScreen('login'),300);
+    return;
+  }
+  if(profile.session_token&&!miTokenLocal){
+    /* Primer arranque de esta protección en un dispositivo ya abierto
+       antes del cambio: lo adoptamos sin cerrar la sesión de golpe. */
+    guardarSesionLocal(user.id,profile.session_token);
+  }
+  if(!sessionCheckInterval){
+    sessionCheckInterval=setInterval(verificarSesionUnica,45000);
   }
 
   const trialVencido=profile.plan_status==='trial'&&profile.trial_ends_at&&new Date(profile.trial_ends_at)<new Date();
@@ -1151,6 +1173,27 @@ function authScreen(view='login'){
 }
 
 /* ── LÓGICA DE AUTH (Supabase) ────────────────────────────────── */
+let sessionCheckInterval=null;
+function claveSesionLocal(uid){return 'bt_session_'+uid;}
+function guardarSesionLocal(uid,token){try{localStorage.setItem(claveSesionLocal(uid),token);}catch(e){}}
+function leerSesionLocal(uid){try{return localStorage.getItem(claveSesionLocal(uid));}catch(e){return null;}}
+
+/* Revisa periódicamente si esta cuenta se inició en otro dispositivo
+   (comparando el token de sesión guardado en el perfil). Si no
+   coincide, cierra esta sesión automáticamente. */
+async function verificarSesionUnica(){
+  if(!user)return;
+  const{data}=await sb.from('profiles').select('session_token').eq('id',user.id).single();
+  const miTokenLocal=leerSesionLocal(user.id);
+  if(data&&data.session_token&&miTokenLocal&&data.session_token!==miTokenLocal){
+    if(sessionCheckInterval){clearInterval(sessionCheckInterval);sessionCheckInterval=null;}
+    await sb.auth.signOut();
+    sess=null;user=null;profile=null;
+    toast('Se ha iniciado sesión en otro dispositivo. Por seguridad, cerramos esta sesión.','error');
+    authScreen('login');
+  }
+}
+
 async function doLogin(){
   const email=(document.getElementById('au')?.value||'').trim();
   const pass=document.getElementById('ap')?.value||'';
@@ -1167,6 +1210,9 @@ async function doLogin(){
   if(error){document.getElementById('err-p').textContent='Correo o contraseña incorrectos';return;}
 
   user=data.user;sess={email:user.email};
+  const miToken=crypto.randomUUID();
+  await sb.from('profiles').update({session_token:miToken}).eq('id',user.id);
+  guardarSesionLocal(user.id,miToken);
   toast('¡Bienvenido! ✂️','success');
   setTimeout(()=>draw(),300);
 }
@@ -1188,7 +1234,9 @@ async function doRegister(){
   if(!data.session){toast('Revisa tu correo para confirmar tu cuenta','info');authScreen('login');return;}
 
   const trialEnd=new Date(Date.now()+20*24*60*60*1000).toISOString();
-  await sb.from('profiles').insert({id:data.user.id,trial_ends_at:trialEnd,plan_status:'trial'});
+  const miToken=crypto.randomUUID();
+  await sb.from('profiles').insert({id:data.user.id,trial_ends_at:trialEnd,plan_status:'trial',session_token:miToken});
+  guardarSesionLocal(data.user.id,miToken);
 
   user=data.user;sess={email:user.email};
   toast('¡Cuenta creada! 20 días de prueba activados ✂️','success');
@@ -1279,6 +1327,7 @@ function appScreen(){
 function goPg(p){pg=p;Object.values(charts).forEach(c=>c.destroy());charts={};appScreen();}
 async function doOut(){
   if(!confirm('¿Cerrar sesión?'))return;
+  if(sessionCheckInterval){clearInterval(sessionCheckInterval);sessionCheckInterval=null;}
   await sb.auth.signOut();
   sess=null;user=null;profile=null;
   toast('Sesión cerrada','info');
