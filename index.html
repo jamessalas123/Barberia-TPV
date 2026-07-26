@@ -1115,6 +1115,9 @@ function authScreen(view='login'){
       <label class="f-label">Correo electrónico</label>
       <input id="ru" class="f-input" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" autocapitalize="none"/>
       <div id="err-ru" class="f-err"></div>
+      <label class="f-label">Teléfono de WhatsApp</label>
+      <input id="rt" class="f-input" type="tel" placeholder="Ej: 612345678" autocomplete="tel" inputmode="tel"/>
+      <div id="err-rt" class="f-err"></div>
       <label class="f-label">Contraseña <span style="color:var(--muted-foreground);font-weight:400">(mín. 6 caracteres)</span></label>
       <div class="f-pw-wrap">
         <input id="rp" class="f-input" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" autocapitalize="none" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')doRegister()"/>
@@ -1217,12 +1220,29 @@ async function doLogin(){
   setTimeout(()=>draw(),300);
 }
 
+function normalizarTelefono(raw){
+  let t=(raw||'').trim().replace(/[\s\-()]/g,'');
+  if(!t)return null;
+  if(!t.startsWith('+')){
+    // Sin prefijo internacional: asumimos España
+    t=t.replace(/^0+/,'');
+    t='+34'+t;
+  }
+  const digitos=t.replace(/^\+/,'');
+  if(digitos.length<9||!/^\d+$/.test(digitos))return null;
+  return t;
+}
+
 async function doRegister(){
   const email=(document.getElementById('ru')?.value||'').trim();
+  const telRaw=document.getElementById('rt')?.value||'';
   const pass=document.getElementById('rp')?.value||'';
   let ok=true;
   if(!email){document.getElementById('err-ru').textContent='El correo es obligatorio';ok=false;}
   else document.getElementById('err-ru').textContent='';
+  const telefono=normalizarTelefono(telRaw);
+  if(!telefono){document.getElementById('err-rt').textContent='Introduce un teléfono de WhatsApp válido';ok=false;}
+  else document.getElementById('err-rt').textContent='';
   if(pass.length<6){document.getElementById('err-rp').textContent='Mínimo 6 caracteres';ok=false;}
   else document.getElementById('err-rp').textContent='';
   if(!ok)return;
@@ -1235,7 +1255,7 @@ async function doRegister(){
 
   const trialEnd=new Date(Date.now()+20*24*60*60*1000).toISOString();
   const miToken=crypto.randomUUID();
-  await sb.from('profiles').insert({id:data.user.id,trial_ends_at:trialEnd,plan_status:'trial',session_token:miToken});
+  await sb.from('profiles').insert({id:data.user.id,trial_ends_at:trialEnd,plan_status:'trial',session_token:miToken,telefono});
   guardarSesionLocal(data.user.id,miToken);
 
   user=data.user;sess={email:user.email};
