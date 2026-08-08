@@ -7,7 +7,13 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-const PRICE_ID = 'price_1TqFsoV05BTdldnGCx2z4O13';
+/* Un precio de Stripe por país. Cuando tengas el ID del precio en COP,
+   ponlo aquí — mientras tanto Colombia sigue bloqueada en el frontend,
+   así que este valor no se usa todavía en producción real. */
+const PRICE_ID_POR_PAIS = {
+  ES: 'price_1TqFsoV05BTdldnGCx2z4O13',
+  CO: 'price_1U2G5DV05BTdldnGNFLpu33Z',
+};
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -31,10 +37,24 @@ export default async function handler(req, res) {
   try {
     const origin = req.headers.origin || `https://${req.headers.host}`;
 
+    /* Buscamos el país del usuario para saber en qué moneda cobrarle */
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('pais')
+      .eq('id', user.id)
+      .single();
+
+    const pais = (profile && profile.pais) || 'ES';
+    const priceId = PRICE_ID_POR_PAIS[pais] || PRICE_ID_POR_PAIS.ES;
+
+    if (priceId.startsWith('PENDIENTE')) {
+      return res.status(400).json({ error: 'Los pagos para este país aún no están disponibles.' });
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
-      line_items: [{ price: PRICE_ID, quantity: 1 }],
+      line_items: [{ price: priceId, quantity: 1 }],
       client_reference_id: user.id,
       customer_email: user.email,
       allow_promotion_codes: true,
