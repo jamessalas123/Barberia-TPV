@@ -217,6 +217,9 @@ input, select { font-family: inherit; outline: none; border: none; }
   box-shadow: 0 2px 16px var(--primary-glow);
 }
 .f-label { font-size: .75rem; font-weight: 600; color: var(--muted-foreground); margin-bottom: .375rem; display: block; }
+.f-consent { display:flex; align-items:flex-start; gap:.5rem; font-size:.72rem; line-height:1.35; color:var(--muted-foreground); margin:.6rem 0; cursor:pointer; }
+.f-consent input[type="checkbox"] { margin-top:.15rem; flex-shrink:0; width:16px; height:16px; accent-color:var(--primary,#000); }
+.f-consent a { color:inherit; text-decoration:underline; }
 .f-input {
   width: 100%; height: 52px; padding: 0 1rem;
   border-radius: var(--radius-lg);
@@ -1124,6 +1127,8 @@ function authScreen(view='login'){
         <button type="button" class="f-pw-toggle" onclick="togglePw('rp',this)" ontouchend="event.preventDefault();togglePw('rp',this)" aria-label="Mostrar contraseña">${ICON_EYE}</button>
       </div>
       <div id="err-rp" class="f-err"></div>
+      <label class="f-consent"><input type="checkbox" id="rc"/> He leído y acepto el <a href="/legal/aviso-legal.html" target="_blank" rel="noopener">Aviso legal</a>, la <a href="/legal/privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> y los <a href="/legal/terminos.html" target="_blank" rel="noopener">Términos y condiciones</a>.</label>
+      <div id="err-rc" class="f-err"></div>
       <button id="rb" class="auth-btn" onclick="doRegister()" ontouchend="event.preventDefault();doRegister()">Crear cuenta</button>
     </div></div>`;
     setTimeout(()=>document.getElementById('ru')?.focus(),50);
@@ -1245,6 +1250,9 @@ async function doRegister(){
   else document.getElementById('err-rt').textContent='';
   if(pass.length<6){document.getElementById('err-rp').textContent='Mínimo 6 caracteres';ok=false;}
   else document.getElementById('err-rp').textContent='';
+  const aceptaTerminos=document.getElementById('rc')?.checked;
+  if(!aceptaTerminos){document.getElementById('err-rc').textContent='Debes aceptar los términos para continuar';ok=false;}
+  else document.getElementById('err-rc').textContent='';
   if(!ok)return;
 
   const btn=document.getElementById('rb');if(btn)btn.disabled=true;
