@@ -850,7 +850,12 @@ const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
 const SLOT=30,DS=9*60,DE=21*60;
 const today=()=>new Date().toISOString().slice(0,10);
-const eur=n=>(n||0).toLocaleString('es-ES',{style:'currency',currency:'EUR'});
+const eur=n=>{
+  const pais=(profile&&profile.pais)||'ES';
+  if(pais==='CO')return (n||0).toLocaleString('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0});
+  return (n||0).toLocaleString('es-ES',{style:'currency',currency:'EUR'});
+};
+const simboloMoneda=()=>((profile&&profile.pais)||'ES')==='CO'?'COP':'€';
 const DAYS=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
 
 const ICON_SCISSORS=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>`;
@@ -981,7 +986,10 @@ function init(){
 }
 
 async function draw(){
-  if(!sess){authScreen('login');return;}
+  if(!sess){
+    if(!leerPaisLocal()){paisGateScreen();return;}
+    authScreen('login');return;
+  }
 
   /* Si el usuario acaba de volver de pagar en Stripe, el webhook puede
      tardar uno o dos segundos en activar el perfil. En vez de mostrar
@@ -1073,10 +1081,47 @@ function blockScreen(trialVencido){
     <p class="block-sub">${trialVencido
       ?'Tus 20 días de prueba gratuita han finalizado. Suscríbete para seguir usando Barbería TPV sin interrupciones.'
       :'Tu suscripción no está activa en este momento. Suscríbete para reactivar tu cuenta.'}</p>
-    <button id="pagar-btn" class="block-btn" onclick="irAPagar()">Suscribirme ahora — 14,99€/mes</button>
+    <button id="pagar-btn" class="block-btn" onclick="irAPagar()">Suscribirme ahora — ${precioSuscripcionTexto()}</button>
     <button class="block-btn" style="background:transparent;border:1.5px solid var(--border);color:var(--muted-foreground);margin-top:.5rem" onclick="window.open('https://wa.me/34643668284?text=Hola,%20tengo%20una%20duda%20con%20mi%20suscripci%C3%B3n%20de%20Barber%C3%ADa%20TPV','_blank')">¿Dudas? Escríbenos por WhatsApp</button>
     <button class="block-btn-out" onclick="doOut()">Cerrar sesión</button>
+    <div style="margin-top:1.25rem;font-size:.68rem;color:var(--muted-foreground);text-align:center;line-height:1.6">
+      ${enlacesLegales()}
+      ${leerPaisLocal()==='CO'?' · <a href="https://www.sic.gov.co" target="_blank" rel="noopener">Superintendencia de Industria y Comercio</a>':''}
+    </div>
   </div></div>`;
+}
+
+/* ── PUERTA DE PAÍS (se muestra una sola vez, antes de login/registro) ── */
+function leerPaisLocal(){return localStorage.getItem('bt_pais');}
+function guardarPaisLocal(p){localStorage.setItem('bt_pais',p);}
+function elegirPais(p){
+  if(p==='CO'){toast('Barbería TPV Colombia llega muy pronto 🇨🇴','info');return;}
+  guardarPaisLocal(p);
+  authScreen('login');
+}
+function paisGateScreen(){
+  document.getElementById('root').innerHTML=`
+  <div class="auth-wrap"><div class="auth-card" style="max-width:420px">
+    <div class="auth-logo">${ICON_SCISSORS}</div>
+    <h1 class="auth-h1" style="text-align:center;margin-bottom:.25rem">Barbería TPV</h1>
+    <p class="auth-sub">¿Desde qué país vas a usar la app?</p>
+    <div style="display:flex;flex-direction:column;gap:.75rem">
+      <button class="auth-btn" onclick="elegirPais('ES')" ontouchend="event.preventDefault();elegirPais('ES')">🇪🇸 España</button>
+      <button class="auth-btn" style="background:var(--muted);color:var(--muted-foreground)" onclick="elegirPais('CO')" ontouchend="event.preventDefault();elegirPais('CO')">🇨🇴 Colombia <span style="font-size:.7rem;font-weight:400">(muy pronto)</span></button>
+    </div>
+  </div></div>`;
+}
+function precioSuscripcionTexto(){
+  const pais=(profile&&profile.pais)||leerPaisLocal()||'ES';
+  if(pais==='CO')return '59.900 COP/mes';
+  return '14,99€/mes';
+}
+function enlacesLegales(){
+  const pais=leerPaisLocal()||'ES';
+  if(pais==='CO'){
+    return `<a href="/legal/co/privacidad.html" target="_blank" rel="noopener">Aviso de privacidad</a> · <a href="/legal/co/terminos.html" target="_blank" rel="noopener">Términos y condiciones</a>`;
+  }
+  return `<a href="/legal/aviso-legal.html" target="_blank" rel="noopener">Aviso legal</a> · <a href="/legal/privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> · <a href="/legal/terminos.html" target="_blank" rel="noopener">Términos y condiciones</a>`;
 }
 
 /* ── AUTH VIEW STATE ──────────────────────────────────────────── */
@@ -1102,6 +1147,10 @@ function authScreen(view='login'){
       <div id="err-p" class="f-err"></div>
       <button id="ab" class="auth-btn" onclick="doLogin()" ontouchend="event.preventDefault();doLogin()">Entrar</button>
       <button class="auth-link" onclick="authScreen('recover')" ontouchend="event.preventDefault();authScreen('recover')">¿Olvidaste tu contraseña?</button>
+      <div style="margin-top:1rem;font-size:.68rem;color:var(--muted-foreground);text-align:center;line-height:1.6">
+        ${enlacesLegales()}
+        ${leerPaisLocal()==='CO'?' · <a href="https://www.sic.gov.co" target="_blank" rel="noopener">SIC</a>':''}
+      </div>
     </div></div>`;
     setTimeout(()=>document.getElementById('au')?.focus(),50);
     return;
@@ -1129,7 +1178,7 @@ function authScreen(view='login'){
         <button type="button" class="f-pw-toggle" onclick="togglePw('rp',this)" ontouchend="event.preventDefault();togglePw('rp',this)" aria-label="Mostrar contraseña">${ICON_EYE}</button>
       </div>
       <div id="err-rp" class="f-err"></div>
-      <label class="f-consent"><input type="checkbox" id="rc"/><span><span class="f-consent-title">He leído y acepto:</span><span class="f-consent-links"><a href="/legal/aviso-legal.html" target="_blank" rel="noopener">Aviso legal</a> · <a href="/legal/privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> · <a href="/legal/terminos.html" target="_blank" rel="noopener">Términos y condiciones</a></span></span></label>
+      <label class="f-consent"><input type="checkbox" id="rc"/><span><span class="f-consent-title">He leído y acepto:</span><span class="f-consent-links">${enlacesLegales()}</span></span></label>
       <div id="err-rc" class="f-err"></div>
       <button id="rb" class="auth-btn" onclick="doRegister()" ontouchend="event.preventDefault();doRegister()">Crear cuenta</button>
     </div></div>`;
@@ -1265,7 +1314,8 @@ async function doRegister(){
 
   const trialEnd=new Date(Date.now()+20*24*60*60*1000).toISOString();
   const miToken=crypto.randomUUID();
-  await sb.from('profiles').insert({id:data.user.id,trial_ends_at:trialEnd,plan_status:'trial',session_token:miToken,telefono});
+  const pais=leerPaisLocal()||'ES';
+  await sb.from('profiles').insert({id:data.user.id,trial_ends_at:trialEnd,plan_status:'trial',session_token:miToken,telefono,pais});
   guardarSesionLocal(data.user.id,miToken);
 
   user=data.user;sess={email:user.email};
@@ -1479,7 +1529,7 @@ function openPay(id,name,t){
         <div class="m-tag">Finalizar cita</div>
         <div class="m-title">${name}</div>
         <div class="m-sub">${t}</div>
-        <label class="m-label">Importe (€)</label>
+        <label class="m-label">Importe (${simboloMoneda()})</label>
         <input id="pa" class="pay-amt" inputmode="decimal" placeholder="0,00" autofocus/>
         <label class="m-label" style="margin-bottom:.5rem">Método de pago</label>
         <div class="pay-meths">
@@ -1640,7 +1690,7 @@ async function pgCaja(el){
           <select id="ec" class="fg-sel"><option>Material de Barbería</option><option>Alquiler</option><option>Luz y agua</option><option>Otros</option></select>
         </div>
         <div class="fg">
-          <label class="fg-lbl">Importe (€)</label>
+          <label class="fg-lbl">Importe (${simboloMoneda()})</label>
           <input id="ea" class="fg-inp" inputmode="decimal" placeholder="0.00"/>
         </div>
         <div class="fg">
