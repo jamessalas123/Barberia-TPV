@@ -1023,10 +1023,7 @@ function init(){
 }
 
 async function draw(){
-  if(!sess){
-    if(!leerPaisLocal()){paisGateScreen();return;}
-    authScreen('login');return;
-  }
+  if(!sess){authScreen('login');return;}
 
   /* Si el usuario acaba de volver de pagar en Stripe, el webhook puede
      tardar uno o dos segundos en activar el perfil. En vez de mostrar
@@ -1122,42 +1119,28 @@ function blockScreen(trialVencido){
     <button class="block-btn" style="background:transparent;border:1.5px solid var(--border);color:var(--muted-foreground);margin-top:.5rem" onclick="window.open('https://wa.me/34643668284?text=Hola,%20tengo%20una%20duda%20con%20mi%20suscripci%C3%B3n%20de%20Barber%C3%ADa%20TPV','_blank')">¿Dudas? Escríbenos por WhatsApp</button>
     <button class="block-btn-out" onclick="doOut()">Cerrar sesión</button>
     <div style="margin-top:1.25rem;font-size:.68rem;color:var(--muted-foreground);text-align:center;line-height:1.6">
-      ${enlacesLegales()}
-      ${leerPaisLocal()==='CO'?' · <a href="https://www.sic.gov.co" target="_blank" rel="noopener">Superintendencia de Industria y Comercio</a>':''}
+      ${enlacesLegales(profile&&profile.pais)}
+      ${(profile&&profile.pais)==='CO'?' · <a href="https://www.sic.gov.co" target="_blank" rel="noopener">Superintendencia de Industria y Comercio</a>':''}
     </div>
   </div></div>`;
 }
 
-/* ── PUERTA DE PAÍS (se muestra una sola vez, antes de login/registro) ── */
-function leerPaisLocal(){return localStorage.getItem('bt_pais');}
-function guardarPaisLocal(p){localStorage.setItem('bt_pais',p);}
-function elegirPais(p){
-  guardarPaisLocal(p);
-  authScreen('login');
-}
-function paisGateScreen(){
-  document.getElementById('root').innerHTML=`
-  <div class="auth-wrap"><div class="auth-card" style="max-width:420px">
-    <div class="auth-logo">${ICON_SCISSORS}</div>
-    <h1 class="auth-h1" style="text-align:center;margin-bottom:.25rem">Barbería TPV</h1>
-    <p class="auth-sub">¿Desde qué país vas a usar la app?</p>
-    <div style="display:flex;flex-direction:column;gap:.75rem">
-      <button class="auth-btn" onclick="elegirPais('ES')" ontouchend="event.preventDefault();elegirPais('ES')">🇪🇸 España</button>
-      <button class="auth-btn" onclick="elegirPais('CO')" ontouchend="event.preventDefault();elegirPais('CO')">🇨🇴 Colombia</button>
-    </div>
-  </div></div>`;
-}
 function precioSuscripcionTexto(){
-  const pais=(profile&&profile.pais)||leerPaisLocal()||'ES';
+  const pais=(profile&&profile.pais)||'ES';
   if(pais==='CO')return '59.900 COP/mes';
   return '14,99€/mes';
 }
-function enlacesLegales(){
-  const pais=leerPaisLocal()||'ES';
+function enlacesLegales(pais){
+  pais=pais||'ES';
   if(pais==='CO'){
     return `<a href="/legal/co/privacidad.html" target="_blank" rel="noopener">Aviso de privacidad</a> · <a href="/legal/co/terminos.html" target="_blank" rel="noopener">Términos y condiciones</a>`;
   }
   return `<a href="/legal/aviso-legal.html" target="_blank" rel="noopener">Aviso legal</a> · <a href="/legal/privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> · <a href="/legal/terminos.html" target="_blank" rel="noopener">Términos y condiciones</a>`;
+}
+function actualizarLinksLegalesRegistro(){
+  const pais=document.getElementById('rpais')?.value||'ES';
+  const box=document.getElementById('legal-links-reg');
+  if(box)box.innerHTML=enlacesLegales(pais)+(pais==='CO'?' · <a href="https://www.sic.gov.co" target="_blank" rel="noopener">SIC</a>':'');
 }
 
 /* ── AUTH VIEW STATE ──────────────────────────────────────────── */
@@ -1184,8 +1167,7 @@ function authScreen(view='login'){
       <button id="ab" class="auth-btn" onclick="doLogin()" ontouchend="event.preventDefault();doLogin()">Entrar</button>
       <button class="auth-link" onclick="authScreen('recover')" ontouchend="event.preventDefault();authScreen('recover')">¿Olvidaste tu contraseña?</button>
       <div style="margin-top:1rem;font-size:.68rem;color:var(--muted-foreground);text-align:center;line-height:1.6">
-        ${enlacesLegales()}
-        ${leerPaisLocal()==='CO'?' · <a href="https://www.sic.gov.co" target="_blank" rel="noopener">SIC</a>':''}
+        ${enlacesLegales('ES')}
       </div>
     </div></div>`;
     setTimeout(()=>document.getElementById('au')?.focus(),50);
@@ -1202,6 +1184,11 @@ function authScreen(view='login'){
         <button class="auth-tab" onclick="authScreen('login')" ontouchend="event.preventDefault();authScreen('login')">Iniciar sesión</button>
         <button class="auth-tab active" onclick="authScreen('register')" ontouchend="event.preventDefault();authScreen('register')">Registrarse</button>
       </div>
+      <label class="f-label">País</label>
+      <select id="rpais" class="f-input" onchange="actualizarLinksLegalesRegistro()">
+        <option value="ES">🇪🇸 España</option>
+        <option value="CO">🇨🇴 Colombia</option>
+      </select>
       <label class="f-label">Correo electrónico</label>
       <input id="ru" class="f-input" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" autocapitalize="none"/>
       <div id="err-ru" class="f-err"></div>
@@ -1214,7 +1201,7 @@ function authScreen(view='login'){
         <button type="button" class="f-pw-toggle" onclick="togglePw('rp',this)" ontouchend="event.preventDefault();togglePw('rp',this)" aria-label="Mostrar contraseña">${ICON_EYE}</button>
       </div>
       <div id="err-rp" class="f-err"></div>
-      <label class="f-consent"><input type="checkbox" id="rc"/><span><span class="f-consent-title">He leído y acepto:</span><span class="f-consent-links">${enlacesLegales()}</span></span></label>
+      <label class="f-consent"><input type="checkbox" id="rc"/><span><span class="f-consent-title">He leído y acepto:</span><span class="f-consent-links" id="legal-links-reg">${enlacesLegales('ES')}</span></span></label>
       <div id="err-rc" class="f-err"></div>
       <button id="rb" class="auth-btn" onclick="doRegister()" ontouchend="event.preventDefault();doRegister()">Crear cuenta</button>
     </div></div>`;
@@ -1350,7 +1337,7 @@ async function doRegister(){
 
   const trialEnd=new Date(Date.now()+20*24*60*60*1000).toISOString();
   const miToken=crypto.randomUUID();
-  const pais=leerPaisLocal()||'ES';
+  const pais=document.getElementById('rpais')?.value||'ES';
   const ivaPorDefecto=pais==='CO'?19:21;
   await sb.from('profiles').insert({id:data.user.id,trial_ends_at:trialEnd,plan_status:'trial',session_token:miToken,telefono,pais,iva_porcentaje:ivaPorDefecto});
   guardarSesionLocal(data.user.id,miToken);
