@@ -1095,7 +1095,6 @@ function blockScreen(trialVencido){
 function leerPaisLocal(){return localStorage.getItem('bt_pais');}
 function guardarPaisLocal(p){localStorage.setItem('bt_pais',p);}
 function elegirPais(p){
-  if(p==='CO'){toast('Barbería TPV Colombia llega muy pronto 🇨🇴','info');return;}
   guardarPaisLocal(p);
   authScreen('login');
 }
@@ -1107,7 +1106,7 @@ function paisGateScreen(){
     <p class="auth-sub">¿Desde qué país vas a usar la app?</p>
     <div style="display:flex;flex-direction:column;gap:.75rem">
       <button class="auth-btn" onclick="elegirPais('ES')" ontouchend="event.preventDefault();elegirPais('ES')">🇪🇸 España</button>
-      <button class="auth-btn" style="background:var(--muted);color:var(--muted-foreground)" onclick="elegirPais('CO')" ontouchend="event.preventDefault();elegirPais('CO')">🇨🇴 Colombia <span style="font-size:.7rem;font-weight:400">(muy pronto)</span></button>
+      <button class="auth-btn" onclick="elegirPais('CO')" ontouchend="event.preventDefault();elegirPais('CO')">🇨🇴 Colombia</button>
     </div>
   </div></div>`;
 }
