@@ -1740,6 +1740,7 @@ async function pgCaja(el){
     sb.from('expenses').select('*').eq('user_id',user.id).gte('expense_date',s).lte('expense_date',e)
   ]);
   const ap=a||[],ex=x||[];
+  window._liqAp=ap;
   let of=0,int=0,ingresoNegocio=0,dineroBarberos=0;
   ap.forEach(a=>{
     const v=Number(a.price)||0;
@@ -1783,7 +1784,7 @@ async function pgCaja(el){
       <div class="meth-kard meth-kard-accent"><div class="meth-head">Ingreso del negocio <span>💰</span></div><div class="meth-val" style="color:var(--primary)">${eur(ingresoNegocio)}</div><div class="meth-sub">Suma de comisión local</div></div>
       <div class="meth-kard"><div class="meth-head">Dinero de barberos <span>✂️</span></div><div class="meth-val">${eur(dineroBarberos)}</div><div class="meth-sub">Pasa por caja, no es tu ingreso</div></div>
     </div>
-    <button class="cash-btn liquidacion-btn" onclick="showLiquidacion(${JSON.stringify(ap).replace(/"/g,'&quot;')})">✂️ Liquidación de barberos</button>`;
+    <button class="cash-btn liquidacion-btn" onclick="showLiquidacion()">✂️ Liquidación de barberos</button>`;
   }else{
     const lst=ex.length===0
       ?`<div style="text-align:center;color:var(--muted-foreground);padding:1.5rem;font-size:.875rem">No hay gastos registrados</div>`
@@ -1835,8 +1836,8 @@ async function pgCaja(el){
   </div>`;
 }
 
-function showLiquidacion(apJson){
-  const ap=JSON.parse(apJson.replace(/&quot;/g,'"'));
+function showLiquidacion(){
+  const ap=window._liqAp||[];
   const porBarbero={};
   ap.forEach(a=>{
     const nombre=a.barbero||'Sin asignar';
