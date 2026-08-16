@@ -173,6 +173,9 @@ input, select { font-family: inherit; outline: none; border: none; }
 .nav-out { color: oklch(1 0 0 / 0.22); }
 .nav-out svg { stroke: oklch(1 0 0 / 0.22); }
 .nav-out:hover { background: oklch(0.62 0.22 25 / 0.12); color: var(--destructive); }
+.nav-suscribir { color: var(--primary); margin-bottom: .5rem; }
+.nav-suscribir svg { fill: var(--primary); stroke: none; }
+.nav-suscribir:hover { background: var(--primary-glow); box-shadow: 0 0 16px var(--primary-glow); }
 .nav-out:hover svg { stroke: var(--destructive); }
 .nav-out:hover .nav-icon-wrap { background: oklch(0.62 0.22 25 / 0.15); }
 
@@ -913,6 +916,7 @@ const ICON_OUT=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 const ICON_CHECK=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>`;
 const ICON_PLUS=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
 const ICON_TRASH=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
+const ICON_STAR=`<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.63 22 9.24 16.5 13.97 18.18 21 12 17.27 5.82 21 7.5 13.97 2 9.24 8.91 8.63 12 2"/></svg>`;
 
 /* ══════════════════════════════════════════════════════════════
    AUTH — Supabase Auth real (email + contraseña)
@@ -1036,7 +1040,7 @@ async function draw(){
   let intentos=vieneDePago?6:1;
   let data,error;
   for(let i=0;i<intentos;i++){
-    ({data,error}=await sb.from('profiles').select('plan_status,trial_ends_at,session_token').eq('id',user.id).single());
+    ({data,error}=await sb.from('profiles').select('plan_status,trial_ends_at,session_token,pais').eq('id',user.id).single());
     if(data&&data.plan_status==='active')break;
     if(i<intentos-1)await new Promise(r=>setTimeout(r,1000));
   }
@@ -1420,6 +1424,12 @@ function navBtn(id,icon,label,navColor,navGlow){
 
 function appScreen(){
   Object.values(charts).forEach(c=>c.destroy());charts={};
+  const enTrial=profile&&profile.plan_status==='trial';
+  const btnSuscribir=enTrial?`
+      <button class="nav-item nav-suscribir" onclick="irAPagar()">
+        <div class="nav-icon-wrap">${ICON_STAR}</div>
+        <span class="nav-label">Suscribirme</span>
+      </button>`:'';
   document.getElementById('root').innerHTML=`
   <div class="app">
     <nav class="sidebar">
@@ -1428,6 +1438,7 @@ function appScreen(){
       ${navBtn('caja',ICON_WALLET,'Caja','oklch(0.68 0.18 145)','oklch(0.68 0.18 145 / 0.38)')}
       ${navBtn('analiticas',ICON_BAR,'Stats','oklch(0.70 0.15 240)','oklch(0.70 0.15 240 / 0.38)')}
       <div class="nav-spacer"></div>
+      ${btnSuscribir}
       <button class="nav-item nav-out" onclick="doOut()">
         <div class="nav-icon-wrap">${ICON_OUT}</div>
         <span class="nav-label">Salir</span>
