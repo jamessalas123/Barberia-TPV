@@ -1500,11 +1500,13 @@ async function pgAgenda(el){
       </div>`;
     }
     const pendientes=items.filter(a=>a.status!=='completed').length;
+    const todoCobrado=pendientes===0;
     return`
-    <div class="slot busy">
+    <div class="slot ${todoCobrado?'paid':'busy'}">
       <div class="slot-time">${t}</div>
-      <div class="slot-body"><span class="slot-free-txt" style="color:var(--destructive-foreground)">Ocupado (${items.length}) · toca para ver</span></div>
+      <div class="slot-body"><span class="slot-free-txt" style="color:${todoCobrado?'var(--primary-foreground)':'var(--destructive-foreground)'}">${todoCobrado?'✓ Cobrado':'Ocupado'} (${items.length}) · toca para ver</span></div>
       <div class="slot-actions">
+        ${todoCobrado?`<div class="check-icon">${ICON_CHECK}</div>`:''}
         <button class="btn-cobrar" onclick="openSlotList('${t}')">VER</button>
       </div>
     </div>`;
