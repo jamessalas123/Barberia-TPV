@@ -1331,15 +1331,34 @@ async function doRegister(){
 
   const btn=document.getElementById('rb');if(btn)btn.disabled=true;
   const{data,error}=await sb.auth.signUp({email,password:pass});
+  if(error){if(btn)btn.disabled=false;document.getElementById('err-ru').textContent=traducirError(error.message);return;}
+
+  /* Supabase, por seguridad, no avisa si el correo ya tiene cuenta: en
+     lugar de dar error, silenciosamente autentica al usuario existente.
+     Lo detectamos con identities.length===0 (indicador estándar de que
+     el usuario ya existía) y lo bloqueamos aquí para que no entre a una
+     cuenta ajena/antigua sin darse cuenta. */
+  const yaExistia=data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0;
+  if(yaExistia){
+    await sb.auth.signOut();
+    if(btn)btn.disabled=false;
+    document.getElementById('err-ru').textContent='Ya existe una cuenta con este correo. Inicia sesión en su lugar.';
+    return;
+  }
+
   if(btn)btn.disabled=false;
-  if(error){document.getElementById('err-ru').textContent=traducirError(error.message);return;}
   if(!data.session){toast('Revisa tu correo para confirmar tu cuenta','info');authScreen('login');return;}
 
   const trialEnd=new Date(Date.now()+20*24*60*60*1000).toISOString();
   const miToken=crypto.randomUUID();
   const pais=document.getElementById('rpais')?.value||'ES';
   const ivaPorDefecto=pais==='CO'?19:21;
-  await sb.from('profiles').insert({id:data.user.id,trial_ends_at:trialEnd,plan_status:'trial',session_token:miToken,telefono,pais,iva_porcentaje:ivaPorDefecto});
+  const{error:errPerfil}=await sb.from('profiles').insert({id:data.user.id,trial_ends_at:trialEnd,plan_status:'trial',session_token:miToken,telefono,pais,iva_porcentaje:ivaPorDefecto});
+  if(errPerfil){
+    await sb.auth.signOut();
+    document.getElementById('err-ru').textContent='No se pudo crear el perfil. Intenta de nuevo o inicia sesión si ya tienes cuenta.';
+    return;
+  }
   guardarSesionLocal(data.user.id,miToken);
 
   user=data.user;sess={email:user.email};
