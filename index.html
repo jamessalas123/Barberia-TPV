@@ -1501,6 +1501,7 @@ async function pgAgenda(el){
         </div>
         <div class="slot-actions">
           <div class="check-icon">${ICON_CHECK}</div>
+          <button class="btn-plus" onclick="openSlotList('${t}')" aria-label="Ver detalle">${ICON_EYE}</button>
           <button class="btn-plus" onclick="openNew('${t}')" aria-label="Añadir otra persona">${ICON_PLUS}</button>
           <button class="btn-del-slot" onclick="delAppt('${a.id}')" aria-label="Eliminar">${ICON_TRASH}</button>
         </div>
@@ -1511,6 +1512,7 @@ async function pgAgenda(el){
         <div class="slot-body"><div class="slot-name">${a.client_name}${a.barbero?' <span class="slot-barbero">· '+a.barbero+'</span>':''}</div></div>
         <div class="slot-actions">
           <button class="btn-cobrar" onclick="openPay('${a.id}','${t}')">COBRAR</button>
+          <button class="btn-plus" onclick="openSlotList('${t}')" aria-label="Ver detalle">${ICON_EYE}</button>
           <button class="btn-plus" onclick="openNew('${t}')" aria-label="Añadir otra persona">${ICON_PLUS}</button>
           <button class="btn-del-slot" onclick="delAppt('${a.id}')" aria-label="Eliminar">${ICON_TRASH}</button>
         </div>
@@ -1600,7 +1602,7 @@ function openSlotList(t){
         ${a.barbero?`<div class="slotlist-barbero">Atiende: ${a.barbero}</div>`:''}
       </div>
       ${done
-        ?`<div class="slotlist-paid">✓ ${eur(a.price)}</div>`
+        ?`<div class="slotlist-paid">✓ ${eur(a.price)}<span class="slotlist-metodo"> · ${etqMetodo(a.payment_method)}</span></div>`
         :`<button class="btn-cobrar" style="padding:.5rem .9rem;font-size:.72rem" onclick="openPay('${a.id}','${t}')">COBRAR</button>`}
       <button class="btn-del-slot" onclick="delAppt('${a.id}')" aria-label="Eliminar">${ICON_TRASH}</button>
     </div>`;
@@ -1639,17 +1641,17 @@ function openPay(id,t){
         <div class="m-title">${a.client_name||''}</div>
         <div class="m-sub">${t}${a.barbero?' · '+a.barbero:''}</div>
         <label class="m-label">Importe (${simboloMoneda()})</label>
-        <input id="pa" class="pay-amt" inputmode="decimal" placeholder="0,00" autofocus oninput="recalcReparto()"/>
+        <input id="pa" class="pay-amt" inputmode="decimal" placeholder="0,00" autofocus oninput="onImporteInput('pa')"/>
         <div class="reparto-box">
           <div class="reparto-lbl">Reparto</div>
           <div class="reparto-row">
             <div class="fg" style="flex:1">
               <label class="fg-lbl">Valor barbero</label>
-              <input id="pvb" class="fg-inp" inputmode="decimal" placeholder="0,00" oninput="recalcReparto('vb')"/>
+              <input id="pvb" class="fg-inp" inputmode="decimal" placeholder="0,00" oninput="onImporteInput('pvb','vb')"/>
             </div>
             <div class="fg" style="flex:1">
               <label class="fg-lbl">Comisión local</label>
-              <input id="pcl" class="fg-inp" inputmode="decimal" placeholder="0,00" oninput="recalcReparto('cl')"/>
+              <input id="pcl" class="fg-inp" inputmode="decimal" placeholder="0,00" oninput="onImporteInput('pcl','cl')"/>
             </div>
           </div>
           <div class="reparto-hint">Se calcula solo — llena uno y el otro se ajusta.</div>
@@ -1670,19 +1672,44 @@ function openPay(id,t){
   setTimeout(()=>document.getElementById('pa')?.focus(),80);
 }
 
+function parseImporte(raw){
+  raw=(raw||'').toString().trim();
+  if(!raw)return 0;
+  const pais=(profile&&profile.pais)||'ES';
+  if(pais==='CO'){
+    /* En Colombia el punto es separador de miles, no decimal */
+    return parseFloat(raw.replace(/\./g,'').replace(',','.'))||0;
+  }
+  return parseFloat(raw.replace(',','.'))||0;
+}
+function formatearSalidaImporte(n){
+  const pais=(profile&&profile.pais)||'ES';
+  if(pais==='CO')return Math.round(n).toLocaleString('es-CO');
+  return n.toFixed(2);
+}
+function formatearInputCO(el){
+  const pais=(profile&&profile.pais)||'ES';
+  if(pais!=='CO'||!el)return;
+  const digits=el.value.replace(/[^\d]/g,'');
+  el.value=digits?Number(digits).toLocaleString('es-CO'):'';
+}
+function onImporteInput(id,origen){
+  formatearInputCO(document.getElementById(id));
+  recalcReparto(origen);
+}
 function recalcReparto(origen){
-  const total=parseFloat((document.getElementById('pa')?.value||'').replace(',','.'))||0;
+  const total=parseImporte(document.getElementById('pa')?.value);
   const vbEl=document.getElementById('pvb'),clEl=document.getElementById('pcl');
   if(!vbEl||!clEl)return;
   if(origen==='vb'){
-    const vb=parseFloat((vbEl.value||'').replace(',','.'))||0;
-    clEl.value=Math.max(0,total-vb).toFixed(2);
+    const vb=parseImporte(vbEl.value);
+    clEl.value=formatearSalidaImporte(Math.max(0,total-vb));
   }else if(origen==='cl'){
-    const cl=parseFloat((clEl.value||'').replace(',','.'))||0;
-    vbEl.value=Math.max(0,total-cl).toFixed(2);
+    const cl=parseImporte(clEl.value);
+    vbEl.value=formatearSalidaImporte(Math.max(0,total-cl));
   }else{
-    const vb=parseFloat((vbEl.value||'').replace(',','.'))||0;
-    clEl.value=Math.max(0,total-vb).toFixed(2);
+    const vb=parseImporte(vbEl.value);
+    clEl.value=formatearSalidaImporte(Math.max(0,total-vb));
   }
 }
 
@@ -1695,10 +1722,10 @@ function selM(m){
 }
 
 async function doPay(id){
-  const p=parseFloat((document.getElementById('pa')?.value||'').replace(',','.'));
+  const p=parseImporte(document.getElementById('pa')?.value);
   if(!p||p<=0)return toast('Importe inválido','error');
-  const vb=parseFloat((document.getElementById('pvb')?.value||'').replace(',','.'))||0;
-  const cl=parseFloat((document.getElementById('pcl')?.value||'').replace(',','.'))||0;
+  const vb=parseImporte(document.getElementById('pvb')?.value)||0;
+  const cl=parseImporte(document.getElementById('pcl')?.value)||0;
   const type=meth==='efectivo'?'interno':'oficial';
   const{error}=await sb.from('appointments').update({status:'completed',payment_method:meth,payment_type:type,price:p,valor_barbero:vb||null,comision_local:cl||null,completed_at:new Date().toISOString()}).eq('id',id);
   if(error)return toast(traducirError(error.message),'error');
@@ -1825,7 +1852,7 @@ async function pgCaja(el){
         </div>
         <div class="fg">
           <label class="fg-lbl">Importe (${simboloMoneda()})</label>
-          <input id="ea" class="fg-inp" inputmode="decimal" placeholder="0.00"/>
+          <input id="ea" class="fg-inp" inputmode="decimal" placeholder="0.00" oninput="formatearInputCO(this)"/>
         </div>
         <div class="fg">
           <label class="fg-lbl">Nota</label>
@@ -1898,7 +1925,7 @@ function setCtab(t){ctab=t;loadPg();}
 function setCper(p){cper=p;loadPg();}
 async function addExp(){
   const cat=document.getElementById('ec')?.value;
-  const amount=parseFloat((document.getElementById('ea')?.value||'').replace(',','.'));
+  const amount=parseImporte(document.getElementById('ea')?.value);
   const note=document.getElementById('en')?.value||'';
   if(!amount||amount<=0)return toast('Importe inválido','error');
   const{error}=await sb.from('expenses').insert({user_id:user.id,category:cat,amount,note,expense_date:today()});
