@@ -399,6 +399,16 @@ input, select { font-family: inherit; outline: none; border: none; }
   transition: all .2s; border: 1.5px solid oklch(0.68 0.18 145 / 0.28);
   touch-action: manipulation;
 }
+.slot.paid .btn-plus, .slot.paid .btn-del-slot {
+  background: oklch(0.78 0.16 75 / 0.14); color: var(--primary);
+  border-color: oklch(0.78 0.16 75 / 0.4);
+}
+.slot.busy .btn-plus, .slot.busy .btn-del-slot {
+  background: oklch(0.62 0.22 25 / 0.14); color: var(--destructive);
+  border-color: oklch(0.62 0.22 25 / 0.4);
+}
+.slot.paid .btn-plus:hover, .slot.paid .btn-del-slot:hover { background: oklch(0.78 0.16 75 / 0.22); }
+.slot.busy .btn-plus:hover, .slot.busy .btn-del-slot:hover { background: oklch(0.62 0.22 25 / 0.22); }
 .btn-plus:hover { background: var(--success); color: var(--success-foreground); box-shadow: 0 0 18px var(--success-glow); }
 .btn-plus:active { transform: scale(.97); }
 
@@ -1560,7 +1570,7 @@ async function pgAgenda(el){
     return`
     <div class="slot ${todoCobrado?'paid':'busy'}">
       <div class="slot-time">${t}</div>
-      <div class="slot-body"><span class="slot-free-txt" style="color:${todoCobrado?'var(--primary-foreground)':'var(--destructive-foreground)'}">${todoCobrado?'✓ Cobrado':'Ocupado'} (${items.length}) · toca para ver</span></div>
+      <div class="slot-body"><span class="slot-free-txt">${todoCobrado?'✓ Cobrado':'Ocupado'} (${items.length}) · toca para ver</span></div>
       <div class="slot-actions">
         ${todoCobrado?`<div class="check-icon">${ICON_CHECK}</div>`:''}
         <button class="btn-ver" onclick="openSlotList('${t}')">VER</button>
