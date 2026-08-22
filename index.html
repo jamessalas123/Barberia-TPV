@@ -1642,6 +1642,8 @@ function openPay(id,t){
         <div class="m-sub">${t}${a.barbero?' · '+a.barbero:''}</div>
         <label class="m-label">Importe (${simboloMoneda()})</label>
         <input id="pa" class="pay-amt" inputmode="decimal" placeholder="0,00" autofocus oninput="onImporteInput('pa')"/>
+        <label class="m-label">Servicio <span style="font-weight:400;color:var(--muted-foreground)">(opcional)</span></label>
+        <input id="psrv" class="m-input" placeholder="Ej: Corte, barba, corte + barba..." value="${a.service||''}" style="margin-bottom:.875rem"/>
         <div class="reparto-box">
           <div class="reparto-lbl">Reparto</div>
           <div class="reparto-row">
@@ -1726,8 +1728,9 @@ async function doPay(id){
   if(!p||p<=0)return toast('Importe inválido','error');
   const vb=parseImporte(document.getElementById('pvb')?.value)||0;
   const cl=parseImporte(document.getElementById('pcl')?.value)||0;
+  const servicio=document.getElementById('psrv')?.value?.trim()||null;
   const type=meth==='efectivo'?'interno':'oficial';
-  const{error}=await sb.from('appointments').update({status:'completed',payment_method:meth,payment_type:type,price:p,valor_barbero:vb||null,comision_local:cl||null,completed_at:new Date().toISOString()}).eq('id',id);
+  const{error}=await sb.from('appointments').update({status:'completed',payment_method:meth,payment_type:type,price:p,service:servicio,valor_barbero:vb||null,comision_local:cl||null,completed_at:new Date().toISOString()}).eq('id',id);
   if(error)return toast(traducirError(error.message),'error');
   toast('Cobrado ✓','success');closeM();loadPg();
 }
