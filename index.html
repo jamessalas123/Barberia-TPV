@@ -308,32 +308,40 @@ input, select { font-family: inherit; outline: none; border: none; }
   box-shadow: 0 4px 20px var(--success-glow);
 }
 .slot.busy {
-  background: var(--destructive);
-  border: 1.5px solid oklch(1 0 0 / 0.18);
-  box-shadow: 0 4px 18px var(--destructive-glow);
+  background: oklch(0.62 0.22 25 / 0.08);
+  border: 1.5px solid oklch(0.62 0.22 25 / 0.3);
 }
-.slot.busy:hover { box-shadow: 0 8px 32px oklch(0.62 0.22 25 / 0.52); transform: translateY(-1px); }
+.slot.busy:hover {
+  background: oklch(0.62 0.22 25 / 0.13);
+  border-color: oklch(0.62 0.22 25 / 0.48);
+  box-shadow: 0 4px 20px var(--destructive-glow);
+}
 .slot.paid {
-  background: var(--primary);
-  border: 1.5px solid oklch(1 0 0 / 0.22);
-  box-shadow: 0 4px 18px var(--primary-glow);
+  background: oklch(0.78 0.16 75 / 0.08);
+  border: 1.5px solid oklch(0.78 0.16 75 / 0.3);
 }
-.slot.paid:hover { box-shadow: 0 8px 32px oklch(0.78 0.16 75 / 0.52); transform: translateY(-1px); }
+.slot.paid:hover {
+  background: oklch(0.78 0.16 75 / 0.13);
+  border-color: oklch(0.78 0.16 75 / 0.48);
+  box-shadow: 0 4px 20px var(--primary-glow);
+}
 
 .slot-time {
   width: 84px; font-size: 1.7rem; font-weight: 900;
   font-variant-numeric: tabular-nums; flex-shrink: 0; line-height: 1;
 }
 .slot.free .slot-time { color: var(--success); }
-.slot.busy .slot-time { color: var(--destructive-foreground); }
-.slot.paid .slot-time { color: var(--primary-foreground); }
+.slot.busy .slot-time { color: var(--destructive); }
+.slot.paid .slot-time { color: var(--primary); }
 
 .slot-body { flex: 1; min-width: 0; }
 .slot-name { font-size: 1.2rem; font-weight: 800; line-height: 1.2; }
-.slot.busy .slot-name { color: var(--destructive-foreground); }
-.slot.paid .slot-name { color: var(--primary-foreground); }
+.slot.busy .slot-name { color: oklch(0.92 0.02 25); }
+.slot.paid .slot-name { color: oklch(0.94 0.02 75); }
 .slot-free-txt { font-size: .9rem; color: var(--success); font-weight: 600; }
-.slot-paid-info { font-size: .85rem; margin-top: .2rem; font-weight: 700; color: oklch(0.18 0.02 75 / 0.85); font-variant-numeric: tabular-nums; }
+.slot.busy .slot-free-txt { color: var(--destructive); }
+.slot.paid .slot-free-txt { color: var(--primary); }
+.slot-paid-info { font-size: .85rem; margin-top: .2rem; font-weight: 700; color: var(--primary); font-variant-numeric: tabular-nums; }
 
 .slot-actions {
   display: flex;
@@ -351,13 +359,25 @@ input, select { font-family: inherit; outline: none; border: none; }
 
 .btn-cobrar {
   height: 48px; padding: 0 1.25rem; border-radius: var(--radius-xl);
-  background: oklch(1 0 0 / 0.22); color: var(--destructive-foreground);
+  background: var(--destructive); color: var(--destructive-foreground);
   font-weight: 900; font-size: .88rem; letter-spacing: .04em;
-  transition: all .2s; border: 1.5px solid oklch(1 0 0 / 0.42);
+  transition: all .2s; border: 1.5px solid oklch(1 0 0 / 0.14);
+  box-shadow: 0 2px 12px var(--destructive-glow);
   touch-action: manipulation;
 }
-.btn-cobrar:hover { background: oklch(1 0 0 / 0.38); box-shadow: 0 0 20px oklch(1 0 0 / 0.25); }
+.btn-cobrar:hover { box-shadow: 0 4px 20px var(--destructive-glow); transform: translateY(-1px); }
 .btn-cobrar:active { transform: scale(.98); }
+
+.btn-ver {
+  height: 48px; padding: 0 1.25rem; border-radius: var(--radius-xl);
+  background: var(--primary); color: var(--primary-foreground);
+  font-weight: 900; font-size: .88rem; letter-spacing: .04em;
+  transition: all .2s; border: 1.5px solid oklch(1 0 0 / 0.14);
+  box-shadow: 0 2px 12px var(--primary-glow);
+  touch-action: manipulation;
+}
+.btn-ver:hover { box-shadow: 0 4px 20px var(--primary-glow); transform: translateY(-1px); }
+.btn-ver:active { transform: scale(.98); }
 
 .btn-del-slot {
   width: 44px; height: 44px; border-radius: var(--radius-lg);
@@ -366,7 +386,6 @@ input, select { font-family: inherit; outline: none; border: none; }
   transition: all .2s; border: 1.5px solid oklch(1 0 0 / 0.18);
   touch-action: manipulation;
 }
-.slot.paid .btn-del-slot { color: var(--primary-foreground); border-color: oklch(0 0 0 / 0.28); }
 .btn-del-slot:hover { background: oklch(0 0 0 / 0.36); }
 .btn-del-slot:active { transform: scale(.97); }
 
@@ -1516,7 +1535,7 @@ async function pgAgenda(el){
         </div>
         <div class="slot-actions">
           <div class="check-icon">${ICON_CHECK}</div>
-          <button class="btn-cobrar" style="padding:.5rem .9rem;font-size:.72rem" onclick="openSlotList('${t}')">VER</button>
+          <button class="btn-ver" style="padding:.5rem .9rem;font-size:.72rem;height:auto" onclick="openSlotList('${t}')">VER</button>
           <button class="btn-plus" onclick="openNew('${t}')" aria-label="Añadir otra persona">${ICON_PLUS}</button>
           <button class="btn-del-slot" onclick="delAppt('${a.id}')" aria-label="Eliminar">${ICON_TRASH}</button>
         </div>
@@ -1541,7 +1560,7 @@ async function pgAgenda(el){
       <div class="slot-body"><span class="slot-free-txt" style="color:${todoCobrado?'var(--primary-foreground)':'var(--destructive-foreground)'}">${todoCobrado?'✓ Cobrado':'Ocupado'} (${items.length}) · toca para ver</span></div>
       <div class="slot-actions">
         ${todoCobrado?`<div class="check-icon">${ICON_CHECK}</div>`:''}
-        <button class="btn-cobrar" onclick="openSlotList('${t}')">VER</button>
+        <button class="btn-ver" onclick="openSlotList('${t}')">VER</button>
       </div>
     </div>`;
   }).join('');
