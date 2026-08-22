@@ -336,12 +336,15 @@ input, select { font-family: inherit; outline: none; border: none; }
 
 .slot-body { flex: 1; min-width: 0; }
 .slot-name { font-size: 1.2rem; font-weight: 800; line-height: 1.2; }
-.slot.busy .slot-name { color: oklch(0.92 0.02 25); }
-.slot.paid .slot-name { color: oklch(0.94 0.02 75); }
+.slot.busy .slot-name { color: var(--destructive); }
+.slot.paid .slot-name { color: var(--primary); }
 .slot-free-txt { font-size: .9rem; color: var(--success); font-weight: 600; }
 .slot.busy .slot-free-txt { color: var(--destructive); }
 .slot.paid .slot-free-txt { color: var(--primary); }
 .slot-paid-info { font-size: .85rem; margin-top: .2rem; font-weight: 700; color: var(--primary); font-variant-numeric: tabular-nums; }
+.slot.busy .slot-paid-info { color: var(--destructive); }
+.slot.busy .slot-barbero { color: var(--destructive); opacity: .8; }
+.slot.paid .slot-barbero { color: var(--primary); opacity: .8; }
 
 .slot-actions {
   display: flex;
@@ -401,8 +404,8 @@ input, select { font-family: inherit; outline: none; border: none; }
 
 .check-icon {
   width: 40px; height: 40px; border-radius: 50%;
-  background: oklch(0 0 0 / 0.18); border: 2px solid oklch(0.18 0.02 75 / 0.45);
-  display: grid; place-items: center; color: var(--primary-foreground); font-size: .95rem;
+  background: oklch(0.78 0.16 75 / 0.14); border: 2px solid oklch(0.78 0.16 75 / 0.4);
+  display: grid; place-items: center; color: var(--primary); font-size: .95rem;
 }
 
 /* ── MODAL ────────────────────────────────────────────────────── */
