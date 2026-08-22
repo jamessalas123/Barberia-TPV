@@ -612,6 +612,21 @@ input, select { font-family: inherit; outline: none; border: none; }
 .liq-lbl { font-size: .65rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-foreground); font-weight: 600; margin-bottom: .2rem; }
 .liq-val { font-size: 1.5rem; font-weight: 900; color: var(--primary); text-shadow: 0 0 14px var(--primary-glow); font-variant-numeric: tabular-nums; }
 
+.cards2 { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-bottom: .625rem; }
+.cierre-tag { font-size: .75rem; letter-spacing: .05em; color: var(--muted-foreground); font-weight: 700; text-transform: uppercase; }
+.cierre-fecha { font-size: 1.4rem; font-weight: 800; margin: .1rem 0 .75rem; }
+.cierre-badge { font-size: .78rem; font-weight: 600; color: var(--primary); background: var(--muted); border: 1px solid var(--primary); border-radius: var(--radius-lg); padding: .625rem .875rem; }
+.cierre-badge-pendiente { color: var(--muted-foreground); border-color: var(--border); }
+.cierre-num { font-size: 1.5rem; font-weight: 800; color: var(--primary); text-shadow: 0 0 12px var(--primary-glow); font-variant-numeric: tabular-nums; }
+.cierre-neto {
+  margin-top: 1.25rem; border-radius: var(--radius-xl); padding: 1.25rem 1.375rem;
+  background: linear-gradient(135deg, oklch(0.78 0.16 75 / 0.14), var(--card));
+  border: 2px solid var(--primary); box-shadow: 0 0 32px var(--primary-glow);
+}
+.cierre-neto-lbl { font-size: .72rem; letter-spacing: .05em; text-transform: uppercase; font-weight: 700; color: var(--primary); margin-bottom: .3rem; }
+.cierre-neto-formula { font-size: .72rem; color: var(--muted-foreground); margin-bottom: .625rem; }
+.cierre-neto-val { font-size: 2.4rem; font-weight: 900; color: var(--primary); text-shadow: 0 0 22px var(--primary-glow); font-variant-numeric: tabular-nums; }
+
 /* ── GASTOS ───────────────────────────────────────────────────── */
 .gform {
   background: var(--card); border: 1.5px solid var(--border);
@@ -1800,13 +1815,15 @@ async function pgCaja(el){
   const tot=of+int,gas=ex.reduce((s,x)=>s+Number(x.amount||0),0);
   const pers=['dia','hoy','semana','mes','trimestre'];
   const perL={dia:'📅 Día',hoy:'Hoy',semana:'Semana',mes:'Mes',trimestre:'Trimestre'};
-  const perBtns=pers.map(p=>`<button class="period-pill ${cper===p?'on':''}" onclick="setCper('${p}')">${perL[p]}</button>`).join('');
-  const datePickerRow=cper==='dia'?`<div style="margin-bottom:.75rem;display:flex;align-items:center;gap:.625rem"><span style="font-size:.75rem;color:var(--muted-foreground);font-weight:600">Fecha:</span><input type="date" class="date-inp" value="${dt}" onchange="chDate(this.value)" style="height:40px;font-size:.85rem"/></div>`:'';
+  const perBtns=ctab==='cierre'?'':pers.map(p=>`<button class="period-pill ${cper===p?'on':''}" onclick="setCper('${p}')">${perL[p]}</button>`).join('');
+  const datePickerRow=(ctab==='cierre'||cper==='dia')?`<div style="margin-bottom:.75rem;display:flex;align-items:center;gap:.625rem"><span style="font-size:.75rem;color:var(--muted-foreground);font-weight:600">Fecha:</span><input type="date" class="date-inp" value="${dt}" onchange="chDate(this.value)" style="height:40px;font-size:.85rem"/></div>`:'';
   const periodoLabel=cper==='dia'?new Date(dt+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'}):({hoy:'Hoy',semana:'Esta semana',mes:'Este mes',trimestre:'Este trimestre'})[cper];
-  const tabBtns=`<button class="caja-tab ${ctab==='caja'?'on':''}" onclick="setCtab('caja')">👜 Caja</button><button class="caja-tab ${ctab==='gastos'?'on':''}" onclick="setCtab('gastos')">📋 Gastos</button>`;
+  const tabBtns=`<button class="caja-tab ${ctab==='caja'?'on':''}" onclick="setCtab('caja')">👜 Caja</button><button class="caja-tab ${ctab==='gastos'?'on':''}" onclick="setCtab('gastos')">📋 Gastos</button><button class="caja-tab ${ctab==='cierre'?'on':''}" onclick="setCtab('cierre')">🔒 Cierre</button>`;
 
   let content='';
-  if(ctab==='caja'){
+  if(ctab==='cierre'){
+    content=await renderCierreDiario();
+  }else if(ctab==='caja'){
     content=`
     <div class="cards3">
       <div class="kard">
@@ -1922,6 +1939,94 @@ function showLiquidacion(){
     </div>
   </div>`;
   document.body.appendChild(div);
+}
+
+async function calcularCierreLive(fecha){
+  const[{data:a},{data:x}]=await Promise.all([
+    sb.from('appointments').select('*').eq('status','completed').eq('user_id',user.id).eq('appointment_date',fecha),
+    sb.from('expenses').select('*').eq('user_id',user.id).eq('expense_date',fecha)
+  ]);
+  const ap=a||[],ex=x||[];
+  let of=0,int=0,ingresoNegocio=0,dineroBarberos=0;
+  ap.forEach(a=>{
+    const v=Number(a.price)||0;
+    if(a.payment_type==='oficial')of+=v;else int+=v;
+    ingresoNegocio+=Number(a.comision_local)||0;
+    dineroBarberos+=Number(a.valor_barbero)||0;
+  });
+  const gastosTotal=ex.reduce((s,g)=>s+Number(g.amount||0),0);
+  return{
+    efectivo:int,tarjeta_transferencia:of,total:of+int,
+    ingreso_negocio:ingresoNegocio,dinero_barberos:dineroBarberos,
+    gastos_total:gastosTotal,ganancia_neta:ingresoNegocio-gastosTotal,
+    gastos_detalle:ex.map(g=>({category:g.category,amount:Number(g.amount),note:g.note||''})),
+    citas_count:ap.length,gastos_count:ex.length
+  };
+}
+
+async function renderCierreDiario(){
+  const{data:guardado}=await sb.from('cierres_caja').select('*').eq('user_id',user.id).eq('fecha',dt).maybeSingle();
+  const live=await calcularCierreLive(dt);
+  const v=guardado||live;
+  const fechaLbl=new Date(dt+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+  const gastosRows=(v.gastos_detalle||[]).length===0
+    ?`<div style="text-align:center;color:var(--muted-foreground);padding:1rem;font-size:.82rem">Sin gastos ese día</div>`
+    :v.gastos_detalle.map(g=>`<div style="display:flex;justify-content:space-between;align-items:center;font-size:.82rem;padding:.5rem 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted-foreground)">${g.category}${g.note?' · '+g.note:''}</span><span class="cierre-num" style="font-size:1.05rem">−${eur(g.amount)}</span></div>`).join('');
+
+  const badge=guardado
+    ?`<div class="cierre-badge">✓ Cierre guardado el ${new Date(guardado.created_at).toLocaleDateString('es-ES')} a las ${new Date(guardado.created_at).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}</div>`
+    :`<div class="cierre-badge cierre-badge-pendiente">Aún no se ha guardado el cierre de este día</div>`;
+
+  const btnTexto=guardado?'🔁 Recalcular y actualizar cierre':'Guardar cierre del día';
+
+  return`
+    <div class="cierre-tag">CIERRE DE CAJA</div>
+    <div class="cierre-fecha">${fechaLbl}</div>
+    ${badge}
+
+    <div class="sec-label" style="margin-top:1.25rem">Ingresos del día</div>
+    <div class="cards2">
+      <div class="kard"><div class="kard-lbl">Efectivo</div><div class="cierre-num">${eur(v.efectivo)}</div></div>
+      <div class="kard"><div class="kard-lbl">Tarjeta/Transferencia</div><div class="cierre-num">${eur(v.tarjeta_transferencia)}</div></div>
+    </div>
+    <div class="kard" style="margin-top:.625rem;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:.85rem;font-weight:600">Total ingresado (caja total)</span>
+      <span class="cierre-num" style="font-size:1.7rem">${eur(v.total)}</span>
+    </div>
+
+    <div class="sec-label" style="margin-top:1.25rem">Desglose de ese ingreso</div>
+    <div class="cards2">
+      <div class="kard"><div class="kard-lbl">Ingreso del negocio</div><div class="cierre-num">${eur(v.ingreso_negocio)}</div><div class="kard-sub">Comisión local</div></div>
+      <div class="kard"><div class="kard-lbl">Dinero de barberos</div><div class="cierre-num">${eur(v.dinero_barberos)}</div><div class="kard-sub">No es ingreso del negocio</div></div>
+    </div>
+
+    <div class="sec-label" style="margin-top:1.25rem">Gastos del día</div>
+    <div class="kard">${gastosRows}</div>
+    <div class="kard" style="margin-top:.625rem;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:.85rem;font-weight:600">Total gastos</span>
+      <span class="cierre-num" style="font-size:1.7rem">−${eur(v.gastos_total)}</span>
+    </div>
+
+    <div class="cierre-neto">
+      <div class="cierre-neto-lbl">Ganancia neta del negocio</div>
+      <div class="cierre-neto-formula">Ingreso del negocio (${eur(v.ingreso_negocio)}) − Gastos (${eur(v.gastos_total)})</div>
+      <div class="cierre-neto-val">${eur(v.ganancia_neta)}</div>
+    </div>
+
+    <button class="cash-btn liquidacion-btn" style="margin-top:1.25rem" onclick="guardarCierre('${dt}')">${btnTexto}</button>
+  `;
+}
+
+async function guardarCierre(fecha){
+  const v=await calcularCierreLive(fecha);
+  const{error}=await sb.from('cierres_caja').upsert({
+    user_id:user.id,fecha,
+    efectivo:v.efectivo,tarjeta_transferencia:v.tarjeta_transferencia,total:v.total,
+    ingreso_negocio:v.ingreso_negocio,dinero_barberos:v.dinero_barberos,
+    gastos_total:v.gastos_total,ganancia_neta:v.ganancia_neta,gastos_detalle:v.gastos_detalle
+  },{onConflict:'user_id,fecha'});
+  if(error)return toast(traducirError(error.message),'error');
+  toast('Cierre guardado ✓','success');loadPg();
 }
 
 function setCtab(t){ctab=t;loadPg();}
