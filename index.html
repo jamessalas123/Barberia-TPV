@@ -1359,6 +1359,24 @@ function normalizarTelefono(raw){
   return t;
 }
 
+function pantallaRevisaCorreo(email){
+  document.getElementById('root').innerHTML=`
+  <div class="auth-wrap"><div class="auth-card" style="max-width:440px;text-align:center">
+    <div style="width:72px;height:72px;border-radius:50%;background:oklch(0.78 0.16 75 / 0.14);border:2px solid oklch(0.78 0.16 75 / 0.4);display:grid;place-items:center;margin:0 auto 1.25rem">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="34" height="34"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    </div>
+    <h1 class="auth-h1" style="margin-bottom:.5rem">Revisa tu correo</h1>
+    <p class="auth-sub" style="margin-bottom:1.5rem">
+      Te enviamos un enlace de confirmación a<br/><strong style="color:var(--foreground)">${email}</strong><br/>
+      Ábrelo para activar tu cuenta y empezar tu prueba gratis de 20 días.
+    </p>
+    <div style="background:var(--muted);border-radius:var(--radius-lg);padding:.875rem 1rem;font-size:.78rem;color:var(--muted-foreground);margin-bottom:1.5rem;text-align:left">
+      💡 Abre el enlace desde el mismo dispositivo donde quieras usar la app. El enlace solo funciona una vez.
+    </div>
+    <button class="auth-btn" onclick="authScreen('login')" ontouchend="event.preventDefault();authScreen('login')" style="width:100%">Ya confirmé, iniciar sesión</button>
+  </div></div>`;
+}
+
 async function doRegister(){
   const email=(document.getElementById('ru')?.value||'').trim();
   const telRaw=document.getElementById('rt')?.value||'';
@@ -1394,7 +1412,7 @@ async function doRegister(){
   }
 
   if(btn)btn.disabled=false;
-  if(!data.session){toast('Revisa tu correo para confirmar tu cuenta','info');authScreen('login');return;}
+  if(!data.session){pantallaRevisaCorreo(email);return;}
 
   const trialEnd=new Date(Date.now()+20*24*60*60*1000).toISOString();
   const miToken=crypto.randomUUID();
