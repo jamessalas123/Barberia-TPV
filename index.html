@@ -1252,8 +1252,8 @@ function authScreen(view='login'){
       <label class="f-label">País</label>
       <input type="hidden" id="rpais" value="ES"/>
       <div class="pais-toggle">
-        <button type="button" class="pais-btn on" id="pb-ES" onclick="selPais('ES')">🇪🇸 España</button>
-        <button type="button" class="pais-btn" id="pb-CO" onclick="selPais('CO')">🇨🇴 Colombia</button>
+        <button type="button" class="pais-btn on" id="pb-ES" onclick="selPais('ES')" ontouchend="event.preventDefault();selPais('ES')">🇪🇸 España</button>
+        <button type="button" class="pais-btn" id="pb-CO" onclick="selPais('CO')" ontouchend="event.preventDefault();selPais('CO')">🇨🇴 Colombia</button>
       </div>
       <label class="f-label">Correo electrónico</label>
       <input id="ru" class="f-input" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" autocapitalize="none"/>
