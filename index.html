@@ -481,6 +481,18 @@ input, select { font-family: inherit; outline: none; border: none; }
 }
 .pay-amt:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); outline: none; }
 .pay-meths { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .5rem; margin-bottom: .875rem; }
+
+.pais-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: .625rem; margin-bottom: .875rem; }
+.pais-btn {
+  height: 52px; border-radius: var(--radius-lg); font-weight: 700; font-size: .92rem;
+  background: var(--muted); color: var(--muted-foreground); border: 2px solid var(--border);
+  transition: all .15s; touch-action: manipulation;
+}
+.pais-btn.on {
+  background: var(--primary); color: var(--primary-foreground);
+  border-color: var(--primary); box-shadow: 0 2px 16px var(--primary-glow);
+}
+.pais-btn:hover:not(.on) { border-color: var(--primary); }
 .pay-meth {
   height: 64px; border-radius: var(--radius-xl);
   background: var(--muted); border: 1.5px solid var(--border); color: var(--muted-foreground);
@@ -1184,6 +1196,12 @@ function enlacesLegales(pais){
   }
   return `<a href="/legal/aviso-legal.html" target="_blank" rel="noopener">Aviso legal</a> · <a href="/legal/privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> · <a href="/legal/terminos.html" target="_blank" rel="noopener">Términos y condiciones</a>`;
 }
+function selPais(p){
+  document.getElementById('rpais').value=p;
+  document.getElementById('pb-ES').className='pais-btn'+(p==='ES'?' on':'');
+  document.getElementById('pb-CO').className='pais-btn'+(p==='CO'?' on':'');
+  actualizarLinksLegalesRegistro();
+}
 function actualizarLinksLegalesRegistro(){
   const pais=document.getElementById('rpais')?.value||'ES';
   const box=document.getElementById('legal-links-reg');
@@ -1232,10 +1250,11 @@ function authScreen(view='login'){
         <button class="auth-tab active" onclick="authScreen('register')" ontouchend="event.preventDefault();authScreen('register')">Registrarse</button>
       </div>
       <label class="f-label">País</label>
-      <select id="rpais" class="f-input" onchange="actualizarLinksLegalesRegistro()">
-        <option value="ES">🇪🇸 España</option>
-        <option value="CO">🇨🇴 Colombia</option>
-      </select>
+      <input type="hidden" id="rpais" value="ES"/>
+      <div class="pais-toggle">
+        <button type="button" class="pais-btn on" id="pb-ES" onclick="selPais('ES')">🇪🇸 España</button>
+        <button type="button" class="pais-btn" id="pb-CO" onclick="selPais('CO')">🇨🇴 Colombia</button>
+      </div>
       <label class="f-label">Correo electrónico</label>
       <input id="ru" class="f-input" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" autocapitalize="none"/>
       <div id="err-ru" class="f-err"></div>
