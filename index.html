@@ -1102,12 +1102,18 @@ async function draw(){
   }
 
   if(error||!data){
-    /* Si por algún motivo no hay fila de perfil, la crea con trial de 20 días */
+    /* Si por algún motivo no hay fila de perfil, la crea con trial de 20 días.
+       El país y teléfono se leen de los metadatos guardados en el registro
+       (sobreviven aunque hayan pasado días desde que se creó la cuenta y
+       se confirme el correo desde otra pestaña/sesión). */
     const trialEnd=new Date(Date.now()+20*24*60*60*1000).toISOString();
     const miToken=crypto.randomUUID();
-    await sb.from('profiles').insert({id:user.id,trial_ends_at:trialEnd,plan_status:'trial',session_token:miToken});
+    const metaPais=user.user_metadata?.pais||'ES';
+    const metaTelefono=user.user_metadata?.telefono||null;
+    const metaIva=metaPais==='CO'?19:21;
+    await sb.from('profiles').insert({id:user.id,trial_ends_at:trialEnd,plan_status:'trial',session_token:miToken,telefono:metaTelefono,pais:metaPais,iva_porcentaje:metaIva});
     guardarSesionLocal(user.id,miToken);
-    profile={plan_status:'trial',trial_ends_at:trialEnd,session_token:miToken};
+    profile={plan_status:'trial',trial_ends_at:trialEnd,session_token:miToken,pais:metaPais};
   }else{
     profile=data;
   }
@@ -1414,7 +1420,8 @@ async function doRegister(){
   if(!ok)return;
 
   const btn=document.getElementById('rb');if(btn)btn.disabled=true;
-  const{data,error}=await sb.auth.signUp({email,password:pass});
+  const pais=document.getElementById('rpais')?.value||'ES';
+  const{data,error}=await sb.auth.signUp({email,password:pass,options:{data:{pais,telefono}}});
   if(error){if(btn)btn.disabled=false;document.getElementById('err-ru').textContent=traducirError(error.message);return;}
 
   /* Supabase, por seguridad, no avisa si el correo ya tiene cuenta: en
@@ -1435,7 +1442,6 @@ async function doRegister(){
 
   const trialEnd=new Date(Date.now()+20*24*60*60*1000).toISOString();
   const miToken=crypto.randomUUID();
-  const pais=document.getElementById('rpais')?.value||'ES';
   const ivaPorDefecto=pais==='CO'?19:21;
   const{error:errPerfil}=await sb.from('profiles').insert({id:data.user.id,trial_ends_at:trialEnd,plan_status:'trial',session_token:miToken,telefono,pais,iva_porcentaje:ivaPorDefecto});
   if(errPerfil){
