@@ -1115,8 +1115,11 @@ async function draw(){
     const metaPais=user.user_metadata?.pais||'ES';
     const metaTelefono=user.user_metadata?.telefono||null;
     const metaIva=metaPais==='CO'?19:21;
-    await sb.from('profiles').insert({id:user.id,trial_ends_at:trialEnd,plan_status:'trial',session_token:miToken,telefono:metaTelefono,pais:metaPais,iva_porcentaje:metaIva});
+    await sb.from('profiles').insert({id:user.id,session_token:miToken,telefono:metaTelefono,pais:metaPais,iva_porcentaje:metaIva});
     guardarSesionLocal(user.id,miToken);
+    /* trial_ends_at y plan_status ya no se envían: la base de datos los fija
+       sola de forma segura (20 días, 'trial'). Este valor local es solo para
+       mostrar algo inmediato en pantalla mientras se recarga el perfil real. */
     profile={plan_status:'trial',trial_ends_at:trialEnd,session_token:miToken,pais:metaPais};
   }else{
     profile=data;
@@ -1446,7 +1449,7 @@ async function doRegister(){
   const trialEnd=new Date(Date.now()+20*24*60*60*1000).toISOString();
   const miToken=crypto.randomUUID();
   const ivaPorDefecto=pais==='CO'?19:21;
-  const{error:errPerfil}=await sb.from('profiles').insert({id:data.user.id,trial_ends_at:trialEnd,plan_status:'trial',session_token:miToken,telefono,pais,iva_porcentaje:ivaPorDefecto});
+  const{error:errPerfil}=await sb.from('profiles').insert({id:data.user.id,session_token:miToken,telefono,pais,iva_porcentaje:ivaPorDefecto});
   if(errPerfil){
     await sb.auth.signOut();
     document.getElementById('err-ru').textContent='No se pudo crear el perfil. Intenta de nuevo o inicia sesión si ya tienes cuenta.';
