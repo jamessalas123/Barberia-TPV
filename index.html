@@ -1939,7 +1939,18 @@ async function pgCaja(el){
       <div class="meth-kard meth-kard-accent"><div class="meth-head">Ingreso del negocio <span>💰</span></div><div class="meth-val" style="color:var(--primary)">${eur(ingresoNegocio)}</div><div class="meth-sub">Suma de comisión local</div></div>
       <div class="meth-kard"><div class="meth-head">Dinero de barberos <span>✂️</span></div><div class="meth-val">${eur(dineroBarberos)}</div><div class="meth-sub">Pasa por caja, no es tu ingreso</div></div>
     </div>
-    <button class="export-btn" style="margin-top:.75rem" onclick="exportCSV()">⬇️ Exportar ingresos y gastos financieros</button>`;
+    <div class="sec-label" style="margin-top:1.25rem">Exportar rango personalizado (opcional)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.625rem;margin-bottom:.625rem">
+      <div>
+        <label style="font-size:.7rem;color:var(--muted-foreground);font-weight:600;display:block;margin-bottom:.25rem">Desde</label>
+        <input type="date" id="exp-desde" class="date-inp" style="width:100%;height:40px" onchange="actualizarBtnExport()"/>
+      </div>
+      <div>
+        <label style="font-size:.7rem;color:var(--muted-foreground);font-weight:600;display:block;margin-bottom:.25rem">Hasta</label>
+        <input type="date" id="exp-hasta" class="date-inp" style="width:100%;height:40px" onchange="actualizarBtnExport()"/>
+      </div>
+    </div>
+    <button class="export-btn" id="exp-btn" style="margin-top:.5rem" onclick="exportCSV()">⬇️ Exportar ingresos y gastos financieros</button>`;
   }else{
     const lst=ex.length===0
       ?`<div style="text-align:center;color:var(--muted-foreground);padding:1.5rem;font-size:.875rem">No hay gastos registrados</div>`
@@ -2147,8 +2158,29 @@ async function addExp(){
 }
 async function delExp(id){await sb.from('expenses').delete().eq('id',id).eq('user_id',user.id);toast('Eliminado','info');loadPg();}
 
+function actualizarBtnExport(){
+  const btn=document.getElementById('exp-btn');
+  if(!btn)return;
+  const d=document.getElementById('exp-desde')?.value;
+  const h=document.getElementById('exp-hasta')?.value;
+  if(d&&h){
+    const fmt=f=>new Date(f+'T12:00:00').toLocaleDateString('es-ES',{day:'numeric',month:'short'});
+    btn.innerHTML=`⬇️ Exportar de ${fmt(d)} a ${fmt(h)}`;
+  }else{
+    btn.innerHTML='⬇️ Exportar ingresos y gastos financieros';
+  }
+}
+
 async function exportCSV(){
-  const{s,e}=getRange();
+  const desde=document.getElementById('exp-desde')?.value;
+  const hasta=document.getElementById('exp-hasta')?.value;
+  let s,e;
+  if(desde&&hasta){
+    if(desde>hasta){toast('La fecha "Desde" no puede ser posterior a "Hasta"','error');return;}
+    s=desde;e=hasta;
+  }else{
+    ({s,e}=getRange());
+  }
   const[{data:a},{data:x}]=await Promise.all([
     sb.from('appointments').select('*').eq('status','completed').eq('user_id',user.id).gte('appointment_date',s).lte('appointment_date',e),
     sb.from('expenses').select('*').eq('user_id',user.id).gte('expense_date',s).lte('expense_date',e)
@@ -2167,7 +2199,7 @@ async function exportCSV(){
   const csv=rows.map(r=>r.join(';')).join('\n');
   const blob=new Blob(["\ufeff"+csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob);
-  const lnk=document.createElement('a');lnk.href=url;lnk.download=`ingresos_gastos_${cper}_${today()}.csv`;lnk.click();
+  const lnk=document.createElement('a');lnk.href=url;lnk.download=`ingresos_gastos_${s}_a_${e}.csv`;lnk.click();
   URL.revokeObjectURL(url);
   toast('CSV exportado ✓','success');
 }
