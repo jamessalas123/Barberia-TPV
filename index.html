@@ -621,14 +621,14 @@ input, select { font-family: inherit; outline: none; border: none; }
 .export-btn:active { transform: scale(.99); }
 .cash-btn {
   width: 100%; height: 60px; border-radius: var(--radius-2xl);
-  background: var(--primary); color: var(--primary-foreground);
+  background: oklch(0.78 0.16 75 / 0.18); color: var(--primary);
   font-weight: 800; font-size: .95rem;
   display: flex; align-items: center; justify-content: center; gap: .5rem; transition: all .2s;
-  border: 1.5px solid oklch(1 0 0 / 0.18);
-  box-shadow: 0 4px 20px var(--primary-glow); margin-top: .5rem;
+  border: 1.5px solid oklch(0.78 0.16 75);
+  box-shadow: 0 0 16px oklch(0.78 0.16 75 / 0.22); margin-top: .5rem;
   touch-action: manipulation;
 }
-.cash-btn:hover { box-shadow: 0 8px 32px oklch(0.78 0.16 75 / 0.55); }
+.cash-btn:hover { box-shadow: 0 0 22px oklch(0.78 0.16 75 / 0.32); }
 .cash-btn:active { transform: scale(.99); }
 
 .meth-kard-accent { border-color: var(--primary); box-shadow: 0 0 18px var(--primary-glow); }
