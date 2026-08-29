@@ -2054,13 +2054,16 @@ async function renderCierreDiario(){
     ?`<div style="text-align:center;color:var(--muted-foreground);padding:1rem;font-size:.82rem">Sin gastos ese día</div>`
     :v.gastos_detalle.map(g=>`<div style="display:flex;justify-content:space-between;align-items:center;font-size:.82rem;padding:.5rem 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted-foreground)">${g.category}${g.note?' · '+g.note:''}</span><span class="cierre-num" style="font-size:1.05rem">−${eur(g.amount)}</span></div>`).join('');
 
+  const esHoy=dt===today();
   const badge=guardado
-    ?`<div class="cierre-badge">🔒 Cierre congelado — guardado el ${new Date(guardado.created_at).toLocaleDateString('es-ES')} a las ${new Date(guardado.created_at).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}. Ya no se puede modificar.</div>`
+    ?(esHoy
+        ?`<div class="cierre-badge">🕒 Cierre guardado — aún puedes corregirlo hasta la medianoche de hoy.</div>`
+        :`<div class="cierre-badge">🔒 Cierre congelado — guardado el ${new Date(guardado.created_at).toLocaleDateString('es-ES')} a las ${new Date(guardado.created_at).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}. Ya no se puede modificar.</div>`)
     :`<div class="cierre-badge cierre-badge-pendiente">Aún no se ha guardado el cierre de este día</div>`;
 
-  const boton=guardado
-    ?''
-    :`<button class="cash-btn liquidacion-btn" style="margin-top:1.25rem" onclick="guardarCierre('${dt}')">Guardar cierre del día</button>`;
+  const boton=(!guardado||esHoy)
+    ?`<button class="cash-btn liquidacion-btn" style="margin-top:1.25rem" onclick="guardarCierre('${dt}')">${guardado?'🔁 Corregir cierre de hoy':'Guardar cierre del día'}</button>`
+    :'';
 
   return`
     <div class="cierre-tag">CIERRE DE CAJA</div>
@@ -2101,12 +2104,16 @@ async function renderCierreDiario(){
 }
 
 async function guardarCierre(fecha){
-  /* Comprobación extra en el cliente: si ya existe un cierre para este día,
-     ni siquiera lo intentamos (aunque la base de datos también lo bloquearía). */
-  const{data:yaExiste}=await sb.from('cierres_caja').select('id').eq('user_id',user.id).eq('fecha',fecha).maybeSingle();
-  if(yaExiste){
-    toast('Este día ya está cerrado y congelado. No se puede modificar.','error');
-    return;
+  /* Comprobación extra en el cliente: si ya existe un cierre para este día
+     y NO es hoy, ni siquiera lo intentamos (la base de datos también lo
+     bloquearía, pero así evitamos una llamada innecesaria y damos un mensaje
+     claro). Si es hoy, sí se puede corregir hasta la medianoche. */
+  if(fecha!==today()){
+    const{data:yaExiste}=await sb.from('cierres_caja').select('id').eq('user_id',user.id).eq('fecha',fecha).maybeSingle();
+    if(yaExiste){
+      toast('Este día ya está cerrado y congelado. No se puede modificar.','error');
+      return;
+    }
   }
   const v=await calcularCierreLive(fecha);
   const{error}=await sb.from('cierres_caja').upsert({
