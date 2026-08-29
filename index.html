@@ -565,20 +565,27 @@ input, select { font-family: inherit; outline: none; border: none; }
   box-shadow: 0 2px 16px var(--primary-glow);
 }
 .period-pill:active { transform: scale(.98); }
-.caja-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: 1.125rem; }
+.caja-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .625rem; margin-bottom: 1.125rem; }
 .caja-tab {
-  height: 52px; border-radius: var(--radius-xl);
-  background: var(--card); border: 1.5px solid var(--border);
-  color: var(--muted-foreground); font-weight: 700; font-size: .875rem;
-  transition: all .2s; touch-action: manipulation;
+  aspect-ratio: 1.05; border-radius: var(--radius-xl);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .5rem;
+  font-weight: 800; font-size: .875rem; line-height: 1.1; text-align: center;
+  transition: all .15s; touch-action: manipulation;
+  background: var(--card); border: 2px solid var(--border); color: var(--muted-foreground);
 }
-.caja-tab:hover { border-color: var(--accent); color: var(--foreground); }
-.caja-tab.on {
-  background: var(--primary); color: var(--primary-foreground);
-  border-color: oklch(1 0 0 / 0.18);
-  box-shadow: 0 4px 20px var(--primary-glow);
-}
-.caja-tab:active { transform: scale(.99); }
+.caja-tab-ico { font-size: 1.9rem; filter: grayscale(1) opacity(.5); transition: filter .15s; }
+.caja-tab-caja { border-color: oklch(0.78 0.16 75 / 0.5); background: oklch(0.78 0.16 75 / 0.10); }
+.caja-tab-gastos { border-color: oklch(0.62 0.22 25 / 0.5); background: oklch(0.62 0.22 25 / 0.10); }
+.caja-tab-cierre { border-color: oklch(0.68 0.18 145 / 0.5); background: oklch(0.68 0.18 145 / 0.10); }
+.caja-tab.on { color: var(--foreground); }
+.caja-tab.on .caja-tab-ico { filter: none; }
+.caja-tab-caja.on { border-color: var(--primary); background: oklch(0.78 0.16 75 / 0.22); box-shadow: 0 0 22px var(--primary-glow); }
+.caja-tab-gastos.on { border-color: var(--destructive); background: oklch(0.62 0.22 25 / 0.22); box-shadow: 0 0 22px var(--destructive-glow); }
+.caja-tab-cierre.on { border-color: var(--success); background: oklch(0.68 0.18 145 / 0.22); box-shadow: 0 0 22px var(--success-glow); }
+.caja-tab:active { transform: scale(.95); }
+.caja-tab-caja:active { box-shadow: 0 0 26px var(--primary-glow); border-color: var(--primary); }
+.caja-tab-gastos:active { box-shadow: 0 0 26px var(--destructive-glow); border-color: var(--destructive); }
+.caja-tab-cierre:active { box-shadow: 0 0 26px var(--success-glow); border-color: var(--success); }
 
 .cards3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .75rem; margin-bottom: .875rem; }
 .kard {
@@ -1899,7 +1906,7 @@ async function pgCaja(el){
   const perBtns=ctab==='cierre'?'':pers.map(p=>`<button class="period-pill ${cper===p?'on':''}" onclick="setCper('${p}')">${perL[p]}</button>`).join('');
   const datePickerRow=(ctab==='cierre'||cper==='dia')?`<div style="margin-bottom:.75rem;display:flex;align-items:center;gap:.625rem"><span style="font-size:.75rem;color:var(--muted-foreground);font-weight:600">Fecha:</span><input type="date" class="date-inp" value="${dt}" onchange="chDate(this.value)" style="height:40px;font-size:.85rem"/></div>`:'';
   const periodoLabel=cper==='dia'?new Date(dt+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'}):({hoy:'Hoy',semana:'Esta semana',mes:'Este mes',trimestre:'Este trimestre'})[cper];
-  const tabBtns=`<button class="caja-tab ${ctab==='caja'?'on':''}" onclick="setCtab('caja')">👜 Caja</button><button class="caja-tab ${ctab==='gastos'?'on':''}" onclick="setCtab('gastos')">📋 Gastos</button><button class="caja-tab ${ctab==='cierre'?'on':''}" onclick="setCtab('cierre')">🔒 Cierre</button>`;
+  const tabBtns=`<button class="caja-tab caja-tab-caja ${ctab==='caja'?'on':''}" onclick="setCtab('caja')"><span class="caja-tab-ico">👜</span><span class="caja-tab-lbl">Caja</span></button><button class="caja-tab caja-tab-gastos ${ctab==='gastos'?'on':''}" onclick="setCtab('gastos')"><span class="caja-tab-ico">📋</span><span class="caja-tab-lbl">Gastos</span></button><button class="caja-tab caja-tab-cierre ${ctab==='cierre'?'on':''}" onclick="setCtab('cierre')"><span class="caja-tab-ico">🔒</span><span class="caja-tab-lbl">Cierre<br>del día</span></button>`;
 
   let content='';
   if(ctab==='cierre'){
