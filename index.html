@@ -1113,11 +1113,11 @@ async function draw(){
   }
 
   if(error||!data){
-    /* Si por algún motivo no hay fila de perfil, la crea con trial de 20 días.
+    /* Si por algún motivo no hay fila de perfil, la crea con trial de 30 días.
        El país y teléfono se leen de los metadatos guardados en el registro
        (sobreviven aunque hayan pasado días desde que se creó la cuenta y
        se confirme el correo desde otra pestaña/sesión). */
-    const trialEnd=new Date(Date.now()+20*24*60*60*1000).toISOString();
+    const trialEnd=new Date(Date.now()+30*24*60*60*1000).toISOString();
     const miToken=crypto.randomUUID();
     const metaPais=user.user_metadata?.pais||'ES';
     const metaTelefono=user.user_metadata?.telefono||null;
@@ -1125,7 +1125,7 @@ async function draw(){
     await sb.from('profiles').insert({id:user.id,session_token:miToken,telefono:metaTelefono,pais:metaPais,iva_porcentaje:metaIva});
     guardarSesionLocal(user.id,miToken);
     /* trial_ends_at y plan_status ya no se envían: la base de datos los fija
-       sola de forma segura (20 días, 'trial'). Este valor local es solo para
+       sola de forma segura (30 días, 'trial'). Este valor local es solo para
        mostrar algo inmediato en pantalla mientras se recarga el perfil real. */
     profile={plan_status:'trial',trial_ends_at:trialEnd,session_token:miToken,pais:metaPais};
   }else{
@@ -1192,7 +1192,7 @@ function blockScreen(trialVencido){
     <div class="block-icon">🔒</div>
     <div class="block-title">${trialVencido?'Tu prueba ha terminado':'Suscripción inactiva'}</div>
     <p class="block-sub">${trialVencido
-      ?'Tus 20 días de prueba gratuita han finalizado. Suscríbete para seguir usando Barbería TPV sin interrupciones.'
+      ?'Tus 30 días de prueba gratuita han finalizado. Suscríbete para seguir usando Barbería TPV sin interrupciones.'
       :'Tu suscripción no está activa en este momento. Suscríbete para reactivar tu cuenta.'}</p>
     <button id="pagar-btn" class="block-btn" onclick="irAPagar()">Suscribirme ahora — ${precioSuscripcionTexto()}</button>
     <button class="block-btn" style="background:transparent;border:1.5px solid var(--border);color:var(--muted-foreground);margin-top:.5rem" onclick="window.open('https://wa.me/34643668284?text=Hola,%20tengo%20una%20duda%20con%20mi%20suscripci%C3%B3n%20de%20Barber%C3%ADa%20TPV','_blank')">¿Dudas? Escríbenos por WhatsApp</button>
@@ -1264,7 +1264,7 @@ function authScreen(view='login'){
     <div class="auth-wrap"><div class="auth-card">
       <div class="auth-logo">${ICON_SCISSORS}</div>
       <h1 class="auth-h1">Crear cuenta</h1>
-      <p class="auth-sub">20 días de prueba gratis</p>
+      <p class="auth-sub">30 días de prueba gratis</p>
       <div class="auth-tabs">
         <button class="auth-tab" onclick="authScreen('login')" ontouchend="event.preventDefault();authScreen('login')">Iniciar sesión</button>
         <button class="auth-tab active" onclick="authScreen('register')" ontouchend="event.preventDefault();authScreen('register')">Registrarse</button>
@@ -1407,7 +1407,7 @@ function pantallaRevisaCorreo(email){
     <h1 class="auth-h1" style="margin-bottom:.5rem">Revisa tu correo</h1>
     <p class="auth-sub" style="margin-bottom:1.5rem">
       Te enviamos un enlace de confirmación a<br/><strong style="color:var(--foreground)">${email}</strong><br/>
-      Ábrelo para activar tu cuenta y empezar tu prueba gratis de 20 días.
+      Ábrelo para activar tu cuenta y empezar tu prueba gratis de 30 días.
     </p>
     <div style="background:var(--muted);border-radius:var(--radius-lg);padding:.875rem 1rem;font-size:.78rem;color:var(--muted-foreground);text-align:left">
       💡 Abre el enlace desde el mismo dispositivo donde quieras usar la app. El enlace solo funciona una vez.
@@ -1453,7 +1453,7 @@ async function doRegister(){
   if(btn)btn.disabled=false;
   if(!data.session){pantallaRevisaCorreo(email);return;}
 
-  const trialEnd=new Date(Date.now()+20*24*60*60*1000).toISOString();
+  const trialEnd=new Date(Date.now()+30*24*60*60*1000).toISOString();
   const miToken=crypto.randomUUID();
   const ivaPorDefecto=pais==='CO'?19:21;
   const{error:errPerfil}=await sb.from('profiles').insert({id:data.user.id,session_token:miToken,telefono,pais,iva_porcentaje:ivaPorDefecto});
@@ -1465,7 +1465,7 @@ async function doRegister(){
   guardarSesionLocal(data.user.id,miToken);
 
   user=data.user;sess={email:user.email};
-  toast('¡Cuenta creada! 20 días de prueba activados ✂️','success');
+  toast('¡Cuenta creada! 30 días de prueba activados ✂️','success');
   setTimeout(()=>draw(),400);
 }
 
