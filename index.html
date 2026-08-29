@@ -943,6 +943,10 @@ input, select { font-family: inherit; outline: none; border: none; }
 const SB_URL="https://vtmegxkarrnofgepqdky.supabase.co";
 const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0bWVneGthcnJub2ZnZXBxZGt5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMjMxNDYsImV4cCI6MjA5Nzg5OTE0Nn0.so3MHuDCky8wCzJOW2hMQChEUf-NgoxwZU13hmG_CiE";
 const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+/* Escapa texto antes de insertarlo en el HTML, para evitar que nombres de
+   clientes/barberos con caracteres especiales (< > & " ') puedan ejecutar
+   código en el navegador (XSS). Usar siempre con datos escritos por el usuario. */
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 const SLOT=30,DS=9*60,DE=21*60;
 const today=()=>new Date().toISOString().slice(0,10);
 const eur=n=>{
@@ -1585,7 +1589,7 @@ async function pgAgenda(el){
       <div class="slot paid">
         <div class="slot-time">${t}</div>
         <div class="slot-body">
-          <div class="slot-name">${a.client_name}${a.barbero?' <span class="slot-barbero">· '+a.barbero+'</span>':''}</div>
+          <div class="slot-name">${esc(a.client_name)}${a.barbero?' <span class="slot-barbero">· '+esc(a.barbero)+'</span>':''}</div>
           <div class="slot-paid-info">✓ ${eur(a.price)} · ${etqMetodo(a.payment_method)}</div>
         </div>
         <div class="slot-actions">
@@ -1598,7 +1602,7 @@ async function pgAgenda(el){
       return`
       <div class="slot busy">
         <div class="slot-time">${t}</div>
-        <div class="slot-body"><div class="slot-name">${a.client_name}${a.barbero?' <span class="slot-barbero">· '+a.barbero+'</span>':''}</div></div>
+        <div class="slot-body"><div class="slot-name">${esc(a.client_name)}${a.barbero?' <span class="slot-barbero">· '+esc(a.barbero)+'</span>':''}</div></div>
         <div class="slot-actions">
           <button class="btn-cobrar" onclick="openPay('${a.id}','${t}')">COBRAR</button>
           <button class="btn-plus" onclick="openSlotList('${t}')" aria-label="Ver detalle">${ICON_EYE}</button>
@@ -1687,8 +1691,8 @@ function openSlotList(t){
     return`
     <div class="slotlist-item">
       <div>
-        <div class="slotlist-name">${a.client_name}${a.service?' <span class="slot-barbero">· '+a.service+'</span>':''}</div>
-        ${a.barbero?`<div class="slotlist-barbero">Atiende: ${a.barbero}</div>`:''}
+        <div class="slotlist-name">${esc(a.client_name)}${a.service?' <span class="slot-barbero">· '+esc(a.service)+'</span>':''}</div>
+        ${a.barbero?`<div class="slotlist-barbero">Atiende: ${esc(a.barbero)}</div>`:''}
       </div>
       ${done
         ?`<div class="slotlist-paid">✓ ${eur(a.price)}<span class="slotlist-metodo"> · ${etqMetodo(a.payment_method)}</span></div>`
@@ -1727,12 +1731,12 @@ function openPay(id,t){
       <div class="modal-body">
         <button class="modal-close" onclick="closeM()">✕</button>
         <div class="m-tag">Finalizar cita</div>
-        <div class="m-title">${a.client_name||''}</div>
-        <div class="m-sub">${t}${a.barbero?' · '+a.barbero:''}</div>
+        <div class="m-title">${esc(a.client_name)||''}</div>
+        <div class="m-sub">${t}${a.barbero?' · '+esc(a.barbero):''}</div>
         <label class="m-label">Importe (${simboloMoneda()})</label>
         <input id="pa" class="pay-amt" inputmode="decimal" placeholder="0,00" autofocus oninput="onImporteInput('pa')"/>
         <label class="m-label">Servicio <span style="font-weight:400;color:var(--muted-foreground)">(opcional)</span></label>
-        <input id="psrv" class="m-input" placeholder="Ej: Corte, barba, corte + barba..." value="${a.service||''}" style="margin-bottom:.875rem"/>
+        <input id="psrv" class="m-input" placeholder="Ej: Corte, barba, corte + barba..." value="${esc(a.service||'')}" style="margin-bottom:.875rem"/>
         <div class="reparto-box">
           <div class="reparto-lbl">Reparto</div>
           <div class="reparto-row">
@@ -1991,7 +1995,7 @@ function showLiquidacion(){
     :nombres.map(n=>`
     <div class="liq-item">
       <div>
-        <div class="liq-name">${n}</div>
+        <div class="liq-name">${esc(n)}</div>
         <div class="liq-cortes">${porBarbero[n].cortes} corte${porBarbero[n].cortes===1?'':'s'} realizado${porBarbero[n].cortes===1?'':'s'}</div>
       </div>
       <div class="liq-valwrap">
