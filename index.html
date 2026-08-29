@@ -565,15 +565,15 @@ input, select { font-family: inherit; outline: none; border: none; }
   box-shadow: 0 2px 16px var(--primary-glow);
 }
 .period-pill:active { transform: scale(.98); }
-.caja-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .625rem; margin-bottom: 1.125rem; }
+.caja-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .75rem; margin-bottom: .875rem; }
 .caja-tab {
-  aspect-ratio: 1.05; border-radius: var(--radius-xl);
+  border-radius: var(--radius-2xl); padding: 1.25rem .5rem;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .5rem;
-  font-weight: 800; font-size: .875rem; line-height: 1.1; text-align: center;
+  font-weight: 700; font-size: .8rem; line-height: 1.15; text-align: center;
   transition: all .15s; touch-action: manipulation;
-  background: var(--card); border: 2px solid var(--border); color: var(--muted-foreground);
+  background: var(--card); border: 1.5px solid var(--border); color: var(--muted-foreground);
 }
-.caja-tab-ico { font-size: 1.9rem; filter: grayscale(1) opacity(.5); transition: filter .15s; }
+.caja-tab-ico { font-size: 1.4rem; filter: grayscale(1) opacity(.5); transition: filter .15s; }
 .caja-tab-caja { border-color: oklch(0.78 0.16 75 / 0.5); background: oklch(0.78 0.16 75 / 0.10); }
 .caja-tab-gastos { border-color: oklch(0.62 0.22 25 / 0.5); background: oklch(0.62 0.22 25 / 0.10); }
 .caja-tab-cierre { border-color: oklch(0.68 0.18 145 / 0.5); background: oklch(0.68 0.18 145 / 0.10); }
@@ -1937,8 +1937,7 @@ async function pgCaja(el){
     <div class="meth3">
       <div class="meth-kard meth-kard-accent"><div class="meth-head">Ingreso del negocio <span>💰</span></div><div class="meth-val" style="color:var(--primary)">${eur(ingresoNegocio)}</div><div class="meth-sub">Suma de comisión local</div></div>
       <div class="meth-kard"><div class="meth-head">Dinero de barberos <span>✂️</span></div><div class="meth-val">${eur(dineroBarberos)}</div><div class="meth-sub">Pasa por caja, no es tu ingreso</div></div>
-    </div>
-    <button class="cash-btn liquidacion-btn" onclick="showLiquidacion()">✂️ Liquidación de barberos</button>`;
+    </div>`;
   }else{
     const lst=ex.length===0
       ?`<div style="text-align:center;color:var(--muted-foreground);padding:1.5rem;font-size:.875rem">No hay gastos registrados</div>`
@@ -1986,6 +1985,7 @@ async function pgCaja(el){
     <div class="period-row">${perBtns}</div>
     ${datePickerRow}
     <div class="caja-tabs">${tabBtns}</div>
+    ${ctab==='caja'?'<button class="cash-btn liquidacion-btn" onclick="showLiquidacion()">✂️ Liquidación de barberos</button>':''}
     ${content}
   </div>`;
 }
