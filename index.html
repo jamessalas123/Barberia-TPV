@@ -593,6 +593,9 @@ input, select { font-family: inherit; outline: none; border: none; }
   border-radius: var(--radius-2xl); padding: 1.25rem; transition: all .22s;
 }
 .kard:hover { border-color: var(--accent); box-shadow: 0 4px 24px oklch(0 0 0 / 0.35), 0 0 20px var(--primary-glow); }
+.kard-glow-primary { border-color: var(--primary); box-shadow: 0 0 18px var(--primary-glow); }
+.kard-glow-success { border-color: var(--success); box-shadow: 0 0 18px var(--success-glow); }
+.kard-glow-neutral { border-color: oklch(1 0 0 / 0.22); box-shadow: 0 0 16px oklch(1 0 0 / 0.10); }
 .kard-icon { font-size: 1rem; margin-bottom: .375rem; }
 .kard-lbl { font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted-foreground); font-weight: 600; margin-bottom: .5rem; }
 .kard-val { font-size: 2rem; font-weight: 900; line-height: 1; color: var(--foreground); font-variant-numeric: tabular-nums; }
@@ -1914,19 +1917,19 @@ async function pgCaja(el){
   }else if(ctab==='caja'){
     content=`
     <div class="cards3">
-      <div class="kard">
+      <div class="kard kard-glow-primary">
         <div class="kard-icon">📈</div>
         <div class="kard-lbl">Caja Total Real</div>
         <div class="kard-val">${eur(tot)}</div>
         <div class="kard-sub">Todo lo cobrado</div>
       </div>
-      <div class="kard">
+      <div class="kard kard-glow-success">
         <div class="kard-icon">💳</div>
         <div class="kard-lbl">Caja Tarjeta/Transferencia</div>
         <div class="kard-val" style="color:var(--success)">${eur(of)}</div>
         <div class="kard-sub">${ap.filter(a=>a.payment_type==='oficial').length} cobro${ap.filter(a=>a.payment_type==='oficial').length===1?'':'s'} registrado${ap.filter(a=>a.payment_type==='oficial').length===1?'':'s'}</div>
       </div>
-      <div class="kard">
+      <div class="kard kard-glow-neutral">
         <div class="kard-icon">💵</div>
         <div class="kard-lbl">Caja Efectivo</div>
         <div class="kard-val" style="color:var(--muted-foreground)">${eur(int)}</div>
@@ -1937,7 +1940,8 @@ async function pgCaja(el){
     <div class="meth3">
       <div class="meth-kard meth-kard-accent"><div class="meth-head">Ingreso del negocio <span>💰</span></div><div class="meth-val" style="color:var(--primary)">${eur(ingresoNegocio)}</div><div class="meth-sub">Suma de comisión local</div></div>
       <div class="meth-kard"><div class="meth-head">Dinero de barberos <span>✂️</span></div><div class="meth-val">${eur(dineroBarberos)}</div><div class="meth-sub">Pasa por caja, no es tu ingreso</div></div>
-    </div>`;
+    </div>
+    <button class="export-btn" style="margin-top:.75rem" onclick="exportCSV()">⬇️ Exportar ingresos y gastos financieros</button>`;
   }else{
     const lst=ex.length===0
       ?`<div style="text-align:center;color:var(--muted-foreground);padding:1.5rem;font-size:.875rem">No hay gastos registrados</div>`
@@ -1974,8 +1978,7 @@ async function pgCaja(el){
         <div class="glist-total">−${eur(gas)}</div>
       </div>
       ${lst}
-    </div>
-    <button class="export-btn" onclick="exportCSV()">⬇️ Exportar ingresos y gastos financieros</button>`;
+    </div>`;
   }
 
   el.innerHTML=`<div class="page">
