@@ -1014,6 +1014,7 @@ function traducirError(msg){
   if(m.includes('password should be at least')||m.includes('password should contain'))return'La contraseña debe tener al menos 6 caracteres';
   if(m.includes('new password should be different'))return'La nueva contraseña debe ser distinta a la anterior';
   if(m.includes('unable to validate email')||m.includes('invalid email'))return'El formato del correo no es válido';
+  if(m.includes('error sending confirmation')||m.includes('error sending recovery')||m.includes('error sending')&&m.includes('email'))return'No pudimos enviarte el correo de confirmación en este momento (fallo técnico temporal). Escríbenos por WhatsApp al +34 643 668 284 y activamos tu cuenta manualmente.';
   if(m.includes('email rate limit') || m.includes('rate limit'))return'Se han pedido demasiados correos seguidos. Espera unos minutos e inténtalo de nuevo';
   if(m.includes('for security purposes')||m.includes('only request this once every'))return'Por seguridad, espera unos segundos antes de volver a intentarlo';
   if(m.includes('email not confirmed'))return'Confirma tu correo antes de iniciar sesión (revisa tu bandeja de entrada)';
