@@ -945,11 +945,11 @@ input, select { font-family: inherit; outline: none; border: none; }
 }
 .recover-result .r-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted-foreground); font-weight: 700; }
 .f-err { font-size: .78rem; color: var(--destructive); font-weight: 600; min-height: 1.1em; margin-top: -.5rem; margin-bottom: .5rem; }
-.otp-boxes { display: flex; gap: .5rem; justify-content: center; margin-bottom: .5rem; }
+.otp-boxes { display: flex; gap: .3rem; justify-content: center; margin-bottom: .5rem; }
 .otp-box {
-  width: 44px; height: 52px; text-align: center; font-size: 1.3rem; font-weight: 700;
-  background: var(--muted); border: 1.5px solid var(--border); border-radius: var(--radius-lg);
-  color: var(--foreground);
+  width: 34px; height: 46px; text-align: center; font-size: 1.05rem; font-weight: 700;
+  background: var(--muted); border: 1.5px solid var(--border); border-radius: var(--radius-md, 8px);
+  color: var(--foreground); padding: 0;
 }
 .otp-box:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px var(--primary-glow); }
 </style>
@@ -1459,6 +1459,8 @@ function pantallaCodigoConfirmacion(email,telefono,pais){
       <input maxlength="1" inputmode="numeric" class="otp-box"/>
       <input maxlength="1" inputmode="numeric" class="otp-box"/>
       <input maxlength="1" inputmode="numeric" class="otp-box"/>
+      <input maxlength="1" inputmode="numeric" class="otp-box"/>
+      <input maxlength="1" inputmode="numeric" class="otp-box"/>
     </div>
     <div id="err-otp" class="f-err" style="margin-bottom:.75rem"></div>
     <button class="auth-btn" id="otp-btn" style="width:100%;margin-bottom:.75rem" onclick="confirmarCodigoOtp('${email}','${telefono}','${pais}')" ontouchend="event.preventDefault();confirmarCodigoOtp('${email}','${telefono}','${pais}')">Confirmar código</button>
@@ -1480,7 +1482,7 @@ function pantallaCodigoConfirmacion(email,telefono,pais){
       });
       box.addEventListener('paste',(e)=>{
         e.preventDefault();
-        const texto=(e.clipboardData||window.clipboardData).getData('text').replace(/[^0-9]/g,'').slice(0,6);
+        const texto=(e.clipboardData||window.clipboardData).getData('text').replace(/[^0-9]/g,'').slice(0,8);
         texto.split('').forEach((d,idx)=>{if(boxes[idx])boxes[idx].value=d;});
         const ultimo=Math.min(texto.length,boxes.length)-1;
         if(ultimo>=0)boxes[ultimo].focus();
@@ -1492,7 +1494,7 @@ function pantallaCodigoConfirmacion(email,telefono,pais){
 async function confirmarCodigoOtp(email,telefono,pais){
   const boxes=[...document.querySelectorAll('.otp-box')];
   const codigo=boxes.map(b=>b.value).join('');
-  if(codigo.length!==6){document.getElementById('err-otp').textContent='Escribe los 6 dígitos del código';return;}
+  if(codigo.length!==8){document.getElementById('err-otp').textContent='Escribe los 8 dígitos del código';return;}
   document.getElementById('err-otp').textContent='';
   const btn=document.getElementById('otp-btn');
   if(btn){btn.disabled=true;btn.textContent='Confirmando…';}
