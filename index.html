@@ -945,6 +945,13 @@ input, select { font-family: inherit; outline: none; border: none; }
 }
 .recover-result .r-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted-foreground); font-weight: 700; }
 .f-err { font-size: .78rem; color: var(--destructive); font-weight: 600; min-height: 1.1em; margin-top: -.5rem; margin-bottom: .5rem; }
+.otp-boxes { display: flex; gap: .5rem; justify-content: center; margin-bottom: .5rem; }
+.otp-box {
+  width: 44px; height: 52px; text-align: center; font-size: 1.3rem; font-weight: 700;
+  background: var(--muted); border: 1.5px solid var(--border); border-radius: var(--radius-lg);
+  color: var(--foreground);
+}
+.otp-box:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px var(--primary-glow); }
 </style>
 <script>
 const SB_URL="https://vtmegxkarrnofgepqdky.supabase.co";
@@ -1437,24 +1444,83 @@ function normalizarTelefono(raw){
   return t;
 }
 
-function pantallaRevisaCorreo(email){
+function pantallaCodigoConfirmacion(email,telefono,pais){
   document.getElementById('root').innerHTML=`
   <div class="auth-wrap"><div class="auth-card" style="max-width:440px;text-align:center">
     <div style="width:72px;height:72px;border-radius:50%;background:oklch(0.78 0.16 75 / 0.14);border:2px solid oklch(0.78 0.16 75 / 0.4);display:grid;place-items:center;margin:0 auto 1.25rem">
       <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="34" height="34"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
     </div>
-    <h1 class="auth-h1" style="margin-bottom:.5rem">Revisa tu correo</h1>
-    <p class="auth-sub" style="margin-bottom:1.5rem">
-      Te enviamos un enlace de confirmación a<br/><strong style="color:var(--foreground)">${email}</strong><br/>
-      Ábrelo para activar tu cuenta y empezar tu prueba gratis de 30 días.
-    </p>
+    <h1 class="auth-h1" style="margin-bottom:.5rem">Escribe tu código</h1>
+    <p class="auth-sub" style="margin-bottom:1.5rem">Te enviamos un código a<br/><strong style="color:var(--foreground)">${email}</strong></p>
+    <div class="otp-boxes" id="otp-boxes">
+      <input maxlength="1" inputmode="numeric" class="otp-box"/>
+      <input maxlength="1" inputmode="numeric" class="otp-box"/>
+      <input maxlength="1" inputmode="numeric" class="otp-box"/>
+      <input maxlength="1" inputmode="numeric" class="otp-box"/>
+      <input maxlength="1" inputmode="numeric" class="otp-box"/>
+      <input maxlength="1" inputmode="numeric" class="otp-box"/>
+    </div>
+    <div id="err-otp" class="f-err" style="margin-bottom:.75rem"></div>
+    <button class="auth-btn" id="otp-btn" style="width:100%;margin-bottom:.75rem" onclick="confirmarCodigoOtp('${email}','${telefono}','${pais}')" ontouchend="event.preventDefault();confirmarCodigoOtp('${email}','${telefono}','${pais}')">Confirmar código</button>
     <div style="background:oklch(0.78 0.16 75 / 0.1);border:1px solid oklch(0.78 0.16 75 / 0.3);border-radius:var(--radius-lg);padding:.875rem 1rem;font-size:.8rem;color:var(--foreground);text-align:left;margin-bottom:.75rem">
-      📩 <strong>¿No lo ves en tu bandeja de entrada?</strong> Revisa la carpeta de <strong>Spam / Correo no deseado</strong> — a veces el primer correo llega ahí. Si lo encuentras, márcalo como "No es spam" para que los próximos lleguen directo.
+      📩 <strong>¿No lo ves en tu bandeja de entrada?</strong> Revisa la carpeta de <strong>Spam / Correo no deseado</strong>.
     </div>
-    <div style="background:var(--muted);border-radius:var(--radius-lg);padding:.875rem 1rem;font-size:.78rem;color:var(--muted-foreground);text-align:left">
-      💡 Abre el enlace desde el mismo dispositivo donde quieras usar la app. El enlace solo funciona una vez.
-    </div>
+    <button style="background:none;border:none;color:var(--primary);font-size:.82rem;font-weight:700;text-decoration:underline;cursor:pointer" id="resend-otp-btn" onclick="reenviarCodigoOtp('${email}')" ontouchend="event.preventDefault();reenviarCodigoOtp('${email}')">Reenviar código</button>
   </div></div>`;
+  setTimeout(()=>{
+    const boxes=[...document.querySelectorAll('.otp-box')];
+    boxes[0]?.focus();
+    boxes.forEach((box,i)=>{
+      box.addEventListener('input',()=>{
+        box.value=box.value.replace(/[^0-9]/g,'');
+        if(box.value&&i<boxes.length-1)boxes[i+1].focus();
+      });
+      box.addEventListener('keydown',(e)=>{
+        if(e.key==='Backspace'&&!box.value&&i>0)boxes[i-1].focus();
+      });
+      box.addEventListener('paste',(e)=>{
+        e.preventDefault();
+        const texto=(e.clipboardData||window.clipboardData).getData('text').replace(/[^0-9]/g,'').slice(0,6);
+        texto.split('').forEach((d,idx)=>{if(boxes[idx])boxes[idx].value=d;});
+        const ultimo=Math.min(texto.length,boxes.length)-1;
+        if(ultimo>=0)boxes[ultimo].focus();
+      });
+    });
+  },50);
+}
+
+async function confirmarCodigoOtp(email,telefono,pais){
+  const boxes=[...document.querySelectorAll('.otp-box')];
+  const codigo=boxes.map(b=>b.value).join('');
+  if(codigo.length!==6){document.getElementById('err-otp').textContent='Escribe los 6 dígitos del código';return;}
+  document.getElementById('err-otp').textContent='';
+  const btn=document.getElementById('otp-btn');
+  if(btn){btn.disabled=true;btn.textContent='Confirmando…';}
+
+  const{data,error}=await sb.auth.verifyOtp({email,token:codigo,type:'signup'});
+  if(error){
+    if(btn){btn.disabled=false;btn.textContent='Confirmar código';}
+    document.getElementById('err-otp').textContent=traducirError(error.message);
+    return;
+  }
+
+  const trialEnd=new Date(Date.now()+30*24*60*60*1000).toISOString();
+  const miToken=crypto.randomUUID();
+  const ivaPorDefecto=pais==='CO'?19:21;
+  await sb.from('profiles').insert({id:data.user.id,session_token:miToken,telefono,pais,iva_porcentaje:ivaPorDefecto});
+  guardarSesionLocal(data.user.id,miToken);
+  user=data.user;sess={email:user.email};
+  toast('¡Cuenta creada! 30 días de prueba activados ✂️','success');
+  setTimeout(()=>draw(),400);
+}
+
+async function reenviarCodigoOtp(email){
+  const btn=document.getElementById('resend-otp-btn');
+  if(btn){btn.disabled=true;btn.textContent='Enviando…';}
+  const{error}=await sb.auth.resend({type:'signup',email});
+  if(btn){btn.disabled=false;btn.textContent='Reenviar código';}
+  if(error){toast(traducirError(error.message),'error');return;}
+  toast('Código reenviado, revisa tu correo','success');
 }
 
 async function doRegister(){
@@ -1493,7 +1559,7 @@ async function doRegister(){
   }
 
   if(btn)btn.disabled=false;
-  if(!data.session){pantallaRevisaCorreo(email);return;}
+  if(!data.session){pantallaCodigoConfirmacion(email,telefono,pais);return;}
 
   const trialEnd=new Date(Date.now()+30*24*60*60*1000).toISOString();
   const miToken=crypto.randomUUID();
