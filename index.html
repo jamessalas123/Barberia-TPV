@@ -482,17 +482,17 @@ input, select { font-family: inherit; outline: none; border: none; }
 .pay-amt:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); outline: none; }
 .pay-meths { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .5rem; margin-bottom: .875rem; }
 
-.pais-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: .625rem; margin-bottom: .875rem; }
-.pais-btn {
-  height: 52px; border-radius: var(--radius-lg); font-weight: 700; font-size: .92rem;
-  background: var(--muted); color: var(--muted-foreground); border: 2px solid var(--border);
-  transition: all .15s; touch-action: manipulation;
+.pais-compact {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--muted); border-radius: var(--radius-lg); padding: .75rem 1rem;
+  margin-bottom: .875rem;
 }
-.pais-btn.on {
-  background: var(--primary); color: var(--primary-foreground);
-  border-color: var(--primary); box-shadow: 0 2px 16px var(--primary-glow);
+.pais-compact span { font-size: .92rem; font-weight: 600; }
+.pais-compact button {
+  font-size: .8rem; font-weight: 700; color: var(--primary);
+  text-decoration: underline; background: none; border: none;
+  cursor: pointer; touch-action: manipulation;
 }
-.pais-btn:hover:not(.on) { border-color: var(--primary); }
 .pay-meth {
   height: 64px; border-radius: var(--radius-xl);
   background: var(--muted); border: 1.5px solid var(--border); color: var(--muted-foreground);
@@ -1219,9 +1219,13 @@ function enlacesLegales(pais){
 }
 function selPais(p){
   document.getElementById('rpais').value=p;
-  document.getElementById('pb-ES').className='pais-btn'+(p==='ES'?' on':'');
-  document.getElementById('pb-CO').className='pais-btn'+(p==='CO'?' on':'');
+  const lbl=document.getElementById('pais-compact-label');
+  if(lbl)lbl.textContent=p==='CO'?'🇨🇴 Colombia':'🇪🇸 España';
   actualizarLinksLegalesRegistro();
+}
+function alternarPais(){
+  const actual=document.getElementById('rpais')?.value||'ES';
+  selPais(actual==='ES'?'CO':'ES');
 }
 let paisTocadoManualmente=false;
 async function detectarPaisRegistro(){
@@ -1281,9 +1285,9 @@ function authScreen(view='login'){
       </div>
       <label class="f-label">País</label>
       <input type="hidden" id="rpais" value="ES"/>
-      <div class="pais-toggle">
-        <button type="button" class="pais-btn on" id="pb-ES" onclick="paisTocadoManualmente=true;selPais('ES')" ontouchend="event.preventDefault();paisTocadoManualmente=true;selPais('ES')">🇪🇸 España</button>
-        <button type="button" class="pais-btn" id="pb-CO" onclick="paisTocadoManualmente=true;selPais('CO')" ontouchend="event.preventDefault();paisTocadoManualmente=true;selPais('CO')">🇨🇴 Colombia</button>
+      <div class="pais-compact">
+        <span id="pais-compact-label">🇪🇸 España</span>
+        <button type="button" onclick="paisTocadoManualmente=true;alternarPais()" ontouchend="event.preventDefault();paisTocadoManualmente=true;alternarPais()">Cambiar</button>
       </div>
       <label class="f-label">Correo electrónico</label>
       <input id="ru" class="f-input" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" autocapitalize="none"/>
