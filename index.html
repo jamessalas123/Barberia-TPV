@@ -1223,6 +1223,15 @@ function selPais(p){
   document.getElementById('pb-CO').className='pais-btn'+(p==='CO'?' on':'');
   actualizarLinksLegalesRegistro();
 }
+let paisTocadoManualmente=false;
+async function detectarPaisRegistro(){
+  paisTocadoManualmente=false;
+  try{
+    const res=await fetch('/api/geo');
+    const data=await res.json();
+    if(!paisTocadoManualmente&&data.country==='CO')selPais('CO');
+  }catch(e){/* si falla, se queda en Espana por defecto */}
+}
 function actualizarLinksLegalesRegistro(){
   const pais=document.getElementById('rpais')?.value||'ES';
   const box=document.getElementById('legal-links-reg');
@@ -1273,8 +1282,8 @@ function authScreen(view='login'){
       <label class="f-label">País</label>
       <input type="hidden" id="rpais" value="ES"/>
       <div class="pais-toggle">
-        <button type="button" class="pais-btn on" id="pb-ES" onclick="selPais('ES')" ontouchend="event.preventDefault();selPais('ES')">🇪🇸 España</button>
-        <button type="button" class="pais-btn" id="pb-CO" onclick="selPais('CO')" ontouchend="event.preventDefault();selPais('CO')">🇨🇴 Colombia</button>
+        <button type="button" class="pais-btn on" id="pb-ES" onclick="paisTocadoManualmente=true;selPais('ES')" ontouchend="event.preventDefault();paisTocadoManualmente=true;selPais('ES')">🇪🇸 España</button>
+        <button type="button" class="pais-btn" id="pb-CO" onclick="paisTocadoManualmente=true;selPais('CO')" ontouchend="event.preventDefault();paisTocadoManualmente=true;selPais('CO')">🇨🇴 Colombia</button>
       </div>
       <label class="f-label">Correo electrónico</label>
       <input id="ru" class="f-input" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" autocapitalize="none"/>
@@ -1293,6 +1302,7 @@ function authScreen(view='login'){
       <button id="rb" class="auth-btn" onclick="doRegister()" ontouchend="event.preventDefault();doRegister()">Crear cuenta</button>
     </div></div>`;
     setTimeout(()=>document.getElementById('ru')?.focus(),50);
+    detectarPaisRegistro();
     return;
   }
 
