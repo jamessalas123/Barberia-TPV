@@ -2370,30 +2370,6 @@ async function exportCSV(){
   toast('CSV exportado ✓','success');
 }
 
-function showCashSummary(efTotal,efCount,periodoLabel){
-  const existing=document.getElementById('cash-modal');if(existing){existing.remove();return;}
-  const div=document.createElement('div');div.id='cash-modal';
-  div.innerHTML=`
-  <div class="overlay" onclick="this.parentElement.remove()">
-    <div class="modal" onclick="event.stopPropagation()" style="max-width:360px;text-align:center">
-      <div class="modal-body">
-        <button class="modal-close" onclick="document.getElementById('cash-modal').remove()">✕</button>
-        <div class="m-tag">Control Privado</div>
-        <div class="m-title" style="font-size:1.25rem;margin-bottom:.25rem">Caja Efectivo</div>
-        <div style="font-size:.78rem;color:var(--muted-foreground);margin-bottom:1.5rem">${periodoLabel}</div>
-        <div style="display:flex;flex-direction:column;align-items:center;background:var(--destructive);border:1.5px solid oklch(1 0 0 / 0.22);border-radius:var(--radius-2xl);padding:1.5rem 2.5rem;margin-bottom:1.5rem;box-shadow:0 6px 32px var(--destructive-glow)">
-          <span style="font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;color:oklch(0.98 0.01 25 / 0.75);font-weight:700;margin-bottom:.5rem">👤 Clientes</span>
-          <span style="font-size:3.5rem;font-weight:800;color:var(--destructive-foreground);line-height:1;font-variant-numeric:tabular-nums">${efCount}</span>
-        </div>
-        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted-foreground);font-weight:600;margin-bottom:.4rem">Total acumulado</div>
-        <div style="font-size:2.75rem;font-weight:900;color:var(--primary);margin-bottom:1.125rem;font-variant-numeric:tabular-nums;text-shadow:0 0 24px var(--primary-glow)">${eur(efTotal)}</div>
-        <div style="font-size:.72rem;color:var(--muted-foreground);padding:.625rem;background:var(--muted);border-radius:var(--radius-lg);border:1px solid var(--border)">🔒 Uso interno · No incluido en el reporte financiero</div>
-      </div>
-    </div>
-  </div>`;
-  document.body.appendChild(div);
-}
-
 /* ── ANALÍTICAS ───────────────────────────────────────────────── */
 async function pgAnaliticas(el){
   const n=new Date();
