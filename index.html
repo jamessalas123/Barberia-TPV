@@ -962,7 +962,13 @@ const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefr
    código en el navegador (XSS). Usar siempre con datos escritos por el usuario. */
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 const SLOT=30,DS=9*60,DE=21*60;
-const today=()=>new Date().toISOString().slice(0,10);
+const today=()=>{
+  const d=new Date();
+  const anio=d.getFullYear();
+  const mes=String(d.getMonth()+1).padStart(2,'0');
+  const dia=String(d.getDate()).padStart(2,'0');
+  return `${anio}-${mes}-${dia}`;
+};
 const eur=n=>{
   const pais=(profile&&profile.pais)||'ES';
   if(pais==='CO')return (n||0).toLocaleString('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0});
@@ -1029,6 +1035,7 @@ function traducirError(msg){
   if(m.includes('user not found'))return'No existe ninguna cuenta con ese correo';
   if(m.includes('network')||m.includes('fetch'))return'Error de conexión. Revisa tu internet e inténtalo de nuevo';
   if(m.includes('token has expired')||m.includes('invalid or expired'))return'El enlace ha caducado. Pide uno nuevo desde "¿Olvidaste tu contraseña?"';
+  if(m.includes('row-level security')||m.includes('row level security'))return'No se puede modificar: revisa que la fecha y hora de tu dispositivo sean correctas, o este cierre ya está congelado.';
   return msg;
 }
 
