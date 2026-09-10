@@ -116,7 +116,19 @@ input, select { font-family: inherit; outline: none; border: none; }
   display: flex; flex-direction: column; align-items: center;
   padding: 1.25rem 0; gap: .25rem; flex-shrink: 0;
   box-shadow: 2px 0 24px oklch(0 0 0 / 0.45);
+  overflow-y: auto; overflow-x: hidden;
+  scrollbar-width: none; position: relative;
 }
+.sidebar::-webkit-scrollbar { display: none; }
+.sidebar-scroll-hint {
+  position: absolute; bottom: 0; left: 0; width: 100%; height: 28px;
+  display: none; align-items: flex-end; justify-content: center;
+  background: linear-gradient(to bottom, transparent, var(--card) 75%);
+  color: var(--primary); pointer-events: none; z-index: 2;
+  animation: sidebarBounce 1.4s ease-in-out infinite;
+}
+.sidebar-scroll-hint.visible { display: flex; }
+@keyframes sidebarBounce { 0%,100%{transform:translateY(0);opacity:.55} 50%{transform:translateY(4px);opacity:1} }
 
 .logo-wrap {
   width: 56px; height: 56px;
@@ -1716,6 +1728,7 @@ function appScreen(){
         <div class="nav-icon-wrap">${ICON_OUT}</div>
         <span class="nav-label">Salir</span>
       </button>
+      <div class="sidebar-scroll-hint" id="sidebar-scroll-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg></div>
     </nav>
     <div style="flex:1;display:flex;flex-direction:column;min-width:0">
       ${bannerDemo}
@@ -1723,6 +1736,19 @@ function appScreen(){
     </div>
   </div>`;
   loadPg();
+  actualizarPistaScrollSidebar();
+}
+function actualizarPistaScrollSidebar(){
+  const nav=document.querySelector('.sidebar');
+  const pista=document.getElementById('sidebar-scroll-hint');
+  if(!nav||!pista)return;
+  const revisar=()=>{
+    const hayMasAbajo=nav.scrollHeight - nav.scrollTop - nav.clientHeight > 8;
+    pista.classList.toggle('visible',hayMasAbajo);
+  };
+  revisar();
+  nav.onscroll=revisar;
+  window.addEventListener('resize',revisar);
 }
 function goPg(p){pg=p;Object.values(charts).forEach(c=>c.destroy());charts={};appScreen();}
 async function doOut(){
