@@ -1654,7 +1654,7 @@ async function iniciarDemo(){
 
     const hoy=new Date().toISOString().slice(0,10);
     await sb.from('appointments').insert([
-      {user_id:user.id,client_name:'Carlos (ejemplo)',barbero:'Pedro',service:'Corte',appointment_date:hoy,start_time:'09:00:00',status:'completed',price:15,payment_method:'efectivo',payment_type:'interno',valor_barbero:9,comision_local:6,duration_minutes:30,completed_at:new Date().toISOString()},
+      {user_id:user.id,client_name:'Javier (ejemplo)',barbero:'Pedro',appointment_date:hoy,start_time:'09:30:00',status:'scheduled',duration_minutes:30},
       {user_id:user.id,client_name:'Andrés (ejemplo)',barbero:'Ana',service:'Corte + barba',appointment_date:hoy,start_time:'10:00:00',status:'completed',price:20,payment_method:'tarjeta',payment_type:'oficial',valor_barbero:12,comision_local:8,duration_minutes:30,completed_at:new Date().toISOString()}
     ]);
 
