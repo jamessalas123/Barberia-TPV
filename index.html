@@ -969,6 +969,15 @@ const today=()=>{
   const dia=String(d.getDate()).padStart(2,'0');
   return `${anio}-${mes}-${dia}`;
 };
+/* Igual que today(), pero para cualquier fecha ya construida — evita el
+   mismo bug de zona horaria (toISOString() usa UTC y puede correr la
+   fecha un dia hacia adelante o atras segun el pais). */
+const fechaLocal=(d)=>{
+  const anio=d.getFullYear();
+  const mes=String(d.getMonth()+1).padStart(2,'0');
+  const dia=String(d.getDate()).padStart(2,'0');
+  return `${anio}-${mes}-${dia}`;
+};
 const eur=n=>{
   const pais=(profile&&profile.pais)||'ES';
   if(pais==='CO')return (n||0).toLocaleString('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0});
@@ -1659,7 +1668,7 @@ async function iniciarDemo(){
 
     await sb.from('profiles').insert({id:user.id,es_demo:true,pais:'ES',plan_status:'demo',session_token:crypto.randomUUID(),iva_porcentaje:21});
 
-    const hoy=new Date().toISOString().slice(0,10);
+    const hoy=today();
     await sb.from('appointments').insert([
       {user_id:user.id,client_name:'Javier (ejemplo)',barbero:'Pedro',appointment_date:hoy,start_time:'09:30:00',status:'scheduled',duration_minutes:30},
       {user_id:user.id,client_name:'Andrés (ejemplo)',barbero:'Ana',service:'Corte + barba',appointment_date:hoy,start_time:'10:00:00',status:'completed',price:20,payment_method:'tarjeta',payment_type:'oficial',valor_barbero:12,comision_local:8,duration_minutes:30,completed_at:new Date().toISOString()}
@@ -2036,9 +2045,9 @@ function getRange(){
   const n=new Date();let s,e;
   if(cper==='dia'){s=dt;e=dt;}
   else if(cper==='hoy'){s=today();e=today();}
-  else if(cper==='semana'){const d=new Date(n);d.setDate(d.getDate()-d.getDay()+1);s=d.toISOString().slice(0,10);const d2=new Date(d);d2.setDate(d2.getDate()+6);e=d2.toISOString().slice(0,10);}
-  else if(cper==='mes'){s=new Date(n.getFullYear(),n.getMonth(),1).toISOString().slice(0,10);e=new Date(n.getFullYear(),n.getMonth()+1,0).toISOString().slice(0,10);}
-  else{const q=Math.floor(n.getMonth()/3);s=new Date(n.getFullYear(),q*3,1).toISOString().slice(0,10);e=new Date(n.getFullYear(),q*3+3,0).toISOString().slice(0,10);}
+  else if(cper==='semana'){const d=new Date(n);d.setDate(d.getDate()-d.getDay()+1);s=fechaLocal(d);const d2=new Date(d);d2.setDate(d2.getDate()+6);e=fechaLocal(d2);}
+  else if(cper==='mes'){s=fechaLocal(new Date(n.getFullYear(),n.getMonth(),1));e=fechaLocal(new Date(n.getFullYear(),n.getMonth()+1,0));}
+  else{const q=Math.floor(n.getMonth()/3);s=fechaLocal(new Date(n.getFullYear(),q*3,1));e=fechaLocal(new Date(n.getFullYear(),q*3+3,0));}
   return{s,e};
 }
 
@@ -2388,10 +2397,10 @@ function showCashSummary(efTotal,efCount,periodoLabel){
 /* ── ANALÍTICAS ───────────────────────────────────────────────── */
 async function pgAnaliticas(el){
   const n=new Date();
-  const s1=new Date(n.getFullYear(),n.getMonth(),1).toISOString().slice(0,10);
-  const e1=new Date(n.getFullYear(),n.getMonth()+1,0).toISOString().slice(0,10);
-  const s0=new Date(n.getFullYear(),n.getMonth()-1,1).toISOString().slice(0,10);
-  const e0=new Date(n.getFullYear(),n.getMonth(),0).toISOString().slice(0,10);
+  const s1=fechaLocal(new Date(n.getFullYear(),n.getMonth(),1));
+  const e1=fechaLocal(new Date(n.getFullYear(),n.getMonth()+1,0));
+  const s0=fechaLocal(new Date(n.getFullYear(),n.getMonth()-1,1));
+  const e0=fechaLocal(new Date(n.getFullYear(),n.getMonth(),0));
   const[{data:a},{data:b}]=await Promise.all([
     sb.from('appointments').select('*').eq('status','completed').eq('user_id',user.id).gte('appointment_date',s1).lte('appointment_date',e1),
     sb.from('appointments').select('*').eq('status','completed').eq('user_id',user.id).gte('appointment_date',s0).lte('appointment_date',e0),
