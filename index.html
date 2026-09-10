@@ -1050,6 +1050,8 @@ function limpiarUrlRecovery(){
 }
 
 function init(){
+  const _spDemo=new URLSearchParams(window.location.search);
+  if(_spDemo.get('demo')==='1'){iniciarDemo();return;}
   if(recoveryMode){
     /* NO tocamos la URL todavía: el token de recuperación sigue en el
        hash y Supabase aún no lo ha leído. Si la limpiamos ahora,
@@ -1641,8 +1643,34 @@ function navBtn(id,icon,label,navColor,navGlow){
   </button>`;
 }
 
+async function iniciarDemo(){
+  document.getElementById('root').innerHTML=`<div class="auth-wrap"><div class="auth-card" style="text-align:center"><p class="auth-sub">Preparando la demo…</p></div></div>`;
+  try{
+    const{data,error}=await sb.auth.signInAnonymously();
+    if(error||!data.session){toast('No se pudo iniciar la demo','error');authScreen('login');return;}
+    user=data.user;sess={email:'demo'};
+
+    await sb.from('profiles').insert({id:user.id,es_demo:true,pais:'ES',plan_status:'demo',session_token:crypto.randomUUID(),iva_porcentaje:21});
+
+    const hoy=new Date().toISOString().slice(0,10);
+    await sb.from('appointments').insert([
+      {user_id:user.id,client_name:'Carlos (ejemplo)',barbero:'Pedro',service:'Corte',appointment_date:hoy,start_time:'09:00:00',status:'completed',price:15,payment_method:'efectivo',payment_type:'interno',valor_barbero:9,comision_local:6,duration_minutes:30,completed_at:new Date().toISOString()},
+      {user_id:user.id,client_name:'Javier (ejemplo)',barbero:'Pedro',appointment_date:hoy,start_time:'09:30:00',status:'scheduled',duration_minutes:30},
+      {user_id:user.id,client_name:'Andrés (ejemplo)',barbero:'Ana',service:'Corte + barba',appointment_date:hoy,start_time:'10:30:00',status:'completed',price:20,payment_method:'tarjeta',payment_type:'oficial',valor_barbero:12,comision_local:8,duration_minutes:30,completed_at:new Date().toISOString()}
+    ]);
+
+    profile={plan_status:'demo',pais:'ES',es_demo:true};
+    toast('Demo lista — datos de ejemplo cargados ✂️','success');
+    appScreen();
+  }catch(e){
+    toast('No se pudo iniciar la demo. Inténtalo de nuevo.','error');
+    authScreen('login');
+  }
+}
+
 function appScreen(){
   Object.values(charts).forEach(c=>c.destroy());charts={};
+  const esDemo=profile&&profile.es_demo;
   const enTrial=profile&&profile.plan_status==='trial';
   const esActivo=profile&&profile.plan_status==='active';
   const btnSuscribir=enTrial?`
@@ -1654,6 +1682,11 @@ function appScreen(){
         <div class="nav-icon-wrap">${ICON_GEAR}</div>
         <span class="nav-label">Gestionar</span>
       </button>`:'');
+  const bannerDemo=esDemo?`
+    <div style="background:oklch(0.78 0.16 75 / 0.12);border-bottom:1px solid oklch(0.78 0.16 75 / 0.35);padding:.625rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap">
+      <span style="font-size:.82rem;font-weight:600;color:var(--primary)">✂️ Modo demostración · datos de ejemplo, no se guardan de verdad</span>
+      <button class="auth-btn" style="width:auto;padding:.5rem 1rem;font-size:.78rem" onclick="authScreen('register')" ontouchend="event.preventDefault();authScreen('register')">Crear mi cuenta</button>
+    </div>`:'';
   document.getElementById('root').innerHTML=`
   <div class="app">
     <nav class="sidebar">
@@ -1668,7 +1701,10 @@ function appScreen(){
         <span class="nav-label">Salir</span>
       </button>
     </nav>
-    <main class="main" id="mc"></main>
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      ${bannerDemo}
+      <main class="main" id="mc"></main>
+    </div>
   </div>`;
   loadPg();
 }
