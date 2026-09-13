@@ -1505,10 +1505,15 @@ function pantallaCodigoConfirmacion(email,telefono,pais){
   setTimeout(()=>{
     const boxes=[...document.querySelectorAll('.otp-box')];
     boxes[0]?.focus();
+    const revisarCompleto=()=>{
+      const completo=boxes.every(b=>b.value.length===1);
+      document.getElementById('otp-btn')?.classList.toggle('listo',completo);
+    };
     boxes.forEach((box,i)=>{
       box.addEventListener('input',()=>{
         box.value=box.value.replace(/[^0-9]/g,'');
         if(box.value&&i<boxes.length-1)boxes[i+1].focus();
+        revisarCompleto();
       });
       box.addEventListener('keydown',(e)=>{
         if(e.key==='Backspace'&&!box.value&&i>0)boxes[i-1].focus();
@@ -1519,6 +1524,7 @@ function pantallaCodigoConfirmacion(email,telefono,pais){
         texto.split('').forEach((d,idx)=>{if(boxes[idx])boxes[idx].value=d;});
         const ultimo=Math.min(texto.length,boxes.length)-1;
         if(ultimo>=0)boxes[ultimo].focus();
+        revisarCompleto();
       });
     });
   },50);
