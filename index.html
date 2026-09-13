@@ -697,12 +697,13 @@ input, select { font-family: inherit; outline: none; border: none; }
 }
 .gform-title { font-weight: 800; font-size: 1rem; margin-bottom: .875rem; color: var(--foreground); }
 .gform-row { display: grid; grid-template-columns: 2fr 1fr 2fr auto; gap: .625rem; align-items: end; }
-.fg { display: flex; flex-direction: column; }
+.fg { display: flex; flex-direction: column; min-width: 0; }
 .fg-lbl { font-size: .72rem; font-weight: 600; color: var(--muted-foreground); margin-bottom: .3rem; text-transform: uppercase; letter-spacing: .05em; }
 .fg-sel, .fg-inp {
   height: 48px; padding: 0 .75rem; border-radius: var(--radius-lg);
   background: var(--input); border: 1.5px solid var(--border);
   color: var(--foreground); font-size: .9rem; transition: all .2s;
+  width: 100%; box-sizing: border-box; min-width: 0;
 }
 .fg-sel:focus, .fg-inp:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); outline: none; }
 .gadd-btn {
