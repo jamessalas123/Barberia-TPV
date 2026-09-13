@@ -262,6 +262,7 @@ input, select { font-family: inherit; outline: none; border: none; }
 .auth-btn:hover { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); box-shadow: 0 4px 24px var(--primary-glow); }
 .auth-btn:active { transform: scale(.99); }
 .auth-btn:disabled { opacity: .4; pointer-events: none; }
+.auth-btn.listo { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); box-shadow: 0 4px 24px var(--primary-glow); }
 
 /* ── PAGE ─────────────────────────────────────────────────────── */
 .page {
@@ -1364,7 +1365,7 @@ function authScreen(view='login'){
         <button type="button" class="f-pw-toggle" onclick="togglePw('rp',this)" ontouchend="event.preventDefault();togglePw('rp',this)" aria-label="Mostrar contraseña">${ICON_EYE}</button>
       </div>
       <div id="err-rp" class="f-err"></div>
-      <label class="f-consent"><input type="checkbox" id="rc"/><span><span class="f-consent-title">He leído y acepto:</span><span class="f-consent-links" id="legal-links-reg">${enlacesLegales('ES')}</span></span></label>
+      <label class="f-consent"><input type="checkbox" id="rc" onchange="document.getElementById('rb').classList.toggle('listo',this.checked)"/><span><span class="f-consent-title">He leído y acepto:</span><span class="f-consent-links" id="legal-links-reg">${enlacesLegales('ES')}</span></span></label>
       <div id="err-rc" class="f-err"></div>
       <button id="rb" class="auth-btn" onclick="doRegister()" ontouchend="event.preventDefault();doRegister()">Crear cuenta</button>
     </div></div>`;
