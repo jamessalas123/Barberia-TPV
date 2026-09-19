@@ -37,12 +37,19 @@ export default async function handler(req, res) {
   try {
     const origin = req.headers.origin || `https://${req.headers.host}`;
 
-    /* Buscamos el país del usuario para saber en qué moneda cobrarle */
+    /* Buscamos el país del usuario para saber en qué moneda cobrarle,
+       y de paso comprobamos que no tenga ya una suscripción activa —
+       si la tuviera, crear otra sesión de pago le cobraría dos veces
+       cada mes sin que se dé cuenta (ej. doble clic en "Suscribirme"). */
     const { data: profile } = await supabase
       .from('profiles')
-      .select('pais')
+      .select('pais,plan_status,stripe_subscription_id')
       .eq('id', user.id)
       .single();
+
+    if (profile && profile.plan_status === 'active' && profile.stripe_subscription_id) {
+      return res.status(400).json({ error: 'Ya tienes una suscripción activa. Usa "Gestionar" para administrarla.' });
+    }
 
     const pais = (profile && profile.pais) || 'ES';
     const priceId = PRICE_ID_POR_PAIS[pais] || PRICE_ID_POR_PAIS.ES;
