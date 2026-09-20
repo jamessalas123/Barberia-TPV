@@ -975,21 +975,24 @@ const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefr
 /* Registro automatico de errores reales del navegador, para que James pueda
    ver fallos en producción sin depender de que el cliente le escriba.
    Silencioso: si falla el propio guardado, no interrumpe a nadie. */
+let reportandoError=false;
 async function reportarErrorApp(mensaje,detalle){
+  if(reportandoError)return;/* evita que un fallo al reportar dispare otro reporte, en bucle */
+  reportandoError=true;
   const datos={
     mensaje:String(mensaje||'').slice(0,500),
     detalle:String(detalle||'').slice(0,2000),
-    pagina:window.location.pathname+window.location.search,
-    fecha:new Date().toISOString()
+    pagina:window.location.pathname+window.location.search
   };
   try{
     await sb.from('error_logs').insert({user_id:(typeof user!=='undefined'&&user)?user.id:null,...datos});
   }catch(e){/* nunca romper la app por esto */}
   try{
-    fetch('https://escaliadigital.app.n8n.cloud/webhook/alerta-error-barberia',{
-      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(datos)
+    await fetch('https://escaliadigital.app.n8n.cloud/webhook/alerta-error-barberia',{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...datos,fecha:new Date().toISOString()})
     });
   }catch(e){/* nunca romper la app por esto */}
+  reportandoError=false;
 }
 window.addEventListener('error',(e)=>{
   reportarErrorApp(e.message,e.error&&e.error.stack?e.error.stack:'');
