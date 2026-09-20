@@ -976,12 +976,18 @@ const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefr
    ver fallos en producción sin depender de que el cliente le escriba.
    Silencioso: si falla el propio guardado, no interrumpe a nadie. */
 async function reportarErrorApp(mensaje,detalle){
+  const datos={
+    mensaje:String(mensaje||'').slice(0,500),
+    detalle:String(detalle||'').slice(0,2000),
+    pagina:window.location.pathname+window.location.search,
+    fecha:new Date().toISOString()
+  };
   try{
-    await sb.from('error_logs').insert({
-      user_id:(typeof user!=='undefined'&&user)?user.id:null,
-      mensaje:String(mensaje||'').slice(0,500),
-      detalle:String(detalle||'').slice(0,2000),
-      pagina:window.location.pathname+window.location.search
+    await sb.from('error_logs').insert({user_id:(typeof user!=='undefined'&&user)?user.id:null,...datos});
+  }catch(e){/* nunca romper la app por esto */}
+  try{
+    fetch('https://escaliadigital.app.n8n.cloud/webhook/alerta-error-barberia',{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(datos)
     });
   }catch(e){/* nunca romper la app por esto */}
 }
