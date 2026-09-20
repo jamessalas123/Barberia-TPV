@@ -988,7 +988,7 @@ async function reportarErrorApp(mensaje,detalle){
     await sb.from('error_logs').insert({user_id:(typeof user!=='undefined'&&user)?user.id:null,...datos});
   }catch(e){/* nunca romper la app por esto */}
   try{
-    await fetch('https://escaliadigital.app.n8n.cloud/webhook/alerta-error-barberia',{
+    await fetch('/api/alert-error',{
       method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...datos,fecha:new Date().toISOString()})
     });
   }catch(e){/* nunca romper la app por esto */}
