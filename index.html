@@ -279,6 +279,25 @@ input, select { font-family: inherit; outline: none; border: none; }
 }
 .date-inp:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); outline: none; }
 
+.agendar-box {
+  position: relative; display: flex; align-items: center; gap: .75rem;
+  padding: .625rem 1.125rem; border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, oklch(0.78 0.16 75 / 0.18), var(--card));
+  border: 2px solid var(--primary); box-shadow: 0 0 24px var(--primary-glow);
+  min-width: 150px; cursor: pointer; touch-action: manipulation;
+}
+.agendar-lbl { font-size: 1rem; font-weight: 700; color: #fff; margin: 0 0 .15rem; }
+.agendar-fecha { font-size: .78rem; color: #fff; margin: 0; }
+.agendar-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; border: none; width: 100%; height: 100%; }
+
+.btn-anonimo {
+  height: 48px; padding: 0 1rem; border-radius: var(--radius-lg);
+  background: oklch(0.78 0.16 75 / 0.14); border: 1.5px solid var(--primary);
+  color: var(--primary); font-size: .82rem; font-weight: 700; white-space: nowrap;
+  touch-action: manipulation; cursor: pointer;
+}
+.btn-anonimo:active { transform: scale(.97); }
+
 /* ── LEYENDA ──────────────────────────────────────────────────── */
 .legend {
   display: grid; grid-template-columns: 1fr 1fr 1fr;
@@ -1005,6 +1024,9 @@ window.addEventListener('unhandledrejection',(e)=>{
    código en el navegador (XSS). Usar siempre con datos escritos por el usuario. */
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 const SLOT=30,DS=9*60,DE=21*60;
+const MESES_CORTOS=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+const mesCorto=(f)=>MESES_CORTOS[parseInt(f.slice(5,7),10)-1];
+const fechaCorta=(f)=>`${f.slice(8,10)}/${f.slice(5,7)}/${f.slice(2,4)}`;
 const today=()=>{
   const d=new Date();
   const anio=d.getFullYear();
@@ -1870,7 +1892,20 @@ async function pgAgenda(el){
         <div class="pg-tag">Agenda</div>
         <h1 class="pg-title">${lbl}</h1>
       </div>
-      <input type="date" class="date-inp" value="${dt}" onchange="chDate(this.value)" aria-label="Seleccionar fecha"/>
+      <div class="agendar-box">
+        <svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true">
+          <rect x="8" y="6" width="32" height="34" rx="6" fill="#fafafb"/>
+          <rect x="8" y="6" width="32" height="10" rx="6" fill="#e8b854"/>
+          <rect x="8" y="12" width="32" height="4" fill="#e8b854"/>
+          <text x="24" y="14" font-size="7" font-weight="700" fill="#1c1d21" text-anchor="middle">${mesCorto(dt)}</text>
+          <text x="24" y="32" font-size="18" font-weight="700" fill="#1c1d21" text-anchor="middle">${dt.slice(8,10)}</text>
+        </svg>
+        <div>
+          <p class="agendar-lbl">Agendar</p>
+          <p class="agendar-fecha">${fechaCorta(dt)}</p>
+        </div>
+        <input type="date" class="agendar-input" value="${dt}" onchange="chDate(this.value)" aria-label="Seleccionar fecha"/>
+      </div>
     </div>
     <div class="legend">
       <div class="leg">
@@ -1903,7 +1938,10 @@ function openNew(t){
         <div class="m-title">${t}</div>
         <div class="m-sub">Completa los datos de la cita</div>
         <label class="m-label">Cliente</label>
-        <input id="nc" class="m-input" placeholder="Nombre del cliente" autofocus onkeydown="if(event.key==='Enter')saveAppt('${t}')"/>
+        <div style="display:flex;gap:.5rem;margin-bottom:.875rem">
+          <input id="nc" class="m-input" placeholder="Nombre del cliente" autofocus onkeydown="if(event.key==='Enter')saveAppt('${t}')" style="flex:1;min-width:0;margin-bottom:0"/>
+          <button type="button" class="btn-anonimo" onclick="document.getElementById('nc').value='Cliente anónimo'" ontouchend="event.preventDefault();document.getElementById('nc').value='Cliente anónimo'">Anónimo</button>
+        </div>
         <label class="m-label">Barbero <span style="font-weight:400;color:var(--muted-foreground)">(opcional)</span></label>
         <input id="nb" class="m-input" placeholder="Nombre de quien atiende" onkeydown="if(event.key==='Enter')saveAppt('${t}')"/>
       </div>
