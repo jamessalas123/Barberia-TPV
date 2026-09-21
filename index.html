@@ -1458,11 +1458,11 @@ function authScreen(view='login'){
       </button>
       <div class="auth-logo">${ICON_SCISSORS}</div>
       <h1 class="auth-h1" style="font-size:1.35rem">Recuperar acceso</h1>
-      <p class="auth-sub">Te enviaremos un enlace a tu correo</p>
+      <p class="auth-sub">Te enviaremos un código a tu correo</p>
       <label class="f-label">Correo electrónico</label>
       <input id="vu" class="f-input" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" onkeydown="if(event.key==='Enter')doRecover()"/>
       <div id="err-vu" class="f-err"></div>
-      <button id="vb" class="auth-btn" onclick="doRecover()" ontouchend="event.preventDefault();doRecover()">Enviar enlace de recuperación</button>
+      <button id="vb" class="auth-btn" onclick="doRecover()" ontouchend="event.preventDefault();doRecover()">Enviar código</button>
       <div id="recover-result"></div>
     </div></div>`;
     setTimeout(()=>document.getElementById('vu')?.focus(),50);
@@ -1673,11 +1673,90 @@ async function doRecover(){
   const email=(document.getElementById('vu')?.value||'').trim();
   if(!email){document.getElementById('err-vu').textContent='Introduce tu correo';return;}
   document.getElementById('err-vu').textContent='';
+  const btn=document.getElementById('vb');
+  if(btn){btn.disabled=true;btn.textContent='Enviando…';}
 
   const{error}=await sb.auth.resetPasswordForEmail(email);
-  const resultEl=document.getElementById('recover-result');
+  if(btn){btn.disabled=false;btn.textContent='Enviar código';}
   if(error){document.getElementById('err-vu').textContent=traducirError(error.message);return;}
-  if(resultEl)resultEl.innerHTML=`<div class="recover-result"><span class="r-label">Listo</span><span style="font-size:.85rem">Revisa tu correo para restablecer tu contraseña.</span></div>`;
+  pantallaCodigoRecuperacion(email);
+}
+
+function pantallaCodigoRecuperacion(email){
+  document.getElementById('root').innerHTML=`
+  <div class="auth-wrap"><div class="auth-card" style="max-width:440px;text-align:center">
+    <div style="width:72px;height:72px;border-radius:50%;background:oklch(0.78 0.16 75 / 0.14);border:2px solid oklch(0.78 0.16 75 / 0.4);display:grid;place-items:center;margin:0 auto 1.25rem">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="34" height="34"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    </div>
+    <h1 class="auth-h1" style="margin-bottom:.5rem">Escribe tu código</h1>
+    <p class="auth-sub" style="margin-bottom:1.5rem">Te enviamos un código a<br/><strong style="color:var(--foreground)">${email}</strong></p>
+    <div class="otp-boxes" id="otp-boxes-rec">
+      <input maxlength="1" inputmode="numeric" class="otp-box"/>
+      <input maxlength="1" inputmode="numeric" class="otp-box"/>
+      <input maxlength="1" inputmode="numeric" class="otp-box"/>
+      <input maxlength="1" inputmode="numeric" class="otp-box"/>
+      <input maxlength="1" inputmode="numeric" class="otp-box"/>
+      <input maxlength="1" inputmode="numeric" class="otp-box"/>
+      <input maxlength="1" inputmode="numeric" class="otp-box"/>
+      <input maxlength="1" inputmode="numeric" class="otp-box"/>
+    </div>
+    <div id="err-otp-rec" class="f-err" style="margin-bottom:.75rem"></div>
+    <button class="auth-btn" id="otp-rec-btn" style="width:100%;margin-bottom:.75rem" onclick="confirmarCodigoRecuperacion('${email}')" ontouchend="event.preventDefault();confirmarCodigoRecuperacion('${email}')">Confirmar código</button>
+    <div style="background:oklch(0.78 0.16 75 / 0.1);border:1px solid oklch(0.78 0.16 75 / 0.3);border-radius:var(--radius-lg);padding:.875rem 1rem;font-size:.8rem;color:var(--foreground);text-align:left;margin-bottom:.75rem">
+      📩 <strong>¿No lo ves en tu bandeja de entrada?</strong> Revisa la carpeta de <strong>Spam / Correo no deseado</strong>.
+    </div>
+    <button style="background:none;border:none;color:var(--primary);font-size:.82rem;font-weight:700;text-decoration:underline;cursor:pointer" onclick="reenviarCodigoRecuperacion('${email}')" ontouchend="event.preventDefault();reenviarCodigoRecuperacion('${email}')">Reenviar código</button>
+  </div></div>`;
+  setTimeout(()=>{
+    const boxes=[...document.querySelectorAll('#otp-boxes-rec .otp-box')];
+    boxes[0]?.focus();
+    const revisarCompleto=()=>{
+      const completo=boxes.every(b=>b.value.length===1);
+      document.getElementById('otp-rec-btn')?.classList.toggle('listo',completo);
+    };
+    boxes.forEach((box,i)=>{
+      box.addEventListener('input',()=>{
+        box.value=box.value.replace(/[^0-9]/g,'');
+        if(box.value&&i<boxes.length-1)boxes[i+1].focus();
+        revisarCompleto();
+      });
+      box.addEventListener('keydown',(e)=>{
+        if(e.key==='Backspace'&&!box.value&&i>0)boxes[i-1].focus();
+      });
+      box.addEventListener('paste',(e)=>{
+        e.preventDefault();
+        const texto=(e.clipboardData||window.clipboardData).getData('text').replace(/[^0-9]/g,'').slice(0,8);
+        texto.split('').forEach((d,idx)=>{if(boxes[idx])boxes[idx].value=d;});
+        const ultimo=Math.min(texto.length,boxes.length)-1;
+        if(ultimo>=0)boxes[ultimo].focus();
+        revisarCompleto();
+      });
+    });
+  },50);
+}
+
+async function confirmarCodigoRecuperacion(email){
+  const boxes=[...document.querySelectorAll('#otp-boxes-rec .otp-box')];
+  const codigo=boxes.map(b=>b.value).join('');
+  if(codigo.length!==8){document.getElementById('err-otp-rec').textContent='Escribe los 8 dígitos del código';return;}
+  document.getElementById('err-otp-rec').textContent='';
+  const btn=document.getElementById('otp-rec-btn');
+  if(btn){btn.disabled=true;btn.textContent='Confirmando…';}
+
+  const{data,error}=await sb.auth.verifyOtp({email,token:codigo,type:'recovery'});
+  if(error){
+    if(btn){btn.disabled=false;btn.textContent='Confirmar código';}
+    document.getElementById('err-otp-rec').textContent=traducirError(error.message);
+    return;
+  }
+  user=data.user;sess={email:user.email};
+  authScreen('newpass');
+}
+
+async function reenviarCodigoRecuperacion(email){
+  const{error}=await sb.auth.resetPasswordForEmail(email);
+  if(error){toast(traducirError(error.message),'error');return;}
+  toast('Código reenviado, revisa tu correo','success');
 }
 
 async function esperarSesion(maxIntentos=10){
