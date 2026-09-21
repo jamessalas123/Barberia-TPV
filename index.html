@@ -1928,6 +1928,11 @@ function chDate(v){dt=v;loadPg();}
 function expUp(){rs=Math.max(0,rs-SLOT);loadPg();}
 function expDown(){re=Math.min(24*60,re+SLOT);loadPg();}
 
+function toggleAnonimo(){
+  const campo=document.getElementById('nc');
+  if(!campo)return;
+  campo.value=(campo.value.trim()==='Cliente anónimo')?'':'Cliente anónimo';
+}
 function openNew(t){
   document.getElementById('mr').innerHTML=`
   <div class="overlay" onclick="closeM()">
@@ -1940,7 +1945,7 @@ function openNew(t){
         <label class="m-label">Cliente</label>
         <div style="display:flex;gap:.5rem;margin-bottom:.875rem">
           <input id="nc" class="m-input" placeholder="Nombre del cliente" autofocus onkeydown="if(event.key==='Enter')saveAppt('${t}')" style="flex:1;min-width:0;margin-bottom:0"/>
-          <button type="button" class="btn-anonimo" onclick="document.getElementById('nc').value='Cliente anónimo'" ontouchend="event.preventDefault();document.getElementById('nc').value='Cliente anónimo'">Anónimo</button>
+          <button type="button" class="btn-anonimo" onclick="toggleAnonimo()" ontouchend="event.preventDefault();toggleAnonimo()">Anónimo</button>
         </div>
         <label class="m-label">Barbero <span style="font-weight:400;color:var(--muted-foreground)">(opcional)</span></label>
         <input id="nb" class="m-input" placeholder="Nombre de quien atiende" onkeydown="if(event.key==='Enter')saveAppt('${t}')"/>
