@@ -2354,10 +2354,10 @@ async function pgCaja(el){
     content=`
     <div class="cards3">
       <div class="kard kard-glow-neutral">
-        <div class="kard-icon">📈</div>
-        <div class="kard-lbl">Caja Total Real</div>
-        <div class="kard-val">${eur(tot)}</div>
-        <div class="kard-sub">Todo lo cobrado</div>
+        <div class="kard-icon">💵</div>
+        <div class="kard-lbl">Caja Efectivo</div>
+        <div class="kard-val" style="color:var(--muted-foreground)">${eur(int)}</div>
+        <div class="kard-sub">Registros en efectivo</div>
       </div>
       <div class="kard kard-glow-neutral">
         <div class="kard-icon">💳</div>
@@ -2365,11 +2365,11 @@ async function pgCaja(el){
         <div class="kard-val" style="color:var(--success)">${eur(of)}</div>
         <div class="kard-sub">${ap.filter(a=>a.payment_type==='oficial').length} cobro${ap.filter(a=>a.payment_type==='oficial').length===1?'':'s'} registrado${ap.filter(a=>a.payment_type==='oficial').length===1?'':'s'}</div>
       </div>
-      <div class="kard kard-glow-neutral">
-        <div class="kard-icon">💵</div>
-        <div class="kard-lbl">Caja Efectivo</div>
-        <div class="kard-val" style="color:var(--muted-foreground)">${eur(int)}</div>
-        <div class="kard-sub">Registros en efectivo</div>
+      <div class="kard kard-glow-primary">
+        <div class="kard-icon">📈</div>
+        <div class="kard-lbl">Caja Total Real</div>
+        <div class="kard-val" style="color:var(--primary)">${eur(tot)}</div>
+        <div class="kard-sub">Todo lo cobrado</div>
       </div>
     </div>
     ${esIndividual?'':`
