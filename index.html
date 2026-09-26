@@ -1340,7 +1340,7 @@ function blockScreen(trialVencido){
     <p class="block-sub">${trialVencido
       ?'Tus 30 días de prueba gratuita han finalizado. Suscríbete para seguir usando Barbería TPV sin interrupciones.'
       :'Tu suscripción no está activa en este momento. Suscríbete para reactivar tu cuenta.'}</p>
-    <button id="pagar-btn" class="block-btn" onclick="irAPagar()">Suscribirme ahora — ${precioSuscripcionTexto()}</button>
+    <button id="pagar-btn" class="block-btn" onclick="irAPagar()" ontouchend="event.preventDefault();irAPagar()">Suscribirme ahora — ${precioSuscripcionTexto()}</button>
     <button class="block-btn" style="background:transparent;border:1.5px solid var(--border);color:var(--muted-foreground);margin-top:.5rem" onclick="window.open('https://wa.me/34689042653?text=Hola,%20tengo%20una%20duda%20con%20mi%20suscripci%C3%B3n%20de%20Barber%C3%ADa%20TPV','_blank')">¿Dudas? Escríbenos por WhatsApp</button>
     <button class="block-btn-out" onclick="doOut()">Cerrar sesión</button>
     <div style="margin-top:1.25rem;font-size:.68rem;color:var(--muted-foreground);text-align:center;line-height:1.6">
@@ -1909,7 +1909,7 @@ function appScreen(){
   const enTrial=profile&&profile.plan_status==='trial';
   const esActivo=profile&&profile.plan_status==='active';
   const btnSuscribir=enTrial?`
-      <button class="nav-item nav-suscribir" onclick="irAPagar()">
+      <button class="nav-item nav-suscribir" onclick="irAPagar()" ontouchend="event.preventDefault();irAPagar()">
         <div class="nav-icon-wrap">${ICON_STAR}</div>
         <span class="nav-label">Suscribirme</span>
       </button>`:(esActivo?`
@@ -2078,8 +2078,8 @@ function chDate(v){dt=v;loadPg();}
 function abrirSelectorFecha(){
   const inp=document.getElementById('agendar-input-real');
   if(!inp)return;
-  try{ inp.showPicker(); }
-  catch(e){ inp.focus(); inp.click(); }
+  inp.focus();
+  inp.click();
 }
 function expUp(){rs=Math.max(0,rs-SLOT);loadPg();}
 function expDown(){re=Math.min(24*60,re+SLOT);loadPg();}
