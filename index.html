@@ -274,6 +274,13 @@ input, select { font-family: inherit; outline: none; border: none; }
   border-color: var(--primary); background: linear-gradient(135deg, oklch(0.78 0.16 75 / 0.14), var(--card));
   box-shadow: 0 0 28px var(--primary-glow);
 }
+@media (hover: hover) {
+  .trabajo-card:hover:not(.trabajo-card-on) {
+    border-color: oklch(0.78 0.16 75 / 0.6);
+    background: linear-gradient(135deg, oklch(0.78 0.16 75 / 0.08), var(--card));
+    box-shadow: 0 0 18px oklch(0.78 0.16 75 / 0.25);
+  }
+}
 .trabajo-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: .75rem; }
 .trabajo-titulo { font-size: 1.05rem; font-weight: 700; color: #fff; }
 .trabajo-sub { font-size: .78rem; color: var(--muted-foreground); margin-top: .2rem; }
@@ -1223,7 +1230,7 @@ async function draw(){
   let intentos=vieneDePago?6:1;
   let data,error;
   for(let i=0;i<intentos;i++){
-    ({data,error}=await sb.from('profiles').select('plan_status,trial_ends_at,session_token,pais').eq('id',user.id).single());
+    ({data,error}=await sb.from('profiles').select('plan_status,trial_ends_at,session_token,pais,tipo_cuenta').eq('id',user.id).single());
     if(data&&data.plan_status==='active')break;
     if(i<intentos-1)await new Promise(r=>setTimeout(r,1000));
   }
@@ -2075,6 +2082,10 @@ function toggleAnonimo(){
   campo.value=(campo.value.trim()==='Cliente anónimo')?'':'Cliente anónimo';
 }
 function openNew(t){
+  const esIndividual=profile&&profile.tipo_cuenta==='individual';
+  const campoBarbero=esIndividual?'':`
+        <label class="m-label">Barbero <span style="font-weight:400;color:var(--muted-foreground)">(opcional)</span></label>
+        <input id="nb" class="m-input" placeholder="Nombre de quien atiende" onkeydown="if(event.key==='Enter')saveAppt('${t}')"/>`;
   document.getElementById('mr').innerHTML=`
   <div class="overlay" onclick="closeM()">
     <div class="modal" onclick="event.stopPropagation()">
@@ -2088,8 +2099,7 @@ function openNew(t){
           <input id="nc" class="m-input" placeholder="Nombre del cliente" autofocus onkeydown="if(event.key==='Enter')saveAppt('${t}')" style="flex:1;min-width:0;margin-bottom:0"/>
           <button type="button" class="btn-anonimo" onclick="toggleAnonimo()" ontouchend="event.preventDefault();toggleAnonimo()">Anónimo</button>
         </div>
-        <label class="m-label">Barbero <span style="font-weight:400;color:var(--muted-foreground)">(opcional)</span></label>
-        <input id="nb" class="m-input" placeholder="Nombre de quien atiende" onkeydown="if(event.key==='Enter')saveAppt('${t}')"/>
+        ${campoBarbero}
       </div>
       <div class="modal-actions">
         <button class="m-btn" onclick="saveAppt('${t}')">Guardar cita</button>
