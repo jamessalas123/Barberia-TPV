@@ -2435,8 +2435,9 @@ async function pgCaja(el){
     <p style="font-size:.82rem;color:var(--muted-foreground);margin-bottom:1rem">${ap.length} citas · ${ex.length} gastos en el periodo</p>
     <div class="period-row">${perBtns}</div>
     ${datePickerRow}
-    <div class="caja-tabs-row">${tabBtns}</div>
-    <div class="caja-tabs-single">${cierreBtn}</div>
+    ${esIndividual
+      ? `<div class="caja-tabs-row">${tabBtns}${cierreBtn}</div>`
+      : `<div class="caja-tabs-row">${tabBtns}</div><div class="caja-tabs-single">${cierreBtn}</div>`}
     ${content}
   </div>`;
 }
