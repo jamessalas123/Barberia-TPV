@@ -1976,6 +1976,7 @@ async function loadPg(){
 
 /* ── AGENDA ───────────────────────────────────────────────────── */
 async function pgAgenda(el){
+  const esIndividual=profile&&profile.tipo_cuenta==='individual';
   const{data}=await sb.from('appointments').select('*').eq('appointment_date',dt).eq('user_id',user.id).order('start_time');
   const appts=data||[];
   const byT={};appts.forEach(a=>{const k=a.start_time.slice(0,5);(byT[k]=byT[k]||[]).push(a);});
@@ -1995,6 +1996,7 @@ async function pgAgenda(el){
     </div>`;
     if(items.length===1){
       const a=items[0];const done=a.status==='completed';
+      const btnAgregarOtro=esIndividual?'':`<button class="btn-plus" onclick="openNew('${t}')" aria-label="Añadir otra persona">${ICON_PLUS}</button>`;
       if(done)return`
       <div class="slot paid">
         <div class="slot-time">${t}</div>
@@ -2005,7 +2007,7 @@ async function pgAgenda(el){
         <div class="slot-actions">
           <div class="check-icon">${ICON_CHECK}</div>
           <button class="btn-ver" style="padding:.5rem .9rem;font-size:.72rem;height:auto" onclick="openSlotList('${t}')">VER</button>
-          <button class="btn-plus" onclick="openNew('${t}')" aria-label="Añadir otra persona">${ICON_PLUS}</button>
+          ${btnAgregarOtro}
           <button class="btn-del-slot" onclick="delAppt('${a.id}')" aria-label="Eliminar">${ICON_TRASH}</button>
         </div>
       </div>`;
@@ -2016,7 +2018,7 @@ async function pgAgenda(el){
         <div class="slot-actions">
           <button class="btn-cobrar" onclick="openPay('${a.id}','${t}')">COBRAR</button>
           <button class="btn-plus" onclick="openSlotList('${t}')" aria-label="Ver detalle">${ICON_EYE}</button>
-          <button class="btn-plus" onclick="openNew('${t}')" aria-label="Añadir otra persona">${ICON_PLUS}</button>
+          ${btnAgregarOtro}
           <button class="btn-del-slot" onclick="delAppt('${a.id}')" aria-label="Eliminar">${ICON_TRASH}</button>
         </div>
       </div>`;
@@ -2119,6 +2121,7 @@ async function saveAppt(t){
 }
 
 function openSlotList(t){
+  const esIndividual=profile&&profile.tipo_cuenta==='individual';
   const items=(window._byT||{})[t]||[];
   const rows=items.map(a=>{
     const done=a.status==='completed';
@@ -2142,7 +2145,7 @@ function openSlotList(t){
         <div class="m-tag">Citas a las ${t}</div>
         <div class="m-title" style="font-size:1.35rem">${items.length} persona${items.length===1?'':'s'}</div>
         <div class="slotlist">${rows}</div>
-        <button class="expand-btn" style="margin-top:.75rem" onclick="openNew('${t}')">+ Añadir otra persona a las ${t}</button>
+        ${esIndividual?'':`<button class="expand-btn" style="margin-top:.75rem" onclick="openNew('${t}')">+ Añadir otra persona a las ${t}</button>`}
       </div>
     </div>
   </div>`;
