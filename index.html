@@ -2166,20 +2166,10 @@ function etqMetodo(m){
 
 function openPay(id,t){
   meth='efectivo';
+  const esIndividual=profile&&profile.tipo_cuenta==='individual';
   const items=(window._byT||{})[t]||[];
   const a=items.find(x=>x.id===id)||{};
-  document.getElementById('mr').innerHTML=`
-  <div class="overlay" onclick="closeM()">
-    <div class="modal" onclick="event.stopPropagation()">
-      <div class="modal-body">
-        <button class="modal-close" onclick="closeM()">✕</button>
-        <div class="m-tag">Finalizar cita</div>
-        <div class="m-title">${esc(a.client_name)||''}</div>
-        <div class="m-sub">${t}${a.barbero?' · '+esc(a.barbero):''}</div>
-        <label class="m-label">Importe (${simboloMoneda()})</label>
-        <input id="pa" class="pay-amt" inputmode="decimal" placeholder="0,00" autofocus oninput="onImporteInput('pa')"/>
-        <label class="m-label">Servicio <span style="font-weight:400;color:var(--muted-foreground)">(opcional)</span></label>
-        <input id="psrv" class="m-input" placeholder="Ej: Corte, barba, corte + barba..." value="${esc(a.service||'')}" style="margin-bottom:.875rem"/>
+  const bloqueReparto=esIndividual?'':`
         <div class="reparto-box">
           <div class="reparto-lbl">Reparto</div>
           <div class="reparto-row">
@@ -2193,7 +2183,20 @@ function openPay(id,t){
             </div>
           </div>
           <div class="reparto-hint">Se calcula solo — llena uno y el otro se ajusta.</div>
-        </div>
+        </div>`;
+  document.getElementById('mr').innerHTML=`
+  <div class="overlay" onclick="closeM()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-body">
+        <button class="modal-close" onclick="closeM()">✕</button>
+        <div class="m-tag">Finalizar cita</div>
+        <div class="m-title">${esc(a.client_name)||''}</div>
+        <div class="m-sub">${t}${a.barbero?' · '+esc(a.barbero):''}</div>
+        <label class="m-label">Importe (${simboloMoneda()})</label>
+        <input id="pa" class="pay-amt" inputmode="decimal" placeholder="0,00" autofocus oninput="onImporteInput('pa')"/>
+        <label class="m-label">Servicio <span style="font-weight:400;color:var(--muted-foreground)">(opcional)</span></label>
+        <input id="psrv" class="m-input" placeholder="Ej: Corte, barba, corte + barba..." value="${esc(a.service||'')}" style="margin-bottom:.875rem"/>
+        ${bloqueReparto}
         <label class="m-label" style="margin-bottom:.5rem">Método de pago</label>
         <div class="pay-meths">
           <button class="pay-meth on" id="pm-efectivo" onclick="selM('efectivo')"><span class="pay-meth-icon">💵</span>Efectivo</button>
@@ -2262,8 +2265,9 @@ function selM(m){
 async function doPay(id){
   const p=parseImporte(document.getElementById('pa')?.value);
   if(!p||p<=0)return toast('Importe inválido','error');
-  const vb=parseImporte(document.getElementById('pvb')?.value)||0;
-  const cl=parseImporte(document.getElementById('pcl')?.value)||0;
+  const esIndividual=profile&&profile.tipo_cuenta==='individual';
+  const vb=esIndividual?0:(parseImporte(document.getElementById('pvb')?.value)||0);
+  const cl=esIndividual?p:(parseImporte(document.getElementById('pcl')?.value)||0);
   const servicio=document.getElementById('psrv')?.value?.trim()||null;
   const type=meth==='efectivo'?'interno':'oficial';
   const{error}=await sb.from('appointments').update({status:'completed',payment_method:meth,payment_type:type,price:p,service:servicio,valor_barbero:vb||null,comision_local:cl||null,completed_at:new Date().toISOString()}).eq('id',id);
@@ -2319,6 +2323,7 @@ function getRange(){
 }
 
 async function pgCaja(el){
+  const esIndividual=profile&&profile.tipo_cuenta==='individual';
   const{s,e}=getRange();
   const[{data:a},{data:x}]=await Promise.all([
     sb.from('appointments').select('*').eq('status','completed').eq('user_id',user.id).gte('appointment_date',s).lte('appointment_date',e),
@@ -2339,7 +2344,7 @@ async function pgCaja(el){
   const perBtns=ctab==='cierre'?'':pers.map(p=>`<button class="period-pill ${cper===p?'on':''}" onclick="setCper('${p}')">${perL[p]}</button>`).join('');
   const datePickerRow=(ctab==='cierre'||cper==='dia')?`<div style="margin-bottom:.75rem;display:flex;align-items:center;gap:.625rem"><span style="font-size:.75rem;color:var(--muted-foreground);font-weight:600">Fecha:</span><input type="date" class="date-inp" value="${dt}" onchange="chDate(this.value)" style="height:40px;font-size:.85rem"/></div>`:'';
   const periodoLabel=cper==='dia'?new Date(dt+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'}):({hoy:'Hoy',semana:'Esta semana',mes:'Este mes',trimestre:'Este trimestre'})[cper];
-  const tabBtns=`<button class="caja-tab caja-tab-caja ${ctab==='caja'?'on':''}" onclick="setCtab('caja')"><span class="caja-tab-ico">👜</span><span class="caja-tab-lbl">Caja</span></button><button class="caja-tab caja-tab-gastos ${ctab==='gastos'?'on':''}" onclick="setCtab('gastos')"><span class="caja-tab-ico">📋</span><span class="caja-tab-lbl">Gastos</span></button><button class="caja-tab caja-tab-liq" onclick="showLiquidacion()"><span class="caja-tab-ico">✂️</span><span class="caja-tab-lbl">Liquidación<br>barberos</span></button>`;
+  const tabBtns=`<button class="caja-tab caja-tab-caja ${ctab==='caja'?'on':''}" onclick="setCtab('caja')"><span class="caja-tab-ico">👜</span><span class="caja-tab-lbl">Caja</span></button><button class="caja-tab caja-tab-gastos ${ctab==='gastos'?'on':''}" onclick="setCtab('gastos')"><span class="caja-tab-ico">📋</span><span class="caja-tab-lbl">Gastos</span></button>${esIndividual?'':'<button class="caja-tab caja-tab-liq" onclick="showLiquidacion()"><span class="caja-tab-ico">✂️</span><span class="caja-tab-lbl">Liquidación<br>barberos</span></button>'}`;
   const cierreBtn=`<button class="caja-tab caja-tab-cierre ${ctab==='cierre'?'on':''}" onclick="setCtab('cierre')"><span class="caja-tab-ico">🔒</span><span class="caja-tab-lbl">Cierre<br>del día</span></button>`;
 
   let content='';
@@ -2367,11 +2372,12 @@ async function pgCaja(el){
         <div class="kard-sub">Registros en efectivo</div>
       </div>
     </div>
+    ${esIndividual?'':`
     <div class="sec-label">Desglose por tipo de dinero</div>
     <div class="meth3">
       <div class="meth-kard meth-kard-accent"><div class="meth-head">Ingreso del negocio <span>💰</span></div><div class="meth-val" style="color:var(--primary)">${eur(ingresoNegocio)}</div><div class="meth-sub">Suma de comisión local</div></div>
       <div class="meth-kard"><div class="meth-head">Dinero de barberos <span>✂️</span></div><div class="meth-val">${eur(dineroBarberos)}</div><div class="meth-sub">Pasa por caja, no es tu ingreso</div></div>
-    </div>
+    </div>`}
     <div class="sec-label" style="margin-top:1.25rem">Exportar rango personalizado (opcional)</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:.625rem;margin-bottom:.625rem">
       <div>
@@ -2498,6 +2504,7 @@ async function calcularCierreLive(fecha){
 }
 
 async function renderCierreDiario(){
+  const esIndividual=profile&&profile.tipo_cuenta==='individual';
   const{data:guardado}=await sb.from('cierres_caja').select('*').eq('user_id',user.id).eq('fecha',dt).maybeSingle();
   const live=await calcularCierreLive(dt);
   const v=guardado||live;
@@ -2532,11 +2539,12 @@ async function renderCierreDiario(){
       <span class="cierre-num" style="font-size:1.7rem">${eur(v.total)}</span>
     </div>
 
+    ${esIndividual?'':`
     <div class="sec-label" style="margin-top:1.25rem">Desglose de ese ingreso</div>
     <div class="cards2">
       <div class="kard"><div class="kard-lbl">Ingreso del negocio</div><div class="cierre-num">${eur(v.ingreso_negocio)}</div><div class="kard-sub">Comisión local</div></div>
       <div class="kard"><div class="kard-lbl">Dinero de barberos</div><div class="cierre-num">${eur(v.dinero_barberos)}</div><div class="kard-sub">No es ingreso del negocio</div></div>
-    </div>
+    </div>`}
 
     <div class="sec-label" style="margin-top:1.25rem">Gastos del día</div>
     <div class="kard">${gastosRows}</div>
