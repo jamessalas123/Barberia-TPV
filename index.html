@@ -2042,7 +2042,7 @@ async function pgAgenda(el){
         <div class="pg-tag">Agenda</div>
         <h1 class="pg-title">${lbl}</h1>
       </div>
-      <div class="agendar-box">
+      <div class="agendar-box" onclick="abrirSelectorFecha()" ontouchend="event.preventDefault();abrirSelectorFecha()">
         <svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true">
           <rect x="8" y="6" width="32" height="34" rx="6" fill="#fafafb"/>
           <rect x="8" y="6" width="32" height="10" rx="6" fill="#e8b854"/>
@@ -2054,7 +2054,7 @@ async function pgAgenda(el){
           <p class="agendar-lbl">Agendar</p>
           <p class="agendar-fecha">${fechaCorta(dt)}</p>
         </div>
-        <input type="date" class="agendar-input" value="${dt}" onchange="chDate(this.value)" aria-label="Seleccionar fecha"/>
+        <input type="date" id="agendar-input-real" class="agendar-input" value="${dt}" onchange="chDate(this.value)" aria-label="Seleccionar fecha"/>
       </div>
     </div>
     <div class="legend">
@@ -2075,6 +2075,12 @@ async function pgAgenda(el){
 }
 
 function chDate(v){dt=v;loadPg();}
+function abrirSelectorFecha(){
+  const inp=document.getElementById('agendar-input-real');
+  if(!inp)return;
+  try{ inp.showPicker(); }
+  catch(e){ inp.focus(); inp.click(); }
+}
 function expUp(){rs=Math.max(0,rs-SLOT);loadPg();}
 function expDown(){re=Math.min(24*60,re+SLOT);loadPg();}
 
