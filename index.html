@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="es" style="color-scheme:dark;background-color:oklch(0.16 0.012 270)" data-theme="dark">
 <head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="color-scheme" content="dark"/>
@@ -196,7 +198,17 @@ input, select { font-family: inherit; outline: none; border: none; }
 .main { flex: 1; overflow-y: auto; overscroll-behavior: contain; }
 
 /* ── AUTH ─────────────────────────────────────────────────────── */
-.auth-wrap { min-height: 100vh; display: grid; place-items: center; padding: 1rem; background: var(--background); }
+.auth-wrap {
+  min-height: 100vh; display: grid; place-items: center; padding: 1rem;
+  background: linear-gradient(to bottom,
+    oklch(0.32 0 0) 0%,
+    oklch(0.52 0 0) 88%,
+    oklch(0.28 0 0) 100%);
+}
+.auth-logo-img { width: 90px; height: auto; margin: 0 auto 1rem; display: block; }
+.auth-brand { font-family: 'Great Vibes', cursive; font-size: 2.6rem; text-align: center; margin-bottom: .25rem; line-height: 1; }
+.auth-brand .parte1 { color: #f0e8da; }
+.auth-brand .parte2 { color: var(--primary); }
 .auth-card {
   width: 100%; max-width: 400px;
   background: var(--card);
@@ -1392,8 +1404,8 @@ function authScreen(view='login'){
   if(view==='login'){
     document.getElementById('root').innerHTML=`
     <div class="auth-wrap"><div class="auth-card">
-      <div class="auth-logo">${ICON_SCISSORS}</div>
-      <h1 class="auth-h1">Barbería TPV</h1>
+      <img src="logo-huella.png" alt="Barbería TPV" class="auth-logo-img"/>
+      <div class="auth-brand"><span class="parte1">Barbería </span><span class="parte2">TPV</span></div>
       <p class="auth-sub">Acceso privado del barbero</p>
       <div class="auth-tabs">
         <button class="auth-tab active" onclick="authScreen('login')" ontouchend="event.preventDefault();authScreen('login')">Iniciar sesión</button>
@@ -1421,7 +1433,7 @@ function authScreen(view='login'){
   if(view==='register'){
     document.getElementById('root').innerHTML=`
     <div class="auth-wrap"><div class="auth-card">
-      <div class="auth-logo">${ICON_SCISSORS}</div>
+      <img src="logo-huella.png" alt="Barbería TPV" class="auth-logo-img"/>
       <h1 class="auth-h1">Crear cuenta</h1>
       <p class="auth-sub">30 días de prueba gratis</p>
       <div class="auth-tabs">
@@ -1458,7 +1470,7 @@ function authScreen(view='login'){
   if(view==='newpass'){
     document.getElementById('root').innerHTML=`
     <div class="auth-wrap"><div class="auth-card">
-      <div class="auth-logo">${ICON_SCISSORS}</div>
+      <img src="logo-huella.png" alt="Barbería TPV" class="auth-logo-img"/>
       <h1 class="auth-h1" style="font-size:1.35rem">Nueva contraseña</h1>
       <p class="auth-sub">Escribe tu nueva contraseña para ${sess?.email||'tu cuenta'}</p>
       <label class="f-label">Nueva contraseña <span style="color:var(--muted-foreground);font-weight:400">(mín. 6 caracteres)</span></label>
@@ -1486,7 +1498,7 @@ function authScreen(view='login'){
       <button class="auth-back" onclick="authScreen('login')" ontouchend="event.preventDefault();authScreen('login')">
         ${ICON_BACK_SVG} Volver al login
       </button>
-      <div class="auth-logo">${ICON_SCISSORS}</div>
+      <img src="logo-huella.png" alt="Barbería TPV" class="auth-logo-img"/>
       <h1 class="auth-h1" style="font-size:1.35rem">Recuperar acceso</h1>
       <p class="auth-sub">Te enviaremos un código a tu correo</p>
       <label class="f-label">Correo electrónico</label>
