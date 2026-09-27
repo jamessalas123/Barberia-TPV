@@ -12,7 +12,7 @@ const supabase = createClient(
    así que este valor no se usa todavía en producción real. */
 const PRICE_ID_POR_PAIS = {
   ES: 'price_1TqFsoV05BTdldnGCx2z4O13',
-  CO: 'price_1U2G5DV05BTdldnGNFLpu33Z',
+  CO: 'price_1UKO1SV05BTdldnGabJOLbOG', // 19.999 COP/mes
 };
 
 export default async function handler(req, res) {
