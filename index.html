@@ -143,10 +143,10 @@ input, select { font-family: inherit; outline: none; border: none; }
 .sidebar {
   width: 84px; height: 100vh;
   background: rgba(255,255,255,0.035);
-  border: 2.5px solid rgba(255,255,255,0.85);
+  border: 1px solid rgba(255,255,255,0.7);
   display: flex; flex-direction: column; align-items: center;
   padding: 1.25rem 0; gap: .25rem; flex-shrink: 0;
-  box-shadow: 0 0 28px rgba(255,255,255,0.45), 2px 0 24px oklch(0 0 0 / 0.45);
+  box-shadow: 0 0 18px rgba(255,255,255,0.3), 2px 0 24px oklch(0 0 0 / 0.45);
   overflow-y: auto; overflow-x: hidden;
   scrollbar-width: none; position: relative;
 }
@@ -375,7 +375,7 @@ input, select { font-family: inherit; outline: none; border: none; }
   border-radius: var(--radius-xl);
   padding: .75rem 1rem;
 }
-.leg { display: flex; align-items: center; gap: .45rem; font-size: .82rem; font-weight: 600; color: var(--foreground); }
+.leg { display: flex; align-items: center; gap: .45rem; font-size: .82rem; font-weight: 600; color: var(--foreground); padding: .4rem .75rem; border-radius: var(--radius-lg); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.4); }
 .leg:nth-child(2) { justify-content: center; }
 .leg:nth-child(3) { justify-content: flex-end; }
 .dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
@@ -383,8 +383,8 @@ input, select { font-family: inherit; outline: none; border: none; }
 /* ── SLOTS ────────────────────────────────────────────────────── */
 .expand-btn {
   width: 100%; height: 48px; border-radius: var(--radius-xl);
-  background: var(--card); border: 1.5px solid var(--border);
-  color: var(--muted-foreground); font-weight: 600; font-size: .875rem;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.55);
+  color: #fff; font-weight: 600; font-size: .875rem;
   margin: .4rem 0; transition: all .2s;
   touch-action: manipulation;
 }
@@ -1957,8 +1957,8 @@ function appScreen(){
       </button>`:'');
   const bannerDemo=esDemo?`
     <div style="background:oklch(1 0 0 / 0.08);border-bottom:1.5px solid rgba(255,255,255,0.7);padding:.625rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap">
-      <span style="font-size:.82rem;font-weight:600;color:var(--primary)">✂️ Modo demostración · datos de ejemplo, no se guardan de verdad</span>
-      <button style="background:oklch(0.72 0.19 145);color:oklch(0.18 0.06 145);border:none;width:auto;padding:.625rem 1.125rem;font-size:.8rem;font-weight:700;border-radius:var(--radius-lg);display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;touch-action:manipulation" onclick="authScreen('register')" ontouchend="event.preventDefault();authScreen('register')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>Crear mi cuenta</button>
+      <span style="font-size:.82rem;font-weight:600;color:#fff;display:inline-flex;align-items:center;gap:.4rem"><img src="logo-huella.png" style="width:16px;height:16px;object-fit:contain" alt=""/> Modo demostración · datos de ejemplo, no se guardan de verdad</span>
+      <button style="background:rgba(255,255,255,0.1);color:#fff;border:1.5px solid rgba(255,255,255,0.75);width:auto;padding:.625rem 1.125rem;font-size:.8rem;font-weight:700;border-radius:var(--radius-lg);display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;touch-action:manipulation" onclick="authScreen('register')" ontouchend="event.preventDefault();authScreen('register')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>Crear mi cuenta</button>
     </div>`:'';
   document.getElementById('root').innerHTML=`
   <div class="app">
