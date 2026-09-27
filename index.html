@@ -142,7 +142,7 @@ input, select { font-family: inherit; outline: none; border: none; }
 /* ── SIDEBAR ──────────────────────────────────────────────────── */
 .sidebar {
   width: 84px; height: 100vh;
-  background: rgba(255,255,255,0.035);
+  background: rgba(255,255,255,0.55);
   border: 1.5px solid var(--primary);
   display: flex; flex-direction: column; align-items: center;
   padding: 1.25rem 0; gap: .25rem; flex-shrink: 0;
@@ -177,7 +177,7 @@ input, select { font-family: inherit; outline: none; border: none; }
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: .3rem; cursor: pointer;
   background: transparent;
-  color: oklch(1 0 0 / 0.32);
+  color: oklch(0.15 0 0 / 0.6);
   font-size: .5rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
   transition: all .2s ease;
   border: none; touch-action: manipulation;
@@ -185,7 +185,7 @@ input, select { font-family: inherit; outline: none; border: none; }
 }
 .nav-item svg {
   width: 28px; height: 28px;
-  stroke: oklch(1 0 0 / 0.32);
+  stroke: oklch(0.15 0 0 / 0.6);
   fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round;
   transition: stroke .2s ease;
 }
@@ -193,7 +193,7 @@ input, select { font-family: inherit; outline: none; border: none; }
 .nav-item:hover svg { stroke: oklch(1 0 0 / 0.72); }
 .nav-item:active { transform: scale(.97); }
 
-.nav-item.active { color: var(--foreground); background: transparent; }
+.nav-item.active { color: oklch(0.12 0 0); background: transparent; }
 .nav-item.active .nav-icon-wrap {
   background: var(--nav-color, var(--primary));
   box-shadow: 0 4px 20px var(--nav-glow, var(--primary-glow));
