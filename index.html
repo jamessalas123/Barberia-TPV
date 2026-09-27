@@ -342,8 +342,8 @@ input, select { font-family: inherit; outline: none; border: none; }
 .pg-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.125rem; gap: 1rem; flex-wrap: wrap; }
 .date-inp {
   height: 48px; padding: 0 1rem; border-radius: var(--radius-xl);
-  background: var(--input); border: 1.5px solid var(--border);
-  color: var(--foreground); font-size: .875rem; cursor: pointer; font-weight: 600; transition: all .2s;
+  background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.75);
+  color: #fff; font-size: .875rem; cursor: pointer; font-weight: 600; transition: all .2s;
 }
 .date-inp:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); outline: none; }
 
@@ -399,8 +399,8 @@ input, select { font-family: inherit; outline: none; border: none; }
 }
 
 .slot.free {
-  background: linear-gradient(oklch(0.68 0.18 145 / 0.22), oklch(0.68 0.18 145 / 0.22)), rgba(18,18,18,0.55);
-  border: 1.5px solid oklch(0.68 0.18 145 / 0.35);
+  background: rgba(255,255,255,0.06);
+  border: 1.5px solid oklch(0.68 0.18 145);
 }
 .slot.free:hover {
   background: linear-gradient(oklch(0.68 0.18 145 / 0.3), oklch(0.68 0.18 145 / 0.3)), rgba(18,18,18,0.55);
@@ -408,8 +408,8 @@ input, select { font-family: inherit; outline: none; border: none; }
   box-shadow: 0 4px 20px var(--success-glow);
 }
 .slot.busy {
-  background: linear-gradient(oklch(0.62 0.22 25 / 0.22), oklch(0.62 0.22 25 / 0.22)), rgba(18,18,18,0.55);
-  border: 1.5px solid oklch(0.62 0.22 25 / 0.4);
+  background: rgba(255,255,255,0.06);
+  border: 1.5px solid oklch(0.62 0.22 25);
 }
 .slot.busy:hover {
   background: linear-gradient(oklch(0.62 0.22 25 / 0.3), oklch(0.62 0.22 25 / 0.3)), rgba(18,18,18,0.55);
@@ -417,8 +417,8 @@ input, select { font-family: inherit; outline: none; border: none; }
   box-shadow: 0 4px 20px var(--destructive-glow);
 }
 .slot.paid {
-  background: linear-gradient(oklch(0.78 0.16 75 / 0.22), oklch(0.78 0.16 75 / 0.22)), rgba(18,18,18,0.55);
-  border: 1.5px solid oklch(0.78 0.16 75 / 0.4);
+  background: rgba(255,255,255,0.06);
+  border: 1.5px solid oklch(0.78 0.16 75);
 }
 .slot.paid:hover {
   background: linear-gradient(oklch(0.78 0.16 75 / 0.3), oklch(0.78 0.16 75 / 0.3)), rgba(18,18,18,0.55);
