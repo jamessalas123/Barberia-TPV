@@ -693,9 +693,9 @@ input, select { font-family: inherit; outline: none; border: none; }
 .kard:hover { border-color: var(--accent); box-shadow: 0 4px 24px oklch(0 0 0 / 0.35), 0 0 20px var(--primary-glow); }
 .kard-glow-primary { border-color: rgba(255,255,255,0.85); box-shadow: 0 0 18px rgba(255,255,255,0.35); }
 .kard-glow-success { border-color: var(--success); box-shadow: 0 0 18px var(--success-glow); }
-.kard-glow-neutral { border-color: oklch(1 0 0 / 0.22); box-shadow: 0 0 16px oklch(1 0 0 / 0.10); }
+.kard-glow-neutral { border-color: rgba(255,255,255,0.75); box-shadow: 0 0 16px rgba(255,255,255,0.25); }
 .kard-icon { font-size: 1rem; margin-bottom: .375rem; }
-.kard-lbl { font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted-foreground); font-weight: 600; margin-bottom: .5rem; }
+.kard-lbl { font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: rgba(255,255,255,0.85); font-weight: 600; margin-bottom: .5rem; }
 .kard-val { font-size: 2rem; font-weight: 900; line-height: 1; color: var(--foreground); font-variant-numeric: tabular-nums; }
 .kard-sub { font-size: .72rem; color: var(--muted-foreground); margin-top: .375rem; }
 .sec-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted-foreground); font-weight: 600; margin-bottom: .625rem; }
@@ -829,12 +829,12 @@ input, select { font-family: inherit; outline: none; border: none; }
 /* ── ANALÍTICAS ───────────────────────────────────────────────── */
 .stats3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .75rem; margin-bottom: 1.125rem; }
 .scard {
-  background: var(--card); border: 1.5px solid var(--border);
+  background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.75);
   border-radius: var(--radius-2xl); padding: 1.25rem; transition: all .22s;
 }
 .scard:hover { border-color: var(--accent); box-shadow: 0 4px 24px oklch(0 0 0 / 0.35); }
-.sc-lbl { font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted-foreground); font-weight: 700; margin-bottom: .5rem; }
-.sc-val { font-size: 2.75rem; font-weight: 900; line-height: 1; margin-bottom: .3rem; color: var(--foreground); font-variant-numeric: tabular-nums; }
+.sc-lbl { font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; color: rgba(255,255,255,0.85); font-weight: 700; margin-bottom: .5rem; }
+.sc-val { font-size: 2.75rem; font-weight: 900; line-height: 1; margin-bottom: .3rem; color: #fff; font-variant-numeric: tabular-nums; }
 .sc-sub { font-size: .78rem; font-weight: 700; }
 .sc-up { color: var(--success); }
 .sc-dn { color: var(--destructive); }
@@ -853,7 +853,7 @@ input, select { font-family: inherit; outline: none; border: none; }
 .bb-btn {
   width: 100%; height: 64px;
   border-radius: var(--radius-2xl);
-  background: oklch(0.19 0.022 270);
+  background: rgba(255,255,255,0.06);
   border: 1.5px solid oklch(0.70 0.15 240 / 0.45);
   color: var(--foreground);
   font-weight: 800; font-size: .95rem;
@@ -885,7 +885,7 @@ input, select { font-family: inherit; outline: none; border: none; }
 
 .bb-result {
   margin-top: .75rem;
-  background: oklch(0.19 0.022 270);
+  background: rgba(255,255,255,0.06);
   border: 1.5px solid oklch(0.70 0.15 240 / 0.32);
   border-radius: var(--radius-2xl);
   overflow: hidden;
@@ -2394,19 +2394,19 @@ async function pgCaja(el){
       <div class="kard kard-glow-neutral">
         <div class="kard-icon">💵</div>
         <div class="kard-lbl">Caja Efectivo</div>
-        <div class="kard-val" style="color:var(--muted-foreground)">${eur(int)}</div>
+        <div class="kard-val" style="color:#fff">${eur(int)}</div>
         <div class="kard-sub">Registros en efectivo</div>
       </div>
       <div class="kard kard-glow-neutral">
         <div class="kard-icon">💳</div>
         <div class="kard-lbl">Caja Tarjeta/Transferencia</div>
-        <div class="kard-val" style="color:var(--success)">${eur(of)}</div>
+        <div class="kard-val" style="color:#fff">${eur(of)}</div>
         <div class="kard-sub">${ap.filter(a=>a.payment_type==='oficial').length} cobro${ap.filter(a=>a.payment_type==='oficial').length===1?'':'s'} registrado${ap.filter(a=>a.payment_type==='oficial').length===1?'':'s'}</div>
       </div>
       <div class="kard kard-glow-primary">
         <div class="kard-icon">📈</div>
         <div class="kard-lbl">Caja Total Real</div>
-        <div class="kard-val" style="color:var(--primary)">${eur(tot)}</div>
+        <div class="kard-val" style="color:#fff">${eur(tot)}</div>
         <div class="kard-sub">Todo lo cobrado</div>
       </div>
     </div>
