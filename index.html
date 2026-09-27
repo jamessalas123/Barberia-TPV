@@ -767,16 +767,16 @@ input, select { font-family: inherit; outline: none; border: none; }
 .cierre-tag { font-size: .75rem; letter-spacing: .05em; color: var(--muted-foreground); font-weight: 700; text-transform: uppercase; }
 .cierre-fecha { font-size: 1.4rem; font-weight: 800; margin: .1rem 0 .75rem; }
 .cierre-badge { font-size: .78rem; font-weight: 600; color: var(--primary); background: var(--muted); border: 1px solid var(--primary); border-radius: var(--radius-lg); padding: .625rem .875rem; }
-.cierre-badge-pendiente { color: var(--muted-foreground); border-color: var(--border); }
+.cierre-badge-pendiente { color: #fff; border-color: rgba(255,255,255,0.75); background: rgba(255,255,255,0.08); }
 .cierre-num { font-size: 1.5rem; font-weight: 800; color: var(--primary); text-shadow: 0 0 12px var(--primary-glow); font-variant-numeric: tabular-nums; }
 .cierre-neto {
   margin-top: 1.25rem; border-radius: var(--radius-xl); padding: 1.25rem 1.375rem;
-  background: linear-gradient(135deg, oklch(0.78 0.16 75 / 0.14), var(--card));
+  background: rgba(255,255,255,0.08);
   border: 2px solid var(--primary); box-shadow: 0 0 32px var(--primary-glow);
 }
-.cierre-neto-lbl { font-size: .72rem; letter-spacing: .05em; text-transform: uppercase; font-weight: 700; color: var(--primary); margin-bottom: .3rem; }
-.cierre-neto-formula { font-size: .72rem; color: var(--muted-foreground); margin-bottom: .625rem; }
-.cierre-neto-val { font-size: 2.4rem; font-weight: 900; color: var(--primary); text-shadow: 0 0 22px var(--primary-glow); font-variant-numeric: tabular-nums; }
+.cierre-neto-lbl { font-size: .72rem; letter-spacing: .05em; text-transform: uppercase; font-weight: 700; color: #fff; margin-bottom: .3rem; }
+.cierre-neto-formula { font-size: .72rem; color: rgba(255,255,255,0.8); margin-bottom: .625rem; }
+.cierre-neto-val { font-size: 2.4rem; font-weight: 900; color: #fff; text-shadow: 0 0 22px var(--primary-glow); font-variant-numeric: tabular-nums; }
 
 /* ── GASTOS ───────────────────────────────────────────────────── */
 .gform {
@@ -789,8 +789,8 @@ input, select { font-family: inherit; outline: none; border: none; }
 .fg-lbl { font-size: .72rem; font-weight: 600; color: var(--muted-foreground); margin-bottom: .3rem; text-transform: uppercase; letter-spacing: .05em; }
 .fg-sel, .fg-inp {
   height: 48px; padding: 0 .75rem; border-radius: var(--radius-lg);
-  background: var(--input); border: 1.5px solid var(--border);
-  color: var(--foreground); font-size: .9rem; transition: all .2s;
+  background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.75);
+  color: #fff; font-size: .9rem; transition: all .2s;
   width: 100%; box-sizing: border-box; min-width: 0;
 }
 .fg-sel:focus, .fg-inp:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); outline: none; }
