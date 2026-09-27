@@ -163,11 +163,10 @@ input, select { font-family: inherit; outline: none; border: none; }
 
 .logo-wrap {
   width: 56px; height: 56px;
-  background: var(--primary);
+  background: transparent;
   border-radius: var(--radius-2xl);
   display: grid; place-items: center;
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 20px var(--primary-glow), 0 0 0 1.5px oklch(1 0 0 / 0.12);
   color: var(--primary-foreground);
 }
 .logo-wrap svg { width: 28px; height: 28px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -400,30 +399,30 @@ input, select { font-family: inherit; outline: none; border: none; }
 }
 
 .slot.free {
-  background: linear-gradient(oklch(0.68 0.18 145 / 0.22), oklch(0.68 0.18 145 / 0.22)), rgba(18,18,18,0.55);
-  border: 1.5px solid oklch(0.68 0.18 145 / 0.35);
+  background: linear-gradient(oklch(0.68 0.22 145 / 0.45), oklch(0.68 0.22 145 / 0.45)), rgba(18,18,18,0.6);
+  border: 2px solid oklch(0.68 0.22 145 / 0.9);
 }
 .slot.free:hover {
-  background: linear-gradient(oklch(0.68 0.18 145 / 0.3), oklch(0.68 0.18 145 / 0.3)), rgba(18,18,18,0.55);
-  border-color: oklch(0.68 0.18 145 / 0.55);
+  background: linear-gradient(oklch(0.68 0.22 145 / 0.55), oklch(0.68 0.22 145 / 0.55)), rgba(18,18,18,0.6);
+  border-color: oklch(0.68 0.22 145);
   box-shadow: 0 4px 20px var(--success-glow);
 }
 .slot.busy {
-  background: linear-gradient(oklch(0.62 0.22 25 / 0.22), oklch(0.62 0.22 25 / 0.22)), rgba(18,18,18,0.55);
-  border: 1.5px solid oklch(0.62 0.22 25 / 0.4);
+  background: linear-gradient(oklch(0.62 0.26 25 / 0.45), oklch(0.62 0.26 25 / 0.45)), rgba(18,18,18,0.6);
+  border: 2px solid oklch(0.62 0.26 25 / 0.9);
 }
 .slot.busy:hover {
-  background: linear-gradient(oklch(0.62 0.22 25 / 0.3), oklch(0.62 0.22 25 / 0.3)), rgba(18,18,18,0.55);
-  border-color: oklch(0.62 0.22 25 / 0.58);
+  background: linear-gradient(oklch(0.62 0.26 25 / 0.55), oklch(0.62 0.26 25 / 0.55)), rgba(18,18,18,0.6);
+  border-color: oklch(0.62 0.26 25);
   box-shadow: 0 4px 20px var(--destructive-glow);
 }
 .slot.paid {
-  background: linear-gradient(oklch(0.78 0.16 75 / 0.22), oklch(0.78 0.16 75 / 0.22)), rgba(18,18,18,0.55);
-  border: 1.5px solid oklch(0.78 0.16 75 / 0.4);
+  background: linear-gradient(oklch(0.78 0.2 75 / 0.45), oklch(0.78 0.2 75 / 0.45)), rgba(18,18,18,0.6);
+  border: 2px solid oklch(0.78 0.2 75 / 0.9);
 }
 .slot.paid:hover {
-  background: linear-gradient(oklch(0.78 0.16 75 / 0.3), oklch(0.78 0.16 75 / 0.3)), rgba(18,18,18,0.55);
-  border-color: oklch(0.78 0.16 75 / 0.58);
+  background: linear-gradient(oklch(0.78 0.2 75 / 0.55), oklch(0.78 0.2 75 / 0.55)), rgba(18,18,18,0.6);
+  border-color: oklch(0.78 0.2 75);
   box-shadow: 0 4px 20px var(--primary-glow);
 }
 
@@ -1964,7 +1963,7 @@ function appScreen(){
   document.getElementById('root').innerHTML=`
   <div class="app">
     <nav class="sidebar">
-      <div class="logo-wrap"><img src="logo-huella.png" alt="Barbería TPV" style="width:38px;height:38px;object-fit:contain"/></div>
+      <div class="logo-wrap"><img src="logo-huella.png" alt="Barbería TPV" style="width:56px;height:56px;object-fit:contain"/></div>
       ${navBtn('agenda',ICON_CAL,'Agenda','oklch(0.78 0.16 75)','oklch(0.78 0.16 75 / 0.38)')}
       ${navBtn('caja',ICON_WALLET,'Caja','oklch(0.68 0.18 145)','oklch(0.68 0.18 145 / 0.38)')}
       ${navBtn('analiticas',ICON_BAR,'Stats','oklch(0.70 0.15 240)','oklch(0.70 0.15 240 / 0.38)')}
