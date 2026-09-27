@@ -408,7 +408,7 @@ input, select { font-family: inherit; outline: none; border: none; }
   box-shadow: 0 4px 20px var(--success-glow);
 }
 .slot.busy {
-  background: rgba(255,255,255,0.06);
+  background: linear-gradient(oklch(0.62 0.22 25 / 0.32), oklch(0.62 0.22 25 / 0.32)), rgba(18,18,18,0.5);
   border: 1.5px solid oklch(0.62 0.22 25);
 }
 .slot.busy:hover {
@@ -417,7 +417,7 @@ input, select { font-family: inherit; outline: none; border: none; }
   box-shadow: 0 4px 20px var(--destructive-glow);
 }
 .slot.paid {
-  background: rgba(255,255,255,0.06);
+  background: linear-gradient(oklch(0.78 0.16 75 / 0.32), oklch(0.78 0.16 75 / 0.32)), rgba(18,18,18,0.5);
   border: 1.5px solid oklch(0.78 0.16 75);
 }
 .slot.paid:hover {
@@ -575,8 +575,8 @@ input, select { font-family: inherit; outline: none; border: none; }
 /* ── COBRO ────────────────────────────────────────────────────── */
 .pay-amt {
   width: 100%; height: 72px; padding: 0 1rem; border-radius: var(--radius-xl);
-  background: var(--input); border: 1.5px solid var(--border);
-  color: var(--foreground); font-size: 2.25rem; font-weight: 900;
+  background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.75);
+  color: var(--primary); font-size: 2.25rem; font-weight: 900;
   font-variant-numeric: tabular-nums; margin-bottom: .875rem; transition: all .2s;
 }
 .pay-amt:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); outline: none; }
