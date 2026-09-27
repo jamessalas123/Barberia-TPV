@@ -2757,6 +2757,8 @@ async function pgAnaliticas(el){
       y:{grid:{color:gridColor},ticks:{color:tickColor,font:{size:12}}}
     }
   };
+  if(charts.c){try{charts.c.destroy();}catch(e){}}
+  if(charts.i){try{charts.i.destroy();}catch(e){}}
   charts.c=new Chart(document.getElementById('cc'),{type:'bar',data:{labels:DAYS,datasets:[{data:cd,backgroundColor:'oklch(0.78 0.16 75)',borderRadius:8,borderSkipped:false}]},options:cfg});
   charts.i=new Chart(document.getElementById('ci'),{type:'bar',data:{labels:DAYS,datasets:[{data:id2,backgroundColor:'oklch(0.68 0.18 145)',borderRadius:8,borderSkipped:false}]},options:cfg});
 
