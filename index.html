@@ -350,8 +350,8 @@ input, select { font-family: inherit; outline: none; border: none; }
 .agendar-box {
   position: relative; display: flex; align-items: center; gap: .75rem;
   padding: .625rem 1.125rem; border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, oklch(1 0 0 / 0.1), var(--card));
-  border: 2px solid rgba(255,255,255,0.85); box-shadow: 0 0 24px rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.1);
+  border: 1.5px solid rgba(255,255,255,0.75); box-shadow: 0 0 24px rgba(255,255,255,0.3);
   min-width: 150px; cursor: pointer; touch-action: manipulation;
 }
 .agendar-lbl { font-size: 1rem; font-weight: 700; color: #fff; margin: 0 0 .15rem; }
@@ -370,12 +370,12 @@ input, select { font-family: inherit; outline: none; border: none; }
 .legend {
   display: grid; grid-template-columns: 1fr 1fr 1fr;
   gap: .5rem; margin-bottom: .875rem;
-  background: var(--card);
-  border: 1.5px solid var(--border);
+  background: rgba(255,255,255,0.1);
+  border: 1.5px solid rgba(255,255,255,0.75);
   border-radius: var(--radius-xl);
   padding: .75rem 1rem;
 }
-.leg { display: flex; align-items: center; gap: .45rem; font-size: .82rem; font-weight: 600; color: var(--foreground); padding: .4rem .75rem; border-radius: var(--radius-lg); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.4); }
+.leg { display: flex; align-items: center; gap: .45rem; font-size: .82rem; font-weight: 600; color: #fff; padding: .4rem .75rem; border-radius: var(--radius-lg); background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.75); }
 .leg:nth-child(2) { justify-content: center; }
 .leg:nth-child(3) { justify-content: flex-end; }
 .dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
@@ -1957,7 +1957,7 @@ function appScreen(){
       </button>`:'');
   const bannerDemo=esDemo?`
     <div style="background:oklch(1 0 0 / 0.08);border-bottom:1.5px solid rgba(255,255,255,0.7);padding:.625rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap">
-      <span style="font-size:.82rem;font-weight:600;color:#fff;display:inline-flex;align-items:center;gap:.4rem"><img src="logo-huella.png" style="width:16px;height:16px;object-fit:contain" alt=""/> Modo demostración · datos de ejemplo, no se guardan de verdad</span>
+      <span style="font-size:.82rem;font-weight:600;color:#fff;display:inline-flex;align-items:center;gap:.4rem"><img src="logo-huella.png" style="width:30px;height:30px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(255,255,255,0.5))" alt=""/> Modo demostración · datos de ejemplo, no se guardan de verdad</span>
       <button style="background:rgba(255,255,255,0.1);color:#fff;border:1.5px solid rgba(255,255,255,0.75);width:auto;padding:.625rem 1.125rem;font-size:.8rem;font-weight:700;border-radius:var(--radius-lg);display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;touch-action:manipulation" onclick="authScreen('register')" ontouchend="event.preventDefault();authScreen('register')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>Crear mi cuenta</button>
     </div>`:'';
   document.getElementById('root').innerHTML=`
