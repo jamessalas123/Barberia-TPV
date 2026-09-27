@@ -86,15 +86,20 @@
 }
 html, body, #root { height: 100%; }
 body {
-  background: linear-gradient(to bottom,
-    rgb(52,52,52) 0%,
-    rgb(58,58,58) 30%,
-    rgb(62,62,62) 55%,
-    rgb(64,64,64) 78%,
-    rgb(65,65,65) 88%,
-    rgb(54,54,54) 95%,
-    rgb(44,44,44) 100%);
-  background-attachment: fixed;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, oklch(0.82 0.16 82 / 18%), transparent 70%),
+    linear-gradient(to right, oklch(1 0 0 / 4%) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 4%) 1px, transparent 1px),
+    linear-gradient(to bottom,
+      rgb(52,52,52) 0%,
+      rgb(58,58,58) 30%,
+      rgb(62,62,62) 55%,
+      rgb(64,64,64) 78%,
+      rgb(65,65,65) 88%,
+      rgb(54,54,54) 95%,
+      rgb(44,44,44) 100%);
+  background-size: auto, 48px 48px, 48px 48px, auto;
+  background-attachment: fixed, fixed, fixed, fixed;
   color: var(--foreground);
   font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   -webkit-tap-highlight-color: transparent;
