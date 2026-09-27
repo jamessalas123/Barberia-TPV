@@ -142,11 +142,11 @@ input, select { font-family: inherit; outline: none; border: none; }
 /* ── SIDEBAR ──────────────────────────────────────────────────── */
 .sidebar {
   width: 84px; height: 100vh;
-  background: var(--card);
-  border-right: 1px solid oklch(1 0 0 / 0.06);
+  background: rgba(255,255,255,0.035);
+  border: 1.5px solid rgba(255,255,255,0.55);
   display: flex; flex-direction: column; align-items: center;
   padding: 1.25rem 0; gap: .25rem; flex-shrink: 0;
-  box-shadow: 2px 0 24px oklch(0 0 0 / 0.45);
+  box-shadow: 0 0 16px rgba(255,255,255,0.22), 2px 0 24px oklch(0 0 0 / 0.45);
   overflow-y: auto; overflow-x: hidden;
   scrollbar-width: none; position: relative;
 }
