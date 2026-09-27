@@ -360,8 +360,8 @@ input, select { font-family: inherit; outline: none; border: none; }
 
 .btn-anonimo {
   height: 48px; padding: 0 1rem; border-radius: var(--radius-lg);
-  background: oklch(0.78 0.16 75 / 0.14); border: 1.5px solid var(--primary);
-  color: var(--primary); font-size: .82rem; font-weight: 700; white-space: nowrap;
+  background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.75);
+  color: #fff; font-size: .82rem; font-weight: 700; white-space: nowrap;
   touch-action: manipulation; cursor: pointer;
 }
 .btn-anonimo:active { transform: scale(.97); }
@@ -403,9 +403,8 @@ input, select { font-family: inherit; outline: none; border: none; }
   border: 1.5px solid oklch(0.68 0.18 145);
 }
 .slot.free:hover {
-  background: linear-gradient(oklch(0.68 0.18 145 / 0.3), oklch(0.68 0.18 145 / 0.3)), rgba(18,18,18,0.55);
-  border-color: oklch(0.68 0.18 145 / 0.55);
-  box-shadow: 0 4px 20px var(--success-glow);
+  background: rgba(255,255,255,0.06);
+  border-color: oklch(0.68 0.18 145);
 }
 .slot.busy {
   background: linear-gradient(oklch(0.62 0.22 25 / 0.32), oklch(0.62 0.22 25 / 0.32)), rgba(18,18,18,0.5);
@@ -558,8 +557,8 @@ input, select { font-family: inherit; outline: none; border: none; }
 .m-label { font-size: .78rem; font-weight: 600; color: var(--muted-foreground); margin-bottom: .4rem; display: block; }
 .m-input {
   width: 100%; height: 56px; padding: 0 1rem; border-radius: var(--radius-xl);
-  background: var(--input); border: 1.5px solid var(--border);
-  color: var(--foreground); font-size: 1.1rem; margin-bottom: 1.125rem; transition: all .2s;
+  background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.75);
+  color: #fff; font-size: 1.1rem; margin-bottom: 1.125rem; transition: all .2s;
 }
 .m-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); outline: none; }
 .m-btn {
