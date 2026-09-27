@@ -86,7 +86,15 @@
 }
 html, body, #root { height: 100%; }
 body {
-  background-color: var(--background);
+  background: linear-gradient(to bottom,
+    rgb(55,55,55) 0%,
+    rgb(70,70,70) 30%,
+    rgb(95,95,95) 55%,
+    rgb(118,118,118) 78%,
+    rgb(125,125,125) 88%,
+    rgb(85,85,85) 95%,
+    rgb(45,45,45) 100%);
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   -webkit-tap-highlight-color: transparent;
@@ -200,10 +208,6 @@ input, select { font-family: inherit; outline: none; border: none; }
 /* ── AUTH ─────────────────────────────────────────────────────── */
 .auth-wrap {
   min-height: 100vh; display: grid; place-items: center; padding: 1rem;
-  background: linear-gradient(to bottom,
-    oklch(0.32 0 0) 0%,
-    oklch(0.52 0 0) 88%,
-    oklch(0.28 0 0) 100%);
 }
 .auth-logo-img { width: 90px; height: auto; margin: 0 auto 1rem; display: block; }
 .auth-brand { font-family: 'Great Vibes', cursive; font-size: 2.6rem; text-align: center; margin-bottom: .25rem; line-height: 1; }
@@ -211,8 +215,10 @@ input, select { font-family: inherit; outline: none; border: none; }
 .auth-brand .parte2 { color: var(--primary); }
 .auth-card {
   width: 100%; max-width: 400px;
-  background: var(--card);
-  border: 1.5px solid var(--border);
+  background: rgba(20,20,20,0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1.5px solid var(--primary);
   border-radius: var(--radius-3xl); padding: 2.25rem;
   box-shadow: 0 25px 50px oklch(0 0 0 / 0.55), 0 0 0 1px oklch(1 0 0 / 0.04);
 }
