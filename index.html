@@ -25,7 +25,7 @@
   --popover-foreground:     oklch(0.97 0.005 270);
 
   /* Marca — ÁMBAR */
-  --primary:                oklch(0.78 0.16 75);
+  --primary:                oklch(0.78 0.20 75);
   --primary-foreground:     oklch(0.18 0.02 75);
   --primary-glow:           oklch(0.78 0.16 75 / 0.32);
 
@@ -38,10 +38,10 @@
   --accent-foreground:      oklch(0.97 0.005 270);
 
   /* Semánticos */
-  --destructive:            oklch(0.62 0.22 25);
+  --destructive:            oklch(0.62 0.26 25);
   --destructive-foreground: oklch(0.98 0.01 25);
   --destructive-glow:       oklch(0.62 0.22 25 / 0.30);
-  --success:                oklch(0.68 0.18 145);
+  --success:                oklch(0.68 0.22 145);
   --success-foreground:     oklch(0.15 0.02 145);
   --success-glow:           oklch(0.68 0.18 145 / 0.28);
   --warning:                oklch(0.78 0.16 75);
@@ -230,13 +230,7 @@ input, select { font-family: inherit; outline: none; border: none; }
 .auth-wrap {
   min-height: 100vh; display: grid; place-items: center; padding: 1rem;
 }
-.auth-logo-badge {
-  width: 84px; height: 84px; margin: 0 auto 1.25rem;
-  background: var(--primary); border-radius: var(--radius-2xl);
-  display: grid; place-items: center; color: var(--primary-foreground);
-  box-shadow: 0 4px 24px var(--primary-glow), 0 0 0 1.5px oklch(1 0 0 / 0.12);
-}
-.auth-logo-badge svg { width: 40px; height: 40px; }
+.auth-logo-img { width: 90px; height: auto; margin: 0 auto 1rem; display: block; }
 .auth-brand { font-family: 'Great Vibes', cursive; font-size: 2.6rem; text-align: center; margin-bottom: .25rem; line-height: 1; }
 .auth-brand .parte1 { color: #f0e8da; }
 .auth-brand .parte2 { color: var(--primary); }
@@ -1437,7 +1431,7 @@ function authScreen(view='login'){
   if(view==='login'){
     document.getElementById('root').innerHTML=`
     <div class="auth-wrap"><div class="auth-card">
-      <div class="auth-logo-badge">${ICON_SCISSORS}</div>
+      <img src="logo-huella.png" alt="Barbería TPV" class="auth-logo-img"/>
       <div class="auth-brand"><span class="parte1">Barbería </span><span class="parte2">TPV</span></div>
       <p class="auth-sub">Acceso privado del barbero</p>
       <div class="auth-tabs">
@@ -1466,7 +1460,7 @@ function authScreen(view='login'){
   if(view==='register'){
     document.getElementById('root').innerHTML=`
     <div class="auth-wrap"><div class="auth-card">
-      <div class="auth-logo-badge">${ICON_SCISSORS}</div>
+      <img src="logo-huella.png" alt="Barbería TPV" class="auth-logo-img"/>
       <h1 class="auth-h1">Crear cuenta</h1>
       <p class="auth-sub">30 días de prueba gratis</p>
       <div class="auth-tabs">
@@ -1503,7 +1497,7 @@ function authScreen(view='login'){
   if(view==='newpass'){
     document.getElementById('root').innerHTML=`
     <div class="auth-wrap"><div class="auth-card">
-      <div class="auth-logo-badge">${ICON_SCISSORS}</div>
+      <img src="logo-huella.png" alt="Barbería TPV" class="auth-logo-img"/>
       <h1 class="auth-h1" style="font-size:1.35rem">Nueva contraseña</h1>
       <p class="auth-sub">Escribe tu nueva contraseña para ${sess?.email||'tu cuenta'}</p>
       <label class="f-label">Nueva contraseña <span style="color:var(--muted-foreground);font-weight:400">(mín. 6 caracteres)</span></label>
@@ -1531,7 +1525,7 @@ function authScreen(view='login'){
       <button class="auth-back" onclick="authScreen('login')" ontouchend="event.preventDefault();authScreen('login')">
         ${ICON_BACK_SVG} Volver al login
       </button>
-      <div class="auth-logo-badge">${ICON_SCISSORS}</div>
+      <img src="logo-huella.png" alt="Barbería TPV" class="auth-logo-img"/>
       <h1 class="auth-h1" style="font-size:1.35rem">Recuperar acceso</h1>
       <p class="auth-sub">Te enviaremos un código a tu correo</p>
       <label class="f-label">Correo electrónico</label>
@@ -1970,7 +1964,7 @@ function appScreen(){
   document.getElementById('root').innerHTML=`
   <div class="app">
     <nav class="sidebar">
-      <div class="logo-wrap">${ICON_SCISSORS}</div>
+      <div class="logo-wrap"><img src="logo-huella.png" alt="Barbería TPV" style="width:38px;height:38px;object-fit:contain"/></div>
       ${navBtn('agenda',ICON_CAL,'Agenda','oklch(0.78 0.16 75)','oklch(0.78 0.16 75 / 0.38)')}
       ${navBtn('caja',ICON_WALLET,'Caja','oklch(0.68 0.18 145)','oklch(0.68 0.18 145 / 0.38)')}
       ${navBtn('analiticas',ICON_BAR,'Stats','oklch(0.70 0.15 240)','oklch(0.70 0.15 240 / 0.38)')}
