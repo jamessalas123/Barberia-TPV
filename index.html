@@ -230,7 +230,13 @@ input, select { font-family: inherit; outline: none; border: none; }
 .auth-wrap {
   min-height: 100vh; display: grid; place-items: center; padding: 1rem;
 }
-.auth-logo-img { width: 90px; height: auto; margin: 0 auto 1rem; display: block; }
+.auth-logo-badge {
+  width: 84px; height: 84px; margin: 0 auto 1.25rem;
+  background: var(--primary); border-radius: var(--radius-2xl);
+  display: grid; place-items: center; color: var(--primary-foreground);
+  box-shadow: 0 4px 24px var(--primary-glow), 0 0 0 1.5px oklch(1 0 0 / 0.12);
+}
+.auth-logo-badge svg { width: 40px; height: 40px; }
 .auth-brand { font-family: 'Great Vibes', cursive; font-size: 2.6rem; text-align: center; margin-bottom: .25rem; line-height: 1; }
 .auth-brand .parte1 { color: #f0e8da; }
 .auth-brand .parte2 { color: var(--primary); }
@@ -1431,7 +1437,7 @@ function authScreen(view='login'){
   if(view==='login'){
     document.getElementById('root').innerHTML=`
     <div class="auth-wrap"><div class="auth-card">
-      <img src="logo-huella.png" alt="Barbería TPV" class="auth-logo-img"/>
+      <div class="auth-logo-badge">${ICON_SCISSORS}</div>
       <div class="auth-brand"><span class="parte1">Barbería </span><span class="parte2">TPV</span></div>
       <p class="auth-sub">Acceso privado del barbero</p>
       <div class="auth-tabs">
@@ -1460,7 +1466,7 @@ function authScreen(view='login'){
   if(view==='register'){
     document.getElementById('root').innerHTML=`
     <div class="auth-wrap"><div class="auth-card">
-      <img src="logo-huella.png" alt="Barbería TPV" class="auth-logo-img"/>
+      <div class="auth-logo-badge">${ICON_SCISSORS}</div>
       <h1 class="auth-h1">Crear cuenta</h1>
       <p class="auth-sub">30 días de prueba gratis</p>
       <div class="auth-tabs">
@@ -1497,7 +1503,7 @@ function authScreen(view='login'){
   if(view==='newpass'){
     document.getElementById('root').innerHTML=`
     <div class="auth-wrap"><div class="auth-card">
-      <img src="logo-huella.png" alt="Barbería TPV" class="auth-logo-img"/>
+      <div class="auth-logo-badge">${ICON_SCISSORS}</div>
       <h1 class="auth-h1" style="font-size:1.35rem">Nueva contraseña</h1>
       <p class="auth-sub">Escribe tu nueva contraseña para ${sess?.email||'tu cuenta'}</p>
       <label class="f-label">Nueva contraseña <span style="color:var(--muted-foreground);font-weight:400">(mín. 6 caracteres)</span></label>
@@ -1525,7 +1531,7 @@ function authScreen(view='login'){
       <button class="auth-back" onclick="authScreen('login')" ontouchend="event.preventDefault();authScreen('login')">
         ${ICON_BACK_SVG} Volver al login
       </button>
-      <img src="logo-huella.png" alt="Barbería TPV" class="auth-logo-img"/>
+      <div class="auth-logo-badge">${ICON_SCISSORS}</div>
       <h1 class="auth-h1" style="font-size:1.35rem">Recuperar acceso</h1>
       <p class="auth-sub">Te enviaremos un código a tu correo</p>
       <label class="f-label">Correo electrónico</label>
