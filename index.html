@@ -1265,7 +1265,7 @@ async function draw(){
   let intentos=vieneDePago?6:1;
   let data,error;
   for(let i=0;i<intentos;i++){
-    ({data,error}=await sb.from('profiles').select('plan_status,trial_ends_at,session_token,pais,tipo_cuenta').eq('id',user.id).single());
+    ({data,error}=await sb.from('profiles').select('plan_status,trial_ends_at,session_token,pais,tipo_cuenta,nombre').eq('id',user.id).single());
     if(data&&data.plan_status==='active')break;
     if(i<intentos-1)await new Promise(r=>setTimeout(r,1000));
   }
@@ -1463,6 +1463,9 @@ function authScreen(view='login'){
         <button class="auth-tab" onclick="authScreen('login')" ontouchend="event.preventDefault();authScreen('login')">Iniciar sesión</button>
         <button class="auth-tab active" onclick="authScreen('register')" ontouchend="event.preventDefault();authScreen('register')">Registrarse</button>
       </div>
+      <label class="f-label">Nombre</label>
+      <input id="rn" class="f-input" type="text" placeholder="Tu nombre" autocomplete="given-name"/>
+      <div id="err-rn" class="f-err"></div>
       <label class="f-label">País</label>
       <input type="hidden" id="rpais" value="ES"/>
       <div class="pais-compact">
@@ -1593,7 +1596,7 @@ function normalizarTelefono(raw){
   return t;
 }
 
-function pantallaCodigoConfirmacion(email,telefono,pais){
+function pantallaCodigoConfirmacion(email,telefono,pais,nombre){
   document.getElementById('root').innerHTML=`
   <div class="auth-wrap"><div class="auth-card" style="max-width:440px;text-align:center">
     <div style="width:72px;height:72px;border-radius:50%;background:oklch(0.78 0.16 75 / 0.14);border:2px solid oklch(0.78 0.16 75 / 0.4);display:grid;place-items:center;margin:0 auto 1.25rem">
@@ -1612,7 +1615,7 @@ function pantallaCodigoConfirmacion(email,telefono,pais){
       <input maxlength="1" inputmode="numeric" class="otp-box"/>
     </div>
     <div id="err-otp" class="f-err" style="margin-bottom:.75rem"></div>
-    <button class="auth-btn" id="otp-btn" style="width:100%;margin-bottom:.75rem" onclick="confirmarCodigoOtp('${email}','${telefono}','${pais}')" ontouchend="event.preventDefault();confirmarCodigoOtp('${email}','${telefono}','${pais}')">Confirmar código</button>
+    <button class="auth-btn" id="otp-btn" style="width:100%;margin-bottom:.75rem" onclick="confirmarCodigoOtp('${email}','${telefono}','${pais}','${esc(nombre)}')" ontouchend="event.preventDefault();confirmarCodigoOtp('${email}','${telefono}','${pais}','${esc(nombre)}')">Confirmar código</button>
     <div style="background:oklch(0.78 0.16 75 / 0.1);border:1px solid oklch(0.78 0.16 75 / 0.3);border-radius:var(--radius-lg);padding:.875rem 1rem;font-size:.8rem;color:var(--foreground);text-align:left;margin-bottom:.75rem">
       📩 <strong>¿No lo ves en tu bandeja de entrada?</strong> Revisa la carpeta de <strong>Spam / Correo no deseado</strong>.
     </div>
@@ -1646,7 +1649,7 @@ function pantallaCodigoConfirmacion(email,telefono,pais){
   },50);
 }
 
-async function confirmarCodigoOtp(email,telefono,pais){
+async function confirmarCodigoOtp(email,telefono,pais,nombre){
   const boxes=[...document.querySelectorAll('.otp-box')];
   const codigo=boxes.map(b=>b.value).join('');
   if(codigo.length!==8){document.getElementById('err-otp').textContent='Escribe los 8 dígitos del código';return;}
@@ -1664,7 +1667,7 @@ async function confirmarCodigoOtp(email,telefono,pais){
   const trialEnd=new Date(Date.now()+30*24*60*60*1000).toISOString();
   const miToken=crypto.randomUUID();
   const ivaPorDefecto=pais==='CO'?19:21;
-  await sb.from('profiles').insert({id:data.user.id,session_token:miToken,telefono,pais,iva_porcentaje:ivaPorDefecto});
+  await sb.from('profiles').insert({id:data.user.id,session_token:miToken,telefono,pais,nombre:nombre||null,iva_porcentaje:ivaPorDefecto});
   guardarSesionLocal(data.user.id,miToken);
   user=data.user;sess={email:user.email};
   pantallaBienvenida(()=>{
@@ -1686,10 +1689,13 @@ async function reenviarCodigoOtp(email){
 }
 
 async function doRegister(){
+  const nombre=(document.getElementById('rn')?.value||'').trim();
   const email=(document.getElementById('ru')?.value||'').trim();
   const telRaw=document.getElementById('rt')?.value||'';
   const pass=document.getElementById('rp')?.value||'';
   let ok=true;
+  if(!nombre){document.getElementById('err-rn').textContent='El nombre es obligatorio';ok=false;}
+  else document.getElementById('err-rn').textContent='';
   if(!email){document.getElementById('err-ru').textContent='El correo es obligatorio';ok=false;}
   else document.getElementById('err-ru').textContent='';
   const telefono=normalizarTelefono(telRaw);
@@ -1721,12 +1727,12 @@ async function doRegister(){
   }
 
   if(btn)btn.disabled=false;
-  if(!data.session){pantallaCodigoConfirmacion(email,telefono,pais);return;}
+  if(!data.session){pantallaCodigoConfirmacion(email,telefono,pais,nombre);return;}
 
   const trialEnd=new Date(Date.now()+30*24*60*60*1000).toISOString();
   const miToken=crypto.randomUUID();
   const ivaPorDefecto=pais==='CO'?19:21;
-  const{error:errPerfil}=await sb.from('profiles').insert({id:data.user.id,session_token:miToken,telefono,pais,iva_porcentaje:ivaPorDefecto});
+  const{error:errPerfil}=await sb.from('profiles').insert({id:data.user.id,session_token:miToken,telefono,pais,nombre:nombre||null,iva_porcentaje:ivaPorDefecto});
   if(errPerfil){
     await sb.auth.signOut();
     document.getElementById('err-ru').textContent='No se pudo crear el perfil. Intenta de nuevo o inicia sesión si ya tienes cuenta.';
@@ -1988,6 +1994,12 @@ function appScreen(){
       ${navBtn('caja',ICON_WALLET,'Caja','oklch(0.68 0.18 145)','oklch(0.68 0.18 145 / 0.38)')}
       ${navBtn('analiticas',ICON_BAR,'Stats','oklch(0.70 0.15 240)','oklch(0.70 0.15 240 / 0.38)')}
       <div class="nav-spacer"></div>
+      <button class="nav-item" onclick="window.open('https://wa.me/34689042653?text=Hola,%20tengo%20una%20duda%20con%20Barber%C3%ADa%20TPV','_blank')" ontouchend="event.preventDefault();window.open('https://wa.me/34689042653?text=Hola,%20tengo%20una%20duda%20con%20Barber%C3%ADa%20TPV','_blank')">
+        <div class="nav-icon-wrap" style="background:transparent;box-shadow:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+        <span class="nav-label">Soporte</span>
+      </button>
       ${btnSuscribir}
       <button class="nav-item nav-out" onclick="doOut()">
         <div class="nav-icon-wrap">${ICON_OUT}</div>
@@ -2097,7 +2109,7 @@ async function pgAgenda(el){
   el.innerHTML=`<div class="page">
     <div class="pg-header">
       <div>
-        <div class="pg-tag">Agenda</div>
+        <div class="pg-tag">${(profile&&profile.nombre)?'Hola, '+esc(profile.nombre):'Agenda'}</div>
         <h1 class="pg-title">${lbl}</h1>
       </div>
       <div class="agendar-box" onclick="abrirSelectorFecha()" ontouchend="event.preventDefault();abrirSelectorFecha()">
