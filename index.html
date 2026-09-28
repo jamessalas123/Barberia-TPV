@@ -2253,7 +2253,14 @@ function openPay(id,t){
         <label class="m-label">Importe (${simboloMoneda()})</label>
         <input id="pa" class="pay-amt" inputmode="decimal" placeholder="0,00" autofocus oninput="onImporteInput('pa')"/>
         <label class="m-label">Servicio <span style="font-weight:400;color:var(--muted-foreground)">(opcional)</span></label>
-        <input id="psrv" class="m-input" placeholder="Ej: Corte, barba, corte + barba..." value="${esc(a.service||'')}" style="margin-bottom:.875rem"/>
+        <select id="psrv-select" class="fg-sel" style="color-scheme:dark;margin-bottom:.625rem" onchange="onServicioSelect(this.value)">
+          <option value="" style="background:#1c1d21;color:#fff">Elegir…</option>
+          <option value="Corte" style="background:#1c1d21;color:#fff">Corte</option>
+          <option value="Barba" style="background:#1c1d21;color:#fff">Barba</option>
+          <option value="Corte + Barba" style="background:#1c1d21;color:#fff">Corte + Barba</option>
+          <option value="__otro__" style="background:#1c1d21;color:#fff">Otros (escribir)</option>
+        </select>
+        <input id="psrv" class="m-input" placeholder="Ej: Corte, barba, corte + barba..." value="${esc(a.service||'')}" style="margin-bottom:.875rem;display:none"/>
         ${bloqueReparto}
         <label class="m-label" style="margin-bottom:.5rem">Método de pago</label>
         <div class="pay-meths">
@@ -2268,7 +2275,26 @@ function openPay(id,t){
       </div>
     </div>
   </div>`;
-  setTimeout(()=>document.getElementById('pa')?.focus(),80);
+  setTimeout(()=>{
+    document.getElementById('pa')?.focus();
+    const preset=['Corte','Barba','Corte + Barba'];
+    const valorActual=(a.service||'').trim();
+    const sel=document.getElementById('psrv-select');
+    const txt=document.getElementById('psrv');
+    if(valorActual&&!preset.includes(valorActual)){
+      sel.value='__otro__'; txt.style.display='block';
+    }else if(preset.includes(valorActual)){
+      sel.value=valorActual;
+    }
+  },80);
+}
+function onServicioSelect(v){
+  const txt=document.getElementById('psrv');
+  if(v==='__otro__'){
+    txt.style.display='block'; txt.value=''; txt.focus();
+  }else{
+    txt.style.display='none'; txt.value=v;
+  }
 }
 
 function parseImporte(raw){
@@ -2465,7 +2491,7 @@ async function pgCaja(el){
       <div class="gform-row">
         <div class="fg">
           <label class="fg-lbl">Categoría</label>
-          <select id="ec" class="fg-sel" style="color-scheme:dark"><option style="background:#1c1d21;color:#fff">Material de Barbería</option><option style="background:#1c1d21;color:#fff">Alquiler</option>${esIndividual?'':'<option style="background:#1c1d21;color:#fff">Luz y agua</option>'}<option style="background:#1c1d21;color:#fff">Otros</option></select>
+          <select id="ec" class="fg-sel" style="color-scheme:dark"><option style="background:#1c1d21;color:#fff">Material de barbería</option><option style="background:#1c1d21;color:#fff">Alquiler de local</option><option style="background:#1c1d21;color:#fff">Alquiler de silla</option><option style="background:#1c1d21;color:#fff">Otros</option></select>
         </div>
         <div class="fg">
           <label class="fg-lbl">Importe (${simboloMoneda()})</label>
