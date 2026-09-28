@@ -236,8 +236,6 @@ input, select { font-family: inherit; outline: none; border: none; }
 .auth-card {
   width: 100%; max-width: 400px;
   background: rgba(20,20,20,0.45);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
   border: 1.5px solid var(--primary);
   border-radius: var(--radius-3xl); padding: 2.25rem;
   box-shadow: 0 25px 50px oklch(0 0 0 / 0.55), 0 0 0 1px oklch(1 0 0 / 0.04);
@@ -2467,7 +2465,7 @@ async function pgCaja(el){
       <div class="gform-row">
         <div class="fg">
           <label class="fg-lbl">Categoría</label>
-          <select id="ec" class="fg-sel" style="color-scheme:dark"><option style="background:#1c1d21;color:#fff">Material de Barbería</option><option style="background:#1c1d21;color:#fff">Alquiler</option><option style="background:#1c1d21;color:#fff">Luz y agua</option><option style="background:#1c1d21;color:#fff">Otros</option></select>
+          <select id="ec" class="fg-sel" style="color-scheme:dark"><option style="background:#1c1d21;color:#fff">Material de Barbería</option><option style="background:#1c1d21;color:#fff">Alquiler</option>${esIndividual?'':'<option style="background:#1c1d21;color:#fff">Luz y agua</option>'}<option style="background:#1c1d21;color:#fff">Otros</option></select>
         </div>
         <div class="fg">
           <label class="fg-lbl">Importe (${simboloMoneda()})</label>
