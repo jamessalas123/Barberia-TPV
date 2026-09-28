@@ -1669,10 +1669,12 @@ async function confirmarCodigoOtp(email,telefono,pais){
   await sb.from('profiles').insert({id:data.user.id,session_token:miToken,telefono,pais,iva_porcentaje:ivaPorDefecto});
   guardarSesionLocal(data.user.id,miToken);
   user=data.user;sess={email:user.email};
-  pantallaComoTrabajas(async(tipo)=>{
-    await sb.from('profiles').update({tipo_cuenta:tipo,tipo_cuenta_elegido:true}).eq('id',user.id);
-    toast('¡Cuenta creada! 30 días de prueba activados ✂️','success');
-    setTimeout(()=>draw(),300);
+  pantallaBienvenida(()=>{
+    pantallaComoTrabajas(async(tipo)=>{
+      await sb.from('profiles').update({tipo_cuenta:tipo,tipo_cuenta_elegido:true}).eq('id',user.id);
+      toast('¡Cuenta creada! 30 días de prueba activados ✂️','success');
+      setTimeout(()=>draw(),300);
+    });
   });
 }
 
@@ -1896,16 +1898,37 @@ async function iniciarDemo(){
     ]);
 
     profile={plan_status:'demo',pais:'ES',es_demo:true};
-    pantallaComoTrabajas(async(tipo)=>{
-      await sb.from('profiles').update({tipo_cuenta:tipo,tipo_cuenta_elegido:true}).eq('id',user.id);
-      profile.tipo_cuenta=tipo;
-      toast('Demo lista — datos de ejemplo cargados ✂️','success');
-      appScreen();
+    pantallaBienvenida(()=>{
+      pantallaComoTrabajas(async(tipo)=>{
+        await sb.from('profiles').update({tipo_cuenta:tipo,tipo_cuenta_elegido:true}).eq('id',user.id);
+        profile.tipo_cuenta=tipo;
+        toast('Demo lista — datos de ejemplo cargados ✂️','success');
+        appScreen();
+      });
     });
   }catch(e){
     toast('No se pudo iniciar la demo. Inténtalo de nuevo.','error');
     authScreen('login');
   }
+}
+
+function pantallaBienvenida(onContinuar){
+  document.getElementById('root').innerHTML=`
+  <div class="auth-wrap"><div style="max-width:420px;width:100%;text-align:center">
+    <img src="logo-huella.png" alt="" style="width:150px;height:auto;object-fit:contain;margin:0 auto 1.5rem;display:block;filter:drop-shadow(0 0 24px oklch(0.78 0.16 75 / 0.35))"/>
+    <div class="auth-brand" style="font-size:2.3rem;margin-bottom:1.25rem">
+      <span class="parte1">Un corte, </span><span class="parte2">una huella</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:.75rem;justify-content:center;margin-bottom:1.25rem">
+      <span style="width:70px;height:1px;background:var(--primary)"></span>
+      <span style="width:9px;height:9px;background:var(--primary);transform:rotate(45deg)"></span>
+      <span style="width:70px;height:1px;background:var(--primary)"></span>
+    </div>
+    <p style="font-size:1.05rem;font-weight:800;letter-spacing:.06em;color:#f0f0ec;margin-bottom:2.5rem">BIENVENIDO A TU CAJA DIGITAL</p>
+    <button class="auth-btn listo" id="bienvenida-btn" style="width:100%">Comenzar</button>
+  </div></div>`;
+  document.getElementById('bienvenida-btn').onclick=onContinuar;
+  document.getElementById('bienvenida-btn').ontouchend=(e)=>{e.preventDefault();onContinuar();};
 }
 
 function pantallaComoTrabajas(onElegido){
