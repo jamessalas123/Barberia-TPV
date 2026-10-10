@@ -718,7 +718,7 @@ input, select { font-family: inherit; outline: none; border: none; }
 .gx-rec{display:flex;align-items:center;gap:.6rem;font-size:.88rem;cursor:pointer;margin:.25rem 0 .6rem;background:none;border:none;color:#fff;padding:0;text-align:left}
 .gx-rec i{width:1.4rem;height:1.4rem;border:1.5px solid var(--destructive);border-radius:.45rem;display:flex;align-items:center;justify-content:center;font-style:normal;color:var(--destructive);flex-shrink:0}
 .gx-rec.on i{background:color-mix(in srgb,var(--destructive) 25%,transparent)}
-.gx-freq{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.875rem}.gx-freq button{border:1.5px solid rgba(255,255,255,.3);border-radius:.75rem;padding:.55rem;background:none;color:#fff;font-size:.85rem;cursor:pointer}.gx-freq button.on{border-color:var(--destructive);color:var(--destructive)}
+.gx-freq{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:.875rem}.gx-freq button{white-space:nowrap;border:1.5px solid rgba(255,255,255,.3);border-radius:.75rem;padding:.55rem .2rem;background:none;color:#fff;font-size:.78rem;cursor:pointer}.gx-freq button.on{border-color:var(--destructive);color:var(--destructive)}
 .gx-modal .pay-meth.on{border-color:var(--destructive)}
 /* pestañas con imagen */
 .caja-tab{padding:.8rem .3rem .65rem;gap:.25rem;background:rgba(255,255,255,.04)!important;box-shadow:none!important;border-color:rgba(255,255,255,.22)!important}
@@ -741,7 +741,8 @@ input, select { font-family: inherit; outline: none; border: none; }
 .caja-door .caja-medal svg{width:2.3rem;height:2.3rem}
 .caja-door-lbl{font-size:.9rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--tc)}
 .caja-rec{display:flex;align-items:center;justify-content:space-between;gap:.75rem;width:100%;border:1.5px solid var(--destructive);border-radius:var(--radius-xl);background:transparent;color:#fff;padding:.8rem 1rem;margin-bottom:.9rem;cursor:pointer;touch-action:manipulation;font-size:.95rem;font-weight:700;text-align:left}
-.caja-rec-n{font-size:.82rem;font-weight:700;color:var(--destructive);white-space:nowrap}
+.caja-rec-n{font-size:.82rem;font-weight:700;color:var(--destructive);white-space:nowrap}.caja-rec-n.ok{color:rgba(255,255,255,.65);font-weight:600}
+.rec-sep{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;opacity:.65;margin:.9rem 0 .5rem}.rec-row.ok{cursor:default;opacity:.7;border-color:rgba(255,255,255,.2)}.rec-vacio{text-align:center;font-size:.88rem;opacity:.75;padding:.75rem .25rem 0}
 .rec-row{display:flex;align-items:center;gap:.7rem;border:1.5px solid rgba(255,255,255,.3);border-radius:var(--radius-xl);padding:.6rem .75rem;margin-bottom:.5rem;cursor:pointer;transition:all .15s}
 .rec-row.on{border-color:var(--destructive)}
 .rec-chk{width:1.5rem;height:1.5rem;border:1.5px solid rgba(255,255,255,.5);border-radius:.45rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:transparent;font-size:.9rem}
@@ -2673,6 +2674,11 @@ const TAB_SVG={
   equipo:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'
 };
 const tabMedal=k=>`<span class="caja-medal"><svg viewBox="0 0 24 24" aria-hidden="true">${TAB_SVG[k]}</svg></span>`;
+function sigRecurrente(fecha,tipo){
+  const d=new Date(fecha+'T12:00:00');
+  if(tipo==='diario')d.setDate(d.getDate()+1);else if(tipo==='semanal')d.setDate(d.getDate()+7);else d.setMonth(d.getMonth()+1);
+  return fechaLocal(d);
+}
 function iconoDe(n,def){
   n=String(n||'').toLowerCase();
   const m=[['corte|pelo|cabello|peinad|barb','✂️'],['uñ|manicur|pedicur','💅'],['ceja|pestaña|depil|cera ','🪮'],['facial|cara|limpieza facial|botox|relleno','🧖'],['masaje|spa','💆'],['tinte|color|mecha','🎨'],['tatu|piercing','🖋️'],['consult|revisi|terapia|sesi','🩺'],['clase|curso','📚'],['alquiler|silla|local|renta','🪑'],['luz|electric','💡'],['agua','💧'],['producto|gel|champ|crema|aceite','🧴'],['material|herramient|cuchill|lima|insumo','🧰'],['limpiez|aseo','🧽'],['internet|wifi|telef|movil|móvil','📶'],['publicidad|anuncio|marketing|redes','📣'],['impuesto|iva|gestor|autónomo|autonomo|seguro|cuota','🏛️'],['sueldo|nómina|nomina|empleado','👥'],['transport|gasolina|combustible','🚗']];
@@ -2778,17 +2784,17 @@ async function pgCaja(el){
     const porMg={efectivo:0,tarjeta:0,transferencia:0};
     ex.forEach(r=>{porMg[mg(r)]+=Number(r.amount)||0;});
     // sugerencias (último gasto de cada nombre) y recurrentes que ya tocan
-    const vistos={},sug=[],vencidos=[];
+    const vistos={},sug=[],vencidos=[],todosRec=[];
     (hx||[]).forEach(r=>{
       const k=(r.category||'').trim().toLowerCase();if(!k||vistos[k])return;vistos[k]=1;sug.push(r);
       if(r.recurrente){
-        const d=new Date(r.expense_date+'T12:00:00');
-        if(r.recurrente==='semanal')d.setDate(d.getDate()+7);else d.setMonth(d.getMonth()+1);
-        if(fechaLocal(d)<=today())vencidos.push(r);
+        const prox=sigRecurrente(r.expense_date,r.recurrente);
+        todosRec.push({...r,prox});
+        if(prox<=today())vencidos.push(r);
       }
     });
-    window._gSug=sug.slice(0,12);window._gDue=vencidos;window._gastos=ex;
-    const aviso=vencidos.length===0?'':`<button class="caja-rec" onclick="abrirRecurrentes()"><span class="caja-rec-t">🔔 Gastos recurrentes</span><span class="caja-rec-n">${vencidos.length} por registrar ›</span></button>`;
+    window._gSug=sug.slice(0,12);window._gDue=vencidos;window._gRec=todosRec;window._gastos=ex;
+    const aviso=`<button class="caja-rec" onclick="abrirRecurrentes()"><span class="caja-rec-t">🔔 Gastos recurrentes</span><span class="caja-rec-n${vencidos.length?'':' ok'}">${vencidos.length?vencidos.length+' por registrar':(todosRec.length?'Todo al día ✓':'Ninguno aún')} ›</span></button>`;
     const lst=ex.slice().sort((x,y)=>String(y.expense_date).localeCompare(String(x.expense_date))||String(y.created_at||'').localeCompare(String(x.created_at||''))).map(r=>{
       const fch=r.expense_date===today()?'hoy':new Date(r.expense_date+'T12:00:00').toLocaleDateString('es-ES',{weekday:'short',day:'numeric'}).replace('.','');
       return `<div class="caja-mv" onclick="abrirGasto('${r.id}')">
@@ -3098,7 +3104,7 @@ function renderGastoModal(){
         <label class="m-label">Nota (opcional)</label>
         <input id="eg-nota" class="m-input" value="${esc(st.nota||'')}" ${bloq?'disabled':''}/>
         ${bloq?'':`<button class="gx-rec${st.rec?' on':''}" onclick="togGRec()"><i>${st.rec?'✓':''}</i>🔁 Se repite (avísame cuando toque)</button>
-        ${st.rec?`<div class="gx-freq"><button class="${st.rec==='semanal'?'on':''}" onclick="setGFreq('semanal')">Cada semana</button><button class="${st.rec==='mensual'?'on':''}" onclick="setGFreq('mensual')">Cada mes</button></div>`:''}`}
+        ${st.rec?`<div class="gx-freq"><button class="${st.rec==='diario'?'on':''}" onclick="setGFreq('diario')">Cada día</button><button class="${st.rec==='semanal'?'on':''}" onclick="setGFreq('semanal')">Cada semana</button><button class="${st.rec==='mensual'?'on':''}" onclick="setGFreq('mensual')">Cada mes</button></div>`:''}`}
         ${bloq?'<div class="caja-lock">🔒 Este día ya está cerrado y no se puede modificar.</div>':''}
       </div>
       <div class="modal-actions pay-acts">
@@ -3114,7 +3120,7 @@ function renderGastoModal(){
 function abrirGasto(id){
   if(!id){window._eg={id:null,nom:'',imp:'',nota:'',m:'efectivo',rec:''};return renderGastoModal();}
   const r=(window._gastos||[]).find(x=>x.id===id);if(!r)return;
-  window._eg={id,nom:r.category||'',imp:valorInputImporte(Number(r.amount)),nota:r.note||'',m:r.payment_method||'efectivo',rec:r.recurrente==='semanal'?'semanal':r.recurrente==='mensual'?'mensual':'',locked:r.expense_date!==today()};
+  window._eg={id,nom:r.category||'',imp:valorInputImporte(Number(r.amount)),nota:r.note||'',m:r.payment_method||'efectivo',rec:['diario','semanal','mensual'].includes(r.recurrente)?r.recurrente:'',locked:r.expense_date!==today()};
   renderGastoModal();
 }
 function gSync(){
@@ -3168,6 +3174,10 @@ function renderRecurrentes(){
     const dias=Math.round((new Date(today()+'T12:00:00')-new Date(r.expense_date+'T12:00:00'))/864e5);
     return `<div class="rec-row${st.sel.has(i)?' on':''}" onclick="recTog(${i})"><div class="rec-chk">✓</div><div class="rec-ic">${iconoGasto(r.category)}</div><div class="rec-x"><b>${esc(r.category)} · ${eur(r.amount)}</b><small>Último pago hace ${dias} día${dias===1?'':'s'} · ${r.recurrente}</small></div></div>`;}).join('');
   const n=st.sel.size;
+  const alDia=(window._gRec||[]).filter(r=>r.prox>today());
+  const fmt=f=>new Date(f+'T12:00:00').toLocaleDateString('es-ES',{day:'numeric',month:'short'}).replace('.','');
+  const filasOk=alDia.map(r=>`<div class="rec-row ok"><div class="rec-chk" style="border-color:var(--success);color:var(--success)">✓</div><div class="rec-ic">${iconoGasto(r.category)}</div><div class="rec-x"><b>${esc(r.category)} · ${eur(r.amount)}</b><small>Al día · próximo ${fmt(r.prox)} · ${r.recurrente}</small></div></div>`).join('');
+  const hayRec=(window._gRec||[]).length>0;
   const div=document.createElement('div');div.id='rec-modal';
   div.innerHTML=`
   <div class="overlay" onclick="document.getElementById('rec-modal').remove()">
@@ -3175,13 +3185,16 @@ function renderRecurrentes(){
       <div class="modal-body">
         <button class="modal-close" onclick="document.getElementById('rec-modal').remove()">✕</button>
         <div class="m-tag">Gastos recurrentes</div>
-        <div class="m-title" style="font-size:1.35rem">🔔 Señala los que ya pagaste</div>
-        <button class="rec-all" onclick="recTodos()">${n===due.length?'Quitar selección':'Seleccionar todos'}</button>
-        ${rows}
+        <div class="m-title" style="font-size:1.35rem">${due.length?'🔔 Señala los que ya pagaste':'🔔 Todo al día'}</div>
+        ${due.length?`<button class="rec-all" onclick="recTodos()">${n===due.length?'Quitar selección':'Seleccionar todos'}</button>${rows}`:''}
+        ${alDia.length?`<div class="rec-sep">Al día</div>${filasOk}`:''}
+        ${hayRec?'':'<div class="rec-vacio">Aún no tienes gastos recurrentes.<br>Al registrar un gasto, activa «Se repite» y elige cada día, semana o mes.</div>'}
+        ${hayRec&&!due.length?'<div class="rec-vacio">No tienes gastos pendientes por registrar.</div>':''}
       </div>
       <div class="modal-actions pay-acts">
-        <button class="confirm-cancel-btn" onclick="document.getElementById('rec-modal').remove()">Cancelar</button>
-        <button class="pay-ok" style="flex:1${n?'':';opacity:.45'}" onclick="recRegistrar()">${n?'Registrar '+n+' gasto'+(n===1?'':'s'):'Elige uno o más'}</button>
+        ${due.length
+          ?`<button class="confirm-cancel-btn" onclick="document.getElementById('rec-modal').remove()">Cancelar</button><button class="pay-ok" style="flex:1${n?'':';opacity:.45'}" onclick="recRegistrar()">${n?'Registrar '+n+' gasto'+(n===1?'':'s'):'Elige uno o más'}</button>`
+          :`<button class="pay-ok" style="flex:1" onclick="document.getElementById('rec-modal').remove()">Cerrar</button>`}
       </div>
     </div>
   </div>`;
