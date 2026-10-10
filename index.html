@@ -732,6 +732,14 @@ input, select { font-family: inherit; outline: none; border: none; }
 .caja-cta{display:flex;justify-content:center;margin-bottom:1rem}
 .caja-add-lg{height:3rem;padding:0 1.7rem;font-size:1rem}
 .caja-cta .caja-cta-btn{width:auto;height:3rem;padding:0 1.7rem;margin:0;font-size:1rem}
+.caja-doors{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;min-height:58vh;align-content:center;margin-top:.5rem}
+.caja-door{--tc:var(--primary);border:1.5px solid var(--tc);border-radius:var(--radius-2xl);min-height:10rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.85rem;background:rgba(255,255,255,.03);cursor:pointer;transition:all .2s;touch-action:manipulation;box-shadow:0 0 18px color-mix(in srgb,var(--tc) 18%,transparent)}
+.caja-door:hover{background:color-mix(in srgb,var(--tc) 8%,transparent)}.caja-door:active{transform:scale(.97)}
+.caja-door.wide{grid-column:1/-1;min-height:8rem}
+.caja-door-caja{--tc:var(--primary)}.caja-door-gastos{--tc:var(--destructive)}.caja-door-cierre{--tc:var(--success)}.caja-door-liq{--tc:oklch(0.75 0.15 250)}
+.caja-door .caja-medal{width:4.3rem;height:4.3rem;border-radius:1.3rem;background:linear-gradient(145deg,color-mix(in srgb,var(--tc) 100%,#fff 18%),color-mix(in srgb,var(--tc) 100%,#000 28%));color:#101010;border-color:transparent;box-shadow:0 8px 20px color-mix(in srgb,var(--tc) 38%,transparent),inset 0 1px 0 rgba(255,255,255,.4)}
+.caja-door .caja-medal svg{width:2.3rem;height:2.3rem}
+.caja-door-lbl{font-size:.9rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--tc)}
 /* medallas */
 .caja-tab-caja{--tc:var(--primary)}.caja-tab-gastos{--tc:var(--destructive)}.caja-tab-cierre{--tc:var(--success)}.caja-tab-liq{--tc:oklch(0.75 0.15 250)}
 .caja-medal{width:2.9rem;height:2.9rem;border-radius:.9rem;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);transition:all .2s}
@@ -2692,6 +2700,7 @@ async function pgCaja(el){
   const perBtns=(ctab!=='caja'&&ctab!=='gastos')?'':pers.map(p=>`<button class="period-pill ${cper===p?'on':''}" onclick="setCper('${p}')">${perL[p]}</button>`).join('');
   const datePickerRow=(ctab==='cierre'||((ctab==='caja'||ctab==='gastos')&&cper==='dia'))?`<div style="margin-bottom:.75rem;display:flex;align-items:center;gap:.625rem"><span style="font-size:.75rem;color:var(--muted-foreground);font-weight:600">Fecha:</span><input type="date" class="date-inp" value="${dt}" onchange="chDate(this.value)" style="height:40px;font-size:.85rem"/></div>`:'';
   const periodoLabel=cper==='dia'?new Date(dt+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'}):({hoy:'Hoy',semana:'Esta semana',mes:'Este mes',trimestre:'Este trimestre'})[cper];
+  window._periodoLbl=periodoLabel;
   const tabBtns=`<button class="caja-tab caja-tab-caja ${ctab==='caja'?'on':''}" onclick="setCtab('caja')">${tabMedal('caja')}<span class="caja-tab-lbl">Caja</span></button><button class="caja-tab caja-tab-gastos ${ctab==='gastos'?'on':''}" onclick="setCtab('gastos')">${tabMedal('gastos')}<span class="caja-tab-lbl">Gastos</span></button>${esIndividual?'':`<button class="caja-tab caja-tab-liq" onclick="showLiquidacion()">${tabMedal('equipo')}<span class="caja-tab-lbl">Liquidación</span></button>`}`;
   const cierreBtn=`<button class="caja-tab caja-tab-cierre ${ctab==='cierre'?'on':''}" onclick="setCtab('cierre')">${tabMedal('cierre')}<span class="caja-tab-lbl">Cierre</span></button>`;
 
@@ -2800,7 +2809,14 @@ async function pgCaja(el){
     ${ctab?`<p style="font-size:.82rem;color:var(--muted-foreground);margin-bottom:1rem">${ap.length} cita${ap.length===1?'':'s'} · ${ex.length} gasto${ex.length===1?'':'s'} en el periodo</p>`:'<div style="height:.75rem"></div>'}
     ${(ctab==='caja'||ctab==='gastos')?`<div class="period-row">${perBtns}<button class="period-pill ${cper==='dia'?'on':''}" onclick="setCper('dia')">📅 Día</button></div>`:''}
     ${datePickerRow}
-    ${esIndividual
+    ${!ctab
+      ? `<div class="caja-doors">
+          <button class="caja-door caja-door-caja" onclick="setCtab('caja')">${tabMedal('caja')}<span class="caja-door-lbl">Caja</span></button>
+          <button class="caja-door caja-door-gastos" onclick="setCtab('gastos')">${tabMedal('gastos')}<span class="caja-door-lbl">Gastos</span></button>
+          <button class="caja-door caja-door-cierre${esIndividual?' wide':''}" onclick="setCtab('cierre')">${tabMedal('cierre')}<span class="caja-door-lbl">Cierre</span></button>
+          ${esIndividual?'':`<button class="caja-door caja-door-liq" onclick="showLiquidacion()">${tabMedal('equipo')}<span class="caja-door-lbl">Liquidación</span></button>`}
+        </div>`
+      : esIndividual
       ? `<div class="caja-tabs-row">${tabBtns}${cierreBtn}</div>`
       : `<div class="caja-tabs-row">${tabBtns}</div><div class="caja-tabs-single">${cierreBtn}</div>`}
     ${content}
@@ -2838,7 +2854,7 @@ function showLiquidacion(){
       <div class="modal-body">
         <button class="modal-close" onclick="document.getElementById('liq-modal').remove()">✕</button>
         <div class="m-tag">Liquidación de barberos</div>
-        <div class="m-title" style="font-size:1.3rem">Este periodo</div>
+        <div class="m-title" style="font-size:1.3rem">${esc(window._periodoLbl||'Este periodo')}</div>
         <div class="liqlist">${rows}</div>
       </div>
     </div>
