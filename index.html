@@ -729,6 +729,13 @@ input, select { font-family: inherit; outline: none; border: none; }
 .caja-tab-gastos.on{border-color:var(--destructive)!important;background:color-mix(in srgb,var(--destructive) 16%,transparent)!important;box-shadow:0 0 18px var(--destructive-glow)!important}.caja-tab-gastos.on .caja-tab-lbl{color:var(--destructive)}
 .caja-tab-cierre.on{border-color:var(--success)!important;background:color-mix(in srgb,var(--success) 16%,transparent)!important;box-shadow:0 0 18px var(--success-glow)!important}.caja-tab-cierre.on .caja-tab-lbl{color:var(--success)}
 .caja-tab-liq .caja-tab-ico{filter:none;opacity:1}
+/* medallas */
+.caja-tab-caja{--tc:var(--primary)}.caja-tab-gastos{--tc:var(--destructive)}.caja-tab-cierre{--tc:var(--success)}.caja-tab-liq{--tc:oklch(0.75 0.15 250)}
+.caja-medal{width:2.9rem;height:2.9rem;border-radius:.9rem;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);transition:all .2s}
+.caja-medal svg{width:1.55rem;height:1.55rem;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.caja-tab.on .caja-medal{background:linear-gradient(145deg,color-mix(in srgb,var(--tc) 100%,#fff 18%),color-mix(in srgb,var(--tc) 100%,#000 28%));color:#101010;border-color:transparent;box-shadow:0 6px 16px color-mix(in srgb,var(--tc) 40%,transparent),inset 0 1px 0 rgba(255,255,255,.4)}
+.caja-tab-liq .caja-medal{color:var(--tc)}
+.caja-tab-liq .caja-tab-lbl{color:var(--tc)}
 /* cierre verde */
 .caja-th-cierre .cierre-num{color:var(--ac);text-shadow:0 0 12px var(--ac-glow)}
 .caja-th-cierre .cierre-badge{color:var(--ac);border-color:var(--ac)}
@@ -2640,6 +2647,13 @@ function getRange(){
   return{s,e};
 }
 
+const TAB_SVG={
+  caja:'<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
+  gastos:'<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/>',
+  cierre:'<path d="M8 2v4M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/>',
+  equipo:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'
+};
+const tabMedal=k=>`<span class="caja-medal"><svg viewBox="0 0 24 24" aria-hidden="true">${TAB_SVG[k]}</svg></span>`;
 function iconoDe(n,def){
   n=String(n||'').toLowerCase();
   const m=[['corte|pelo|cabello|peinad|barb','✂️'],['uñ|manicur|pedicur','💅'],['ceja|pestaña|depil|cera ','🪮'],['facial|cara|limpieza facial|botox|relleno','🧖'],['masaje|spa','💆'],['tinte|color|mecha','🎨'],['tatu|piercing','🖋️'],['consult|revisi|terapia|sesi','🩺'],['clase|curso','📚'],['alquiler|silla|local|renta','🪑'],['luz|electric','💡'],['agua','💧'],['producto|gel|champ|crema|aceite','🧴'],['material|herramient|cuchill|lima|insumo','🧰'],['limpiez|aseo','🧽'],['internet|wifi|telef|movil|móvil','📶'],['publicidad|anuncio|marketing|redes','📣'],['impuesto|iva|gestor|autónomo|autonomo|seguro|cuota','🏛️'],['sueldo|nómina|nomina|empleado','👥'],['transport|gasolina|combustible','🚗']];
@@ -2675,8 +2689,8 @@ async function pgCaja(el){
   const perBtns=ctab==='cierre'?'':pers.map(p=>`<button class="period-pill ${cper===p?'on':''}" onclick="setCper('${p}')">${perL[p]}</button>`).join('');
   const datePickerRow=(ctab==='cierre'||cper==='dia')?`<div style="margin-bottom:.75rem;display:flex;align-items:center;gap:.625rem"><span style="font-size:.75rem;color:var(--muted-foreground);font-weight:600">Fecha:</span><input type="date" class="date-inp" value="${dt}" onchange="chDate(this.value)" style="height:40px;font-size:.85rem"/></div>`:'';
   const periodoLabel=cper==='dia'?new Date(dt+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'}):({hoy:'Hoy',semana:'Esta semana',mes:'Este mes',trimestre:'Este trimestre'})[cper];
-  const tabBtns=`<button class="caja-tab caja-tab-caja ${ctab==='caja'?'on':''}" onclick="setCtab('caja')"><span class="caja-tab-ico">👜</span><span class="caja-tab-lbl">Caja</span></button><button class="caja-tab caja-tab-gastos ${ctab==='gastos'?'on':''}" onclick="setCtab('gastos')"><span class="caja-tab-ico">🧾</span><span class="caja-tab-lbl">Gastos</span></button>${esIndividual?'':'<button class="caja-tab caja-tab-liq" onclick="showLiquidacion()"><span class="caja-tab-ico">✂️</span><span class="caja-tab-lbl">Liquidación</span></button>'}`;
-  const cierreBtn=`<button class="caja-tab caja-tab-cierre ${ctab==='cierre'?'on':''}" onclick="setCtab('cierre')"><span class="caja-tab-ico">🔒</span><span class="caja-tab-lbl">Cierre</span></button>`;
+  const tabBtns=`<button class="caja-tab caja-tab-caja ${ctab==='caja'?'on':''}" onclick="setCtab('caja')">${tabMedal('caja')}<span class="caja-tab-lbl">Caja</span></button><button class="caja-tab caja-tab-gastos ${ctab==='gastos'?'on':''}" onclick="setCtab('gastos')">${tabMedal('gastos')}<span class="caja-tab-lbl">Gastos</span></button>${esIndividual?'':`<button class="caja-tab caja-tab-liq" onclick="showLiquidacion()">${tabMedal('equipo')}<span class="caja-tab-lbl">Liquidación</span></button>`}`;
+  const cierreBtn=`<button class="caja-tab caja-tab-cierre ${ctab==='cierre'?'on':''}" onclick="setCtab('cierre')">${tabMedal('cierre')}<span class="caja-tab-lbl">Cierre</span></button>`;
 
   let content='';
   if(ctab==='cierre'){
