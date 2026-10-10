@@ -630,7 +630,7 @@ input, select { font-family: inherit; outline: none; border: none; }
 .pay-ok:hover { box-shadow: 0 6px 28px var(--primary-glow); opacity: .92; }
 .pay-ok:active { transform: scale(.99); }
 
-/* ── INDIVIDUAL: servicios guardados ──────────────────────────── */
+/* ── Servicios guardados (Individual y Local) ─────────────────── */
 .svc-msg { font-size: .85rem; line-height: 1.5; text-align: center; color: var(--muted-foreground); margin: 0 0 .875rem; }
 .svc-add {
   width: 100%; height: 56px; border-radius: var(--radius-xl); margin-bottom: 1rem;
@@ -2278,11 +2278,12 @@ function etqMetodo(m){
 
 function openPay(id,t){
   meth='efectivo';
-  const esIndividual=profile&&profile.tipo_cuenta==='individual';
   const items=(window._byT||{})[t]||[];
   const a=items.find(x=>x.id===id)||{};
-  if(esIndividual)return openPayInd(id,t,a);
-  const bloqueReparto=esIndividual?'':`
+  return openPayInd(id,t,a);
+}
+function bloqueRepartoHtml(){
+  return `
         <div class="reparto-box">
           <div class="reparto-lbl">Reparto</div>
           <div class="reparto-row">
@@ -2297,53 +2298,9 @@ function openPay(id,t){
           </div>
           <div class="reparto-hint">Se calcula solo — llena uno y el otro se ajusta.</div>
         </div>`;
-  document.getElementById('mr').innerHTML=`
-  <div class="overlay" onclick="closeM()">
-    <div class="modal" onclick="event.stopPropagation()">
-      <div class="modal-body">
-        <button class="modal-close" onclick="closeM()">✕</button>
-        <div class="m-tag">Finalizar cita</div>
-        <div class="m-title">${esc(a.client_name)||''}</div>
-        <div class="m-sub">${t}${a.barbero?' · '+esc(a.barbero):''}</div>
-        <label class="m-label">Importe (${simboloMoneda()})</label>
-        <input id="pa" class="pay-amt" inputmode="decimal" placeholder="0,00" autofocus oninput="onImporteInput('pa')"/>
-        <label class="m-label">Servicio <span style="font-weight:400;color:var(--muted-foreground)">(opcional)</span></label>
-        <select id="psrv-select" class="fg-sel" style="color-scheme:dark;margin-bottom:.625rem" onchange="onServicioSelect(this.value)">
-          <option value="" style="background:#1c1d21;color:#fff">Elegir…</option>
-          <option value="Corte" style="background:#1c1d21;color:#fff">Corte</option>
-          <option value="Barba" style="background:#1c1d21;color:#fff">Barba</option>
-          <option value="Corte + Barba" style="background:#1c1d21;color:#fff">Corte + Barba</option>
-          <option value="__otro__" style="background:#1c1d21;color:#fff">Otros (escribir)</option>
-        </select>
-        <input id="psrv" class="m-input" placeholder="Ej: Corte, barba, corte + barba..." value="${esc(a.service||'')}" style="margin-bottom:.875rem;display:none"/>
-        ${bloqueReparto}
-        <label class="m-label" style="margin-bottom:.5rem">Método de pago</label>
-        <div class="pay-meths">
-          <button class="pay-meth on" id="pm-efectivo" onclick="selM('efectivo')"><span class="pay-meth-icon">💵</span>Efectivo</button>
-          <button class="pay-meth" id="pm-tarjeta" onclick="selM('tarjeta')"><span class="pay-meth-icon">💳</span>Tarjeta</button>
-          <button class="pay-meth" id="pm-transferencia" onclick="selM('transferencia')"><span class="pay-meth-icon">🏦</span>Transferencia</button>
-        </div>
-      </div>
-      <div class="modal-actions pay-acts">
-        <button class="pay-del-btn" onclick="delAppt('${id}')" aria-label="Eliminar cita">${ICON_TRASH}</button>
-        <button class="pay-ok" onclick="doPay('${id}')">Cobrar y cerrar</button>
-      </div>
-    </div>
-  </div>`;
-  setTimeout(()=>{
-    document.getElementById('pa')?.focus();
-    const preset=['Corte','Barba','Corte + Barba'];
-    const valorActual=(a.service||'').trim();
-    const sel=document.getElementById('psrv-select');
-    const txt=document.getElementById('psrv');
-    if(valorActual&&!preset.includes(valorActual)){
-      sel.value='__otro__'; txt.style.display='block';
-    }else if(preset.includes(valorActual)){
-      sel.value=valorActual;
-    }
-  },80);
 }
-/* ── COBRO INDIVIDUAL: lista de "Mis servicios" ───────────────── */
+
+/* ── COBRO: lista de "Mis servicios" (Individual y Local) ─────── */
 let _servicios=null; /* null = aún sin cargar */
 let _pi=null;        /* estado del cobro individual abierto */
 async function cargarServicios(){
@@ -2371,11 +2328,12 @@ function openPayInd(id,t,a){
 function renderPayInd(){
   if(!_pi)return;
   const a=_pi.a||{},id=_pi.id;
+  const esInd=profile&&profile.tipo_cuenta==='individual';
   const cab=`
         <button class="modal-close" onclick="closeM()">✕</button>
         <div class="m-tag">Finalizar cita</div>
         <div class="m-title">${esc(a.client_name)||''}</div>
-        <div class="m-sub">${esc(_pi.t)}</div>`;
+        <div class="m-sub">${esc(_pi.t)}${(!esInd&&a.barbero)?' · '+esc(a.barbero):''}</div>`;
   let html;
   if(_pi.step===2&&_pi.svc){
     const s=_pi.svc;
@@ -2388,6 +2346,7 @@ function renderPayInd(){
         <button class="svc-link" onclick="payIndVolver()">Cambiar servicio</button>
         <input type="hidden" id="pa" value="${esc(valorInputImporte(s.precio))}"/>
         <input type="hidden" id="psrv" value="${esc(s.nombre)}"/>
+        ${esInd?'':bloqueRepartoHtml()}
         <label class="m-label" style="margin-bottom:.5rem">Método de pago</label>
         <div class="pay-meths">
           <button class="pay-meth${meth==='efectivo'?' on':''}" id="pm-efectivo" onclick="selM('efectivo')"><span class="pay-meth-icon">💵</span>Efectivo</button>
@@ -2557,7 +2516,7 @@ async function doPay(id){
   const type=meth==='efectivo'?'interno':'oficial';
   const{error}=await sb.from('appointments').update({status:'completed',payment_method:meth,payment_type:type,price:p,service:servicio,valor_barbero:vb||null,comision_local:cl||null,completed_at:new Date().toISOString()}).eq('id',id);
   if(error)return toast(traducirError(error.message),'error');
-  if(esIndividual&&_pi&&_pi.svc&&_pi.svc.id){
+  if(_pi&&_pi.svc&&_pi.svc.id){
     /* el servicio usado sube al principio de la lista */
     sb.from('servicios').update({usado_en:new Date().toISOString()}).eq('id',_pi.svc.id).eq('user_id',user.id).then(()=>{_servicios=null;});
   }
