@@ -735,7 +735,7 @@ input, select { font-family: inherit; outline: none; border: none; }
 .caja-doors{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;min-height:58vh;align-content:center;margin-top:.5rem}
 .caja-door{--tc:var(--primary);border:1.5px solid var(--tc);border-radius:var(--radius-2xl);min-height:10rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.85rem;background:rgba(255,255,255,.03);cursor:pointer;transition:all .2s;touch-action:manipulation;box-shadow:0 0 18px color-mix(in srgb,var(--tc) 18%,transparent)}
 .caja-door:hover{background:color-mix(in srgb,var(--tc) 8%,transparent)}.caja-door:active{transform:scale(.97)}
-.caja-door.wide{grid-column:1/-1;min-height:8rem}
+.caja-door.solo{grid-column:1/-1;justify-self:center;width:calc((100% - .9rem)/2)}
 .caja-door-caja{--tc:var(--primary)}.caja-door-gastos{--tc:var(--destructive)}.caja-door-cierre{--tc:var(--success)}.caja-door-liq{--tc:oklch(0.75 0.15 250)}
 .caja-door .caja-medal{width:4.3rem;height:4.3rem;border-radius:1.3rem;background:linear-gradient(145deg,color-mix(in srgb,var(--tc) 100%,#fff 18%),color-mix(in srgb,var(--tc) 100%,#000 28%));color:#101010;border-color:transparent;box-shadow:0 8px 20px color-mix(in srgb,var(--tc) 38%,transparent),inset 0 1px 0 rgba(255,255,255,.4)}
 .caja-door .caja-medal svg{width:2.3rem;height:2.3rem}
@@ -2813,7 +2813,7 @@ async function pgCaja(el){
       ? `<div class="caja-doors">
           <button class="caja-door caja-door-caja" onclick="setCtab('caja')">${tabMedal('caja')}<span class="caja-door-lbl">Caja</span></button>
           <button class="caja-door caja-door-gastos" onclick="setCtab('gastos')">${tabMedal('gastos')}<span class="caja-door-lbl">Gastos</span></button>
-          <button class="caja-door caja-door-cierre${esIndividual?' wide':''}" onclick="setCtab('cierre')">${tabMedal('cierre')}<span class="caja-door-lbl">Cierre</span></button>
+          <button class="caja-door caja-door-cierre${esIndividual?' solo':''}" onclick="setCtab('cierre')">${tabMedal('cierre')}<span class="caja-door-lbl">Cierre</span></button>
           ${esIndividual?'':`<button class="caja-door caja-door-liq" onclick="showLiquidacion()">${tabMedal('equipo')}<span class="caja-door-lbl">Liquidación</span></button>`}
         </div>`
       : esIndividual
