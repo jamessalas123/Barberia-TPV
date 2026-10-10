@@ -2122,13 +2122,12 @@ function appScreen(){
       </button>`:'');
   const bannerDemo=esDemo?`
     <div style="background:oklch(1 0 0 / 0.08);border-bottom:1.5px solid rgba(255,255,255,0.7);padding:.625rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap">
-      <span style="font-size:.82rem;font-weight:600;color:#fff;display:inline-flex;align-items:center;gap:.4rem"><img src="logo-huella.png" style="width:30px;height:30px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(255,255,255,0.5))" alt=""/> Modo demostración · datos de ejemplo, no se guardan de verdad</span>
+      <span style="font-size:.82rem;font-weight:600;color:#fff;display:inline-flex;align-items:center;gap:.4rem">Modo demostración · datos de ejemplo, no se guardan de verdad</span>
       <button style="background:rgba(255,255,255,0.1);color:#fff;border:1.5px solid rgba(255,255,255,0.75);width:auto;padding:.625rem 1.125rem;font-size:.8rem;font-weight:700;border-radius:var(--radius-lg);display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;touch-action:manipulation" onclick="authScreen('register')" ontouchend="event.preventDefault();authScreen('register')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>Crear mi cuenta</button>
     </div>`:'';
   document.getElementById('root').innerHTML=`
   <div class="app">
     <nav class="sidebar">
-      <div class="logo-wrap"><img src="logo-huella.png" alt="Barbería TPV" style="width:56px;height:56px;object-fit:contain"/></div>
       ${navBtn('agenda',ICON_CAL,'Agenda','oklch(0.78 0.16 75)','oklch(0.78 0.16 75 / 0.38)')}
       ${navBtn('caja',ICON_WALLET,'Caja','oklch(0.68 0.18 145)','oklch(0.68 0.18 145 / 0.38)')}
       ${navBtn('analiticas',ICON_BAR,'Stats','oklch(0.70 0.15 240)','oklch(0.70 0.15 240 / 0.38)')}
