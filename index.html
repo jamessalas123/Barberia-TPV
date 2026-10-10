@@ -715,6 +715,7 @@ input, select { font-family: inherit; outline: none; border: none; }
 .caja-al{display:flex;align-items:center;gap:.65rem;margin-top:.4rem}.caja-al-i{font-size:1.5rem}.caja-al-x{flex:1;font-size:.9rem}.caja-al-x small{display:block;opacity:.7;font-size:.75rem}
 .caja-al-go{border:1.5px solid var(--destructive);color:var(--destructive);background:none;border-radius:.75rem;padding:.5rem .8rem;font-weight:800;font-size:.85rem;cursor:pointer;white-space:nowrap;touch-action:manipulation}
 .gx-sug{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0 .875rem}.gx-sug button{border:1px solid var(--destructive);color:#fff;background:none;border-radius:999px;padding:.3rem .75rem;font-size:.8rem;cursor:pointer}
+.gx-sug .gx-picked{border-width:1.5px;font-weight:700;padding:.4rem .6rem .4rem .85rem}.gx-picked span{color:var(--destructive);margin-left:.35rem;font-weight:800}.gx-hint{font-size:.74rem;opacity:.65;align-self:center}
 .gx-rec{display:flex;align-items:center;gap:.6rem;font-size:.88rem;cursor:pointer;margin:.25rem 0 .6rem;background:none;border:none;color:#fff;padding:0;text-align:left}
 .gx-rec i{width:1.4rem;height:1.4rem;border:1.5px solid var(--destructive);border-radius:.45rem;display:flex;align-items:center;justify-content:center;font-style:normal;color:var(--destructive);flex-shrink:0}
 .gx-rec.on i{background:color-mix(in srgb,var(--destructive) 25%,transparent)}
@@ -3080,13 +3081,17 @@ async function guardarCobro(){
   document.getElementById('cobro-modal')?.remove();
   toast('Cobro corregido ✓','success');loadPg();
 }
+function gChipsHtml(st){
+  if(st.pick)return `<button class="gx-picked" onclick="gQuitar()">${iconoGasto(st.nom)} ${esc(st.nom)} <span>✕</span></button><span class="gx-hint">¿Te equivocaste? Toca la ✕ para elegir otro.</span>`;
+  const q=(st.nom||'').trim().toLowerCase();
+  return (window._gSug||[]).map((r,i)=>({r,i})).filter(o=>!q||String(o.r.category).toLowerCase().includes(q)).slice(0,5).map(o=>`<button onclick="gPick(${o.i})">${iconoGasto(o.r.category)} ${esc(o.r.category)}</button>`).join('');
+}
 function renderGastoModal(){
   const st=window._eg;if(!st)return;
   const old=document.getElementById('gasto-modal');if(old)old.remove();
   const bloq=!!st.locked;
   const metBtn=(m,ico,nom)=>`<button class="pay-meth${st.m===m?' on':''}" ${bloq?'disabled style="opacity:.6;cursor:default"':`onclick="selGm('${m}')"`}><span class="pay-meth-icon">${ico}</span>${nom}</button>`;
-  const q=(st.nom||'').trim().toLowerCase();
-  const chips=st.id?'':(window._gSug||[]).map((r,i)=>({r,i})).filter(o=>!q||String(o.r.category).toLowerCase().includes(q)).slice(0,5).map(o=>`<button onclick="gPick(${o.i})">${iconoGasto(o.r.category)} ${esc(o.r.category)}</button>`).join('');
+  const chips=st.id?'':gChipsHtml(st);
   const div=document.createElement('div');div.id='gasto-modal';
   div.innerHTML=`
   <div class="overlay" onclick="document.getElementById('gasto-modal').remove()">
@@ -3134,13 +3139,19 @@ function setGFreq(f){if(window._eg){gSync();window._eg.rec=f;renderGastoModal();
 function gFiltrar(){
   const st=window._eg;if(!st)return;
   const nom=document.getElementById('eg-nom');st.nom=nom?nom.value:'';
-  const q=st.nom.trim().toLowerCase();
+  st.pick=false;
   const box=document.getElementById('eg-sug');if(!box)return;
-  box.innerHTML=(window._gSug||[]).map((r,i)=>({r,i})).filter(o=>!q||String(o.r.category).toLowerCase().includes(q)).slice(0,5).map(o=>`<button onclick="gPick(${o.i})">${iconoGasto(o.r.category)} ${esc(o.r.category)}</button>`).join('');
+  box.innerHTML=gChipsHtml(st);
+}
+function gQuitar(){
+  const st=window._eg;if(!st)return;
+  st.pick=false;st.nom='';st.imp='';st.m='efectivo';st.rec='';
+  renderGastoModal();
+  const n=document.getElementById('eg-nom');if(n)n.focus();
 }
 function gPick(i){
   const r=(window._gSug||[])[i];const st=window._eg;if(!r||!st)return;
-  st.nom=r.category;st.imp=valorInputImporte(Number(r.amount));st.m=r.payment_method||'efectivo';st.rec=r.recurrente||'';
+  st.nom=r.category;st.imp=valorInputImporte(Number(r.amount));st.m=r.payment_method||'efectivo';st.rec=r.recurrente||'';st.pick=true;
   renderGastoModal();
 }
 async function guardarGasto(){
