@@ -708,7 +708,7 @@ input, select { font-family: inherit; outline: none; border: none; }
 .caja-ic{width:2.7rem;height:2.7rem;border-radius:.8rem;background:color-mix(in srgb,var(--ac) 18%,transparent);display:flex;align-items:center;justify-content:center;font-size:1.45rem;flex-shrink:0}
 .caja-mv{padding:.55rem .8rem .55rem .55rem}
 .caja-th{max-width:560px}
-.caja-add{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;border:1.5px solid var(--ac);color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,transparent);border-radius:999px;height:2.5rem;padding:0 1.1rem;font-size:.9rem;font-weight:800;cursor:pointer;touch-action:manipulation;text-transform:none;letter-spacing:0}
+.caja-add{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;border:1.5px solid var(--ac);color:#fff;background:transparent;border-radius:999px;height:2.5rem;padding:0 1.1rem;font-size:.9rem;font-weight:800;cursor:pointer;touch-action:manipulation;text-transform:none;letter-spacing:0}
 .caja-add:active{transform:scale(.98)}
 .caja-alert{border:1.5px solid var(--destructive);border-radius:var(--radius-xl);padding:.7rem .8rem;margin-bottom:.9rem;background:color-mix(in srgb,var(--destructive) 10%,transparent)}
 .caja-alert-h{font-size:.82rem;font-weight:800;margin-bottom:.4rem}
@@ -740,6 +740,14 @@ input, select { font-family: inherit; outline: none; border: none; }
 .caja-door .caja-medal{width:4.3rem;height:4.3rem;border-radius:1.3rem;background:linear-gradient(145deg,color-mix(in srgb,var(--tc) 100%,#fff 18%),color-mix(in srgb,var(--tc) 100%,#000 28%));color:#101010;border-color:transparent;box-shadow:0 8px 20px color-mix(in srgb,var(--tc) 38%,transparent),inset 0 1px 0 rgba(255,255,255,.4)}
 .caja-door .caja-medal svg{width:2.3rem;height:2.3rem}
 .caja-door-lbl{font-size:.9rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--tc)}
+.caja-rec{display:flex;align-items:center;justify-content:space-between;gap:.75rem;width:100%;border:1.5px solid var(--destructive);border-radius:var(--radius-xl);background:transparent;color:#fff;padding:.8rem 1rem;margin-bottom:.9rem;cursor:pointer;touch-action:manipulation;font-size:.95rem;font-weight:700;text-align:left}
+.caja-rec-n{font-size:.82rem;font-weight:700;color:var(--destructive);white-space:nowrap}
+.rec-row{display:flex;align-items:center;gap:.7rem;border:1.5px solid rgba(255,255,255,.3);border-radius:var(--radius-xl);padding:.6rem .75rem;margin-bottom:.5rem;cursor:pointer;transition:all .15s}
+.rec-row.on{border-color:var(--destructive)}
+.rec-chk{width:1.5rem;height:1.5rem;border:1.5px solid rgba(255,255,255,.5);border-radius:.45rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:transparent;font-size:.9rem}
+.rec-row.on .rec-chk{border-color:var(--destructive);background:color-mix(in srgb,var(--destructive) 28%,transparent);color:var(--destructive)}
+.rec-ic{font-size:1.5rem}.rec-x{flex:1;min-width:0}.rec-x b{display:block;font-size:.95rem}.rec-x small{font-size:.75rem;opacity:.7}
+.rec-all{background:none;border:none;color:var(--destructive);font-weight:700;font-size:.85rem;cursor:pointer;padding:.25rem 0;margin-bottom:.5rem}
 /* medallas */
 .caja-tab-caja{--tc:var(--primary)}.caja-tab-gastos{--tc:var(--destructive)}.caja-tab-cierre{--tc:var(--success)}.caja-tab-liq{--tc:oklch(0.75 0.15 250)}
 .caja-medal{width:2.9rem;height:2.9rem;border-radius:.9rem;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);transition:all .2s}
@@ -2780,9 +2788,7 @@ async function pgCaja(el){
       }
     });
     window._gSug=sug.slice(0,12);window._gDue=vencidos;window._gastos=ex;
-    const aviso=vencidos.length===0?'':`<div class="caja-alert"><div class="caja-alert-h">🔔 Gastos recurrentes por registrar</div>${vencidos.map((r,i)=>{
-      const dias=Math.round((new Date(today()+'T12:00:00')-new Date(r.expense_date+'T12:00:00'))/864e5);
-      return `<div class="caja-al"><div class="caja-al-i">${iconoGasto(r.category)}</div><div class="caja-al-x">${esc(r.category)} · ${eur(r.amount)}<small>Último pago hace ${dias} día${dias===1?'':'s'} (${r.recurrente})</small></div><button class="caja-al-go" onclick="registrarRecurrente(${i})">Registrar</button></div>`;}).join('')}</div>`;
+    const aviso=vencidos.length===0?'':`<button class="caja-rec" onclick="abrirRecurrentes()"><span class="caja-rec-t">🔔 Gastos recurrentes</span><span class="caja-rec-n">${vencidos.length} por registrar ›</span></button>`;
     const lst=ex.slice().sort((x,y)=>String(y.expense_date).localeCompare(String(x.expense_date))||String(y.created_at||'').localeCompare(String(x.created_at||''))).map(r=>{
       const fch=r.expense_date===today()?'hoy':new Date(r.expense_date+'T12:00:00').toLocaleDateString('es-ES',{weekday:'short',day:'numeric'}).replace('.','');
       return `<div class="caja-mv" onclick="abrirGasto('${r.id}')">
@@ -3152,11 +3158,45 @@ async function guardarGasto(){
   document.getElementById('gasto-modal')?.remove();
   toast(st.id?'Gasto corregido ✓':'Gasto registrado ✓','success');loadPg();
 }
-async function registrarRecurrente(i){
-  const r=(window._gDue||[])[i];if(!r)return;
-  const{error}=await sb.from('expenses').insert({user_id:user.id,category:r.category,amount:Number(r.amount),note:'',expense_date:today(),payment_method:r.payment_method||'efectivo',recurrente:r.recurrente});
+function abrirRecurrentes(){
+  window._rec={sel:new Set()};renderRecurrentes();
+}
+function renderRecurrentes(){
+  const due=window._gDue||[];const st=window._rec;if(!st)return;
+  const old=document.getElementById('rec-modal');if(old)old.remove();
+  const rows=due.map((r,i)=>{
+    const dias=Math.round((new Date(today()+'T12:00:00')-new Date(r.expense_date+'T12:00:00'))/864e5);
+    return `<div class="rec-row${st.sel.has(i)?' on':''}" onclick="recTog(${i})"><div class="rec-chk">✓</div><div class="rec-ic">${iconoGasto(r.category)}</div><div class="rec-x"><b>${esc(r.category)} · ${eur(r.amount)}</b><small>Último pago hace ${dias} día${dias===1?'':'s'} · ${r.recurrente}</small></div></div>`;}).join('');
+  const n=st.sel.size;
+  const div=document.createElement('div');div.id='rec-modal';
+  div.innerHTML=`
+  <div class="overlay" onclick="document.getElementById('rec-modal').remove()">
+    <div class="modal gx-modal" onclick="event.stopPropagation()" style="max-width:440px">
+      <div class="modal-body">
+        <button class="modal-close" onclick="document.getElementById('rec-modal').remove()">✕</button>
+        <div class="m-tag">Gastos recurrentes</div>
+        <div class="m-title" style="font-size:1.35rem">🔔 Señala los que ya pagaste</div>
+        <button class="rec-all" onclick="recTodos()">${n===due.length?'Quitar selección':'Seleccionar todos'}</button>
+        ${rows}
+      </div>
+      <div class="modal-actions pay-acts">
+        <button class="confirm-cancel-btn" onclick="document.getElementById('rec-modal').remove()">Cancelar</button>
+        <button class="pay-ok" style="flex:1${n?'':';opacity:.45'}" onclick="recRegistrar()">${n?'Registrar '+n+' gasto'+(n===1?'':'s'):'Elige uno o más'}</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.appendChild(div);
+}
+function recTog(i){const st=window._rec;if(!st)return;st.sel.has(i)?st.sel.delete(i):st.sel.add(i);renderRecurrentes();}
+function recTodos(){const st=window._rec;if(!st)return;const due=window._gDue||[];if(st.sel.size===due.length)st.sel.clear();else due.forEach((_,i)=>st.sel.add(i));renderRecurrentes();}
+async function recRegistrar(){
+  const st=window._rec;if(!st||!st.sel.size)return;
+  const due=window._gDue||[];
+  const filas=[...st.sel].map(i=>due[i]).filter(Boolean).map(r=>({user_id:user.id,category:r.category,amount:Number(r.amount),note:'',expense_date:today(),payment_method:r.payment_method||'efectivo',recurrente:r.recurrente}));
+  const{error}=await sb.from('expenses').insert(filas);
   if(error)return toast(traducirError(error.message),'error');
-  toast('Registrado: '+r.category+' ✓','success');loadPg();
+  document.getElementById('rec-modal')?.remove();window._rec=null;
+  toast(filas.length===1?'Gasto registrado ✓':filas.length+' gastos registrados ✓','success');loadPg();
 }
 async function delExp(id){
   const r=(window._gastos||[]).find(x=>x.id===id);
