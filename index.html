@@ -729,6 +729,9 @@ input, select { font-family: inherit; outline: none; border: none; }
 .caja-tab-gastos.on{border-color:var(--destructive)!important;background:color-mix(in srgb,var(--destructive) 16%,transparent)!important;box-shadow:0 0 18px var(--destructive-glow)!important}.caja-tab-gastos.on .caja-tab-lbl{color:var(--destructive)}
 .caja-tab-cierre.on{border-color:var(--success)!important;background:color-mix(in srgb,var(--success) 16%,transparent)!important;box-shadow:0 0 18px var(--success-glow)!important}.caja-tab-cierre.on .caja-tab-lbl{color:var(--success)}
 .caja-tab-liq .caja-tab-ico{filter:none;opacity:1}
+.caja-cta{display:flex;justify-content:center;margin-bottom:1rem}
+.caja-add-lg{height:3rem;padding:0 1.7rem;font-size:1rem}
+.caja-cta .caja-cta-btn{width:auto;height:3rem;padding:0 1.7rem;margin:0;font-size:1rem}
 /* medallas */
 .caja-tab-caja{--tc:var(--primary)}.caja-tab-gastos{--tc:var(--destructive)}.caja-tab-cierre{--tc:var(--success)}.caja-tab-liq{--tc:oklch(0.75 0.15 250)}
 .caja-medal{width:2.9rem;height:2.9rem;border-radius:.9rem;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);transition:all .2s}
@@ -1260,7 +1263,7 @@ const ICON_GEAR=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
    Sesión gestionada por Supabase (persistente, multi-dispositivo).
    ══════════════════════════════════════════════════════════════ */
 
-let sess=null,user=null,profile=null,pg='agenda',dt=today(),rs=DS,re=DE,ctab='caja',cper='hoy',meth='efectivo',cmeth=null,cvermas=false;
+let sess=null,user=null,profile=null,pg='agenda',dt=today(),rs=DS,re=DE,ctab=null,cper='hoy',meth='efectivo',cmeth=null,cvermas=false;
 let charts={};
 
 function toast(m,k='info'){
@@ -2145,7 +2148,7 @@ function actualizarPistaScrollSidebar(){
   nav.onscroll=revisar;
   window.addEventListener('resize',revisar);
 }
-function goPg(p){pg=p;Object.values(charts).forEach(c=>c.destroy());charts={};appScreen();}
+function goPg(p){pg=p;if(p==='caja'){ctab=null;cmeth=null;cvermas=false;}Object.values(charts).forEach(c=>c.destroy());charts={};appScreen();}
 async function doOut(){
   if(!confirm('¿Cerrar sesión?'))return;
   if(sessionCheckInterval){clearInterval(sessionCheckInterval);sessionCheckInterval=null;}
@@ -2686,8 +2689,8 @@ async function pgCaja(el){
   const tot=of+int,gas=ex.reduce((s,x)=>s+Number(x.amount||0),0);
   const pers=['hoy','semana','mes','trimestre'];
   const perL={dia:'📅 Día',hoy:'Hoy',semana:'Semana',mes:'Mes',trimestre:'Trimestre'};
-  const perBtns=ctab==='cierre'?'':pers.map(p=>`<button class="period-pill ${cper===p?'on':''}" onclick="setCper('${p}')">${perL[p]}</button>`).join('');
-  const datePickerRow=(ctab==='cierre'||cper==='dia')?`<div style="margin-bottom:.75rem;display:flex;align-items:center;gap:.625rem"><span style="font-size:.75rem;color:var(--muted-foreground);font-weight:600">Fecha:</span><input type="date" class="date-inp" value="${dt}" onchange="chDate(this.value)" style="height:40px;font-size:.85rem"/></div>`:'';
+  const perBtns=(ctab!=='caja'&&ctab!=='gastos')?'':pers.map(p=>`<button class="period-pill ${cper===p?'on':''}" onclick="setCper('${p}')">${perL[p]}</button>`).join('');
+  const datePickerRow=(ctab==='cierre'||((ctab==='caja'||ctab==='gastos')&&cper==='dia'))?`<div style="margin-bottom:.75rem;display:flex;align-items:center;gap:.625rem"><span style="font-size:.75rem;color:var(--muted-foreground);font-weight:600">Fecha:</span><input type="date" class="date-inp" value="${dt}" onchange="chDate(this.value)" style="height:40px;font-size:.85rem"/></div>`:'';
   const periodoLabel=cper==='dia'?new Date(dt+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'}):({hoy:'Hoy',semana:'Esta semana',mes:'Este mes',trimestre:'Este trimestre'})[cper];
   const tabBtns=`<button class="caja-tab caja-tab-caja ${ctab==='caja'?'on':''}" onclick="setCtab('caja')">${tabMedal('caja')}<span class="caja-tab-lbl">Caja</span></button><button class="caja-tab caja-tab-gastos ${ctab==='gastos'?'on':''}" onclick="setCtab('gastos')">${tabMedal('gastos')}<span class="caja-tab-lbl">Gastos</span></button>${esIndividual?'':`<button class="caja-tab caja-tab-liq" onclick="showLiquidacion()">${tabMedal('equipo')}<span class="caja-tab-lbl">Liquidación</span></button>`}`;
   const cierreBtn=`<button class="caja-tab caja-tab-cierre ${ctab==='cierre'?'on':''}" onclick="setCtab('cierre')">${tabMedal('cierre')}<span class="caja-tab-lbl">Cierre</span></button>`;
@@ -2751,7 +2754,7 @@ async function pgCaja(el){
     <div class="caja-sec"><span>Movimientos · ${lista.length}</span>${cmeth?`<button class="caja-fchip" onclick="setCmeth('${cmeth}')">${nomM[cmeth]} ✕</button>`:''}</div>
     ${lista.length===0?'<div class="caja-empty">No hay cobros en este periodo</div>':mostrados.map(filaCobro).join('')}
     ${(!cvermas&&lista.length>6)?`<button class="caja-more" onclick="cvermas=true;loadPg()">Ver los ${lista.length-6} restantes</button>`:''}`;
-  }else{
+  }else if(ctab==='gastos'){
     const nomM={efectivo:'Efectivo',tarjeta:'Tarjeta',transferencia:'Transferencia'};
     const icoM={efectivo:'💵',tarjeta:'💳',transferencia:'🏦'};
     const mg=r=>icoM[r.payment_method]?r.payment_method:'efectivo';
@@ -2779,6 +2782,7 @@ async function pgCaja(el){
         <div class="caja-mv-p">−${eur(r.amount)}<small>${icoM[mg(r)]}</small></div>
       </div>`;}).join('');
     content=`
+    <div class="caja-cta"><button class="caja-add caja-add-lg" onclick="abrirGasto()">＋ Registrar gasto</button></div>
     ${aviso}
     <div class="caja-hero">
       <div class="caja-hero-i">🧾</div>
@@ -2786,15 +2790,15 @@ async function pgCaja(el){
       <div class="caja-hero-v">−${eur(gas)}</div>
     </div>
     <div class="caja-m3">${['efectivo','tarjeta','transferencia'].map(m=>`<div class="caja-mk" style="cursor:default"><span class="caja-mk-i">${icoM[m]}</span><span class="caja-mk-n">${nomM[m]}</span><span class="caja-mk-a">${eur(porMg[m])}</span></div>`).join('')}</div>
-    <div class="caja-sec"><span>${ex.length} gasto${ex.length===1?'':'s'}</span><button class="caja-add" onclick="abrirGasto()">＋ Gasto</button></div>
+    <div class="caja-sec"><span>${ex.length} gasto${ex.length===1?'':'s'}</span></div>
     ${ex.length===0?'<div class="caja-empty">Aún no hay gastos en este periodo</div>':lst}`;
   }
 
-  el.innerHTML=`<div class="page caja-th caja-th-${ctab}">
+  el.innerHTML=`<div class="page caja-th caja-th-${ctab||'caja'}">
     <div class="pg-tag">Panel de Caja</div>
     <div class="caja-head"><h1 class="pg-title" style="margin:0">Caja</h1><button class="caja-exp" onclick="abrirExportar()">⬇ Exportar</button></div>
-    <p style="font-size:.82rem;color:var(--muted-foreground);margin-bottom:1rem">${ap.length} cita${ap.length===1?'':'s'} · ${ex.length} gasto${ex.length===1?'':'s'} en el periodo</p>
-    <div class="period-row">${perBtns}${ctab==='cierre'?'':`<button class="period-pill ${cper==='dia'?'on':''}" onclick="setCper('dia')">📅 Día</button>`}</div>
+    ${ctab?`<p style="font-size:.82rem;color:var(--muted-foreground);margin-bottom:1rem">${ap.length} cita${ap.length===1?'':'s'} · ${ex.length} gasto${ex.length===1?'':'s'} en el periodo</p>`:'<div style="height:.75rem"></div>'}
+    ${(ctab==='caja'||ctab==='gastos')?`<div class="period-row">${perBtns}<button class="period-pill ${cper==='dia'?'on':''}" onclick="setCper('dia')">📅 Día</button></div>`:''}
     ${datePickerRow}
     ${esIndividual
       ? `<div class="caja-tabs-row">${tabBtns}${cierreBtn}</div>`
@@ -2883,10 +2887,11 @@ async function renderCierreDiario(){
     :`<div class="cierre-badge cierre-badge-pendiente">Aún no se ha guardado el cierre de este día</div>`;
 
   const boton=(!guardado||esHoy)
-    ?`<button class="cash-btn liquidacion-btn" style="margin-top:1.25rem" onclick="guardarCierre('${dt}')">${guardado?'🔁 Corregir cierre de hoy':'Guardar cierre del día'}</button>`
+    ?`<div class="caja-cta"><button class="cash-btn liquidacion-btn caja-cta-btn" onclick="guardarCierre('${dt}')">${guardado?'🔁 Corregir cierre de hoy':'🔒 Guardar cierre del día'}</button></div>`
     :'';
 
   return`
+    ${boton}
     <div class="cierre-tag">CIERRE DE CAJA</div>
     <div class="cierre-fecha">${fechaLbl}</div>
     ${badge}
@@ -2928,7 +2933,6 @@ async function renderCierreDiario(){
       <div class="cierre-neto-val">${eur(v.ganancia_neta)}</div>
     </div>
 
-    ${boton}
   `;
 }
 
