@@ -669,33 +669,73 @@ input, select { font-family: inherit; outline: none; border: none; }
 .svc-link { display: block; margin: 0 auto 1rem; background: none; border: none; color: var(--primary); font-size: .85rem; font-weight: 700; text-decoration: underline; cursor: pointer; touch-action: manipulation; }
 
 .caja-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .25rem; }
-.caja-exp { height: 40px; padding: 0 1rem; border-radius: var(--radius-lg); background: transparent; border: 1.5px solid rgba(255,255,255,0.75); color: #fff; font-size: .82rem; font-weight: 700; touch-action: manipulation; cursor: pointer; }
-.caja-hero { border: 1.5px solid var(--primary); border-radius: var(--radius-2xl); padding: 1.1rem 1rem; text-align: center; margin-bottom: .875rem; background: rgba(255,255,255,0.04); }
+.caja-exp { height: 40px; padding: 0 1rem; border-radius: var(--radius-lg); background: transparent; border: 1.5px solid var(--ac); color: #fff; font-size: .82rem; font-weight: 700; touch-action: manipulation; cursor: pointer; }
+.caja-hero { border: 1.5px solid var(--ac); border-radius: var(--radius-2xl); padding: 1.1rem 1rem; text-align: center; margin-bottom: .875rem; background: rgba(255,255,255,0.04); }
 .caja-hero-l { font-size: .72rem; letter-spacing: .09em; text-transform: uppercase; color: rgba(255,255,255,0.8); }
-.caja-hero-v { font-size: 2.6rem; font-weight: 900; color: var(--primary); text-shadow: 0 0 22px var(--primary-glow); font-variant-numeric: tabular-nums; margin: .15rem 0; }
+.caja-hero-v { font-size: 2.6rem; font-weight: 900; color: var(--ac); text-shadow: 0 0 22px var(--ac-glow); font-variant-numeric: tabular-nums; margin: .15rem 0; }
 .caja-hero-f { font-size: .82rem; color: rgba(255,255,255,0.85); }
 .caja-chip { display: inline-block; margin-top: .6rem; font-size: .78rem; font-weight: 700; border-radius: 999px; padding: .2rem .7rem; }
 .caja-chip-up { color: var(--success); border: 1px solid var(--success); }
 .caja-chip-dn { color: var(--destructive); border: 1px solid var(--destructive); }
 .caja-chip-eq { color: #fff; border: 1px solid rgba(255,255,255,0.75); }
 .caja-m3 { display: grid; grid-template-columns: repeat(3,1fr); gap: .5rem; margin-bottom: .4rem; }
-.caja-mk { display: flex; flex-direction: column; align-items: center; gap: .1rem; padding: .7rem .25rem; border-radius: var(--radius-xl); background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.75); color: #fff; cursor: pointer; transition: all .2s; touch-action: manipulation; }
-.caja-mk:hover, .caja-mk.on { border-color: var(--primary); background: rgba(255,255,255,0.18); }
+.caja-mk { display: flex; flex-direction: column; align-items: center; gap: .1rem; padding: .7rem .25rem; border-radius: var(--radius-xl); background: rgba(255,255,255,0.1); border: 1.5px solid var(--ac); color: #fff; cursor: pointer; transition: all .2s; touch-action: manipulation; }
+.caja-mk:hover, .caja-mk.on { border-color: var(--ac); background: rgba(255,255,255,0.18); }
 .caja-mk-i { font-size: 1.15rem; } .caja-mk-n { font-size: .7rem; opacity: .85; }
 .caja-mk-a { font-size: .95rem; font-weight: 800; font-variant-numeric: tabular-nums; } .caja-mk-c { font-size: .66rem; opacity: .65; }
 .caja-hint { font-size: .72rem; color: var(--muted-foreground); text-align: center; margin-bottom: 1rem; }
 .caja-sec { display: flex; align-items: center; justify-content: space-between; margin: .25rem 0 .6rem; font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; font-weight: 600; color: var(--muted-foreground); }
-.caja-fchip { font-size: .75rem; color: var(--primary); border: 1px solid var(--primary); background: none; border-radius: 999px; padding: .15rem .7rem; cursor: pointer; text-transform: none; letter-spacing: 0; }
-.caja-mv { display: flex; align-items: center; gap: .75rem; padding: .65rem .85rem; margin-bottom: .5rem; border-radius: var(--radius-xl); background: transparent; border: 1.5px solid rgba(255,255,255,0.75); cursor: pointer; transition: all .2s; }
-.caja-mv:hover { border-color: var(--primary); background: rgba(255,255,255,0.05); }
+.caja-fchip { font-size: .75rem; color: var(--ac); border: 1px solid var(--ac); background: none; border-radius: 999px; padding: .15rem .7rem; cursor: pointer; text-transform: none; letter-spacing: 0; }
+.caja-mv { display: flex; align-items: center; gap: .75rem; padding: .65rem .85rem; margin-bottom: .5rem; border-radius: var(--radius-xl); background: transparent; border: 1.5px solid var(--ac); cursor: pointer; transition: all .2s; }
+.caja-mv:hover { border-color: var(--ac); background: rgba(255,255,255,0.05); }
 .caja-mv-t { width: 3.4rem; font-size: .78rem; color: rgba(255,255,255,0.7); line-height: 1.25; flex-shrink: 0; }
 .caja-mv-x { flex: 1; min-width: 0; } .caja-mv-x b { display: block; font-size: .95rem; font-weight: 600; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .caja-mv-x small { font-size: .75rem; color: rgba(255,255,255,0.65); }
-.caja-mv-p { text-align: right; font-weight: 800; color: var(--primary); font-size: .95rem; font-variant-numeric: tabular-nums; } .caja-mv-p small { display: block; font-size: .85rem; font-weight: 400; }
-.caja-more { display: block; width: 100%; padding: .75rem; background: none; border: none; color: var(--primary); font-weight: 700; font-size: .9rem; cursor: pointer; }
+.caja-mv-p { text-align: right; font-weight: 800; color: var(--ac); font-size: .95rem; font-variant-numeric: tabular-nums; } .caja-mv-p small { display: block; font-size: .85rem; font-weight: 400; }
+.caja-more { display: block; width: 100%; padding: .75rem; background: none; border: none; color: var(--ac); font-weight: 700; font-size: .9rem; cursor: pointer; }
 .caja-empty { text-align: center; color: var(--muted-foreground); padding: 1.5rem; font-size: .875rem; }
 .caja-lock { border: 1px solid rgba(255,255,255,0.5); border-radius: var(--radius-lg); padding: .75rem; font-size: .82rem; text-align: center; color: rgba(255,255,255,0.85); }
 
+.caja-th{--ac:var(--primary);--ac-glow:var(--primary-glow)}
+.caja-th-gastos{--ac:var(--destructive);--ac-glow:var(--destructive-glow)}
+.caja-th-cierre{--ac:var(--success);--ac-glow:var(--success-glow)}
+.caja-th .period-pill{border-color:rgba(255,255,255,.28)}
+.caja-th .period-pill.on{border-color:var(--ac);color:var(--ac);background:color-mix(in srgb,var(--ac) 16%,transparent);box-shadow:none}
+.caja-hero{background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 14%,transparent),transparent)}
+.caja-hero-i{font-size:2rem;line-height:1.1;margin-bottom:.15rem}
+.caja-hero-v{text-shadow:0 0 22px var(--ac-glow)}
+.caja-mk{background:rgba(255,255,255,.04)}.caja-mk-i{font-size:1.7rem}.caja-mk-a{font-size:1rem}
+.caja-ic{width:2.7rem;height:2.7rem;border-radius:.8rem;background:color-mix(in srgb,var(--ac) 18%,transparent);display:flex;align-items:center;justify-content:center;font-size:1.45rem;flex-shrink:0}
+.caja-mv{padding:.55rem .8rem .55rem .55rem}
+.caja-add{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;border:1.5px solid var(--ac);color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,transparent);border-radius:var(--radius-xl);padding:.9rem;font-size:1rem;font-weight:800;cursor:pointer;margin-bottom:.9rem;touch-action:manipulation}
+.caja-add:active{transform:scale(.98)}
+.caja-alert{border:1.5px solid var(--destructive);border-radius:var(--radius-xl);padding:.7rem .8rem;margin-bottom:.9rem;background:color-mix(in srgb,var(--destructive) 10%,transparent)}
+.caja-alert-h{font-size:.82rem;font-weight:800;margin-bottom:.4rem}
+.caja-al{display:flex;align-items:center;gap:.65rem;margin-top:.4rem}.caja-al-i{font-size:1.5rem}.caja-al-x{flex:1;font-size:.9rem}.caja-al-x small{display:block;opacity:.7;font-size:.75rem}
+.caja-al-go{border:1.5px solid var(--destructive);color:var(--destructive);background:none;border-radius:.75rem;padding:.5rem .8rem;font-weight:800;font-size:.85rem;cursor:pointer;white-space:nowrap;touch-action:manipulation}
+.gx-sug{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0 .875rem}.gx-sug button{border:1px solid var(--destructive);color:#fff;background:none;border-radius:999px;padding:.3rem .75rem;font-size:.8rem;cursor:pointer}
+.gx-rec{display:flex;align-items:center;gap:.6rem;font-size:.88rem;cursor:pointer;margin:.25rem 0 .6rem;background:none;border:none;color:#fff;padding:0;text-align:left}
+.gx-rec i{width:1.4rem;height:1.4rem;border:1.5px solid var(--destructive);border-radius:.45rem;display:flex;align-items:center;justify-content:center;font-style:normal;color:var(--destructive);flex-shrink:0}
+.gx-rec.on i{background:color-mix(in srgb,var(--destructive) 25%,transparent)}
+.gx-freq{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.875rem}.gx-freq button{border:1.5px solid rgba(255,255,255,.3);border-radius:.75rem;padding:.55rem;background:none;color:#fff;font-size:.85rem;cursor:pointer}.gx-freq button.on{border-color:var(--destructive);color:var(--destructive)}
+.gx-modal .pay-meth.on{border-color:var(--destructive)}
+/* pestañas con imagen */
+.caja-tab{padding:.8rem .3rem .65rem;gap:.25rem;background:rgba(255,255,255,.04)!important;box-shadow:none!important;border-color:rgba(255,255,255,.22)!important}
+.caja-tab .caja-tab-ico{font-size:2rem;line-height:1.1;filter:grayscale(.55);opacity:.8;transition:all .2s}
+.caja-tab .caja-tab-lbl{font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.7);font-weight:700}
+.caja-tab.on .caja-tab-ico{filter:none;opacity:1;transform:scale(1.1)}
+.caja-tab-caja.on{border-color:var(--primary)!important;background:color-mix(in srgb,var(--primary) 16%,transparent)!important;box-shadow:0 0 18px var(--primary-glow)!important}.caja-tab-caja.on .caja-tab-lbl{color:var(--primary)}
+.caja-tab-gastos.on{border-color:var(--destructive)!important;background:color-mix(in srgb,var(--destructive) 16%,transparent)!important;box-shadow:0 0 18px var(--destructive-glow)!important}.caja-tab-gastos.on .caja-tab-lbl{color:var(--destructive)}
+.caja-tab-cierre.on{border-color:var(--success)!important;background:color-mix(in srgb,var(--success) 16%,transparent)!important;box-shadow:0 0 18px var(--success-glow)!important}.caja-tab-cierre.on .caja-tab-lbl{color:var(--success)}
+.caja-tab-liq .caja-tab-ico{filter:none;opacity:1}
+/* cierre verde */
+.caja-th-cierre .cierre-num{color:var(--ac);text-shadow:0 0 12px var(--ac-glow)}
+.caja-th-cierre .cierre-badge{color:var(--ac);border-color:var(--ac)}
+.caja-th-cierre .cierre-badge-pendiente{color:#fff;border-color:rgba(255,255,255,.4)}
+.caja-th-cierre .kard{border-color:var(--ac)}
+.caja-th-cierre .cierre-neto{border-color:var(--ac);box-shadow:0 0 32px var(--ac-glow)}
+.caja-th-cierre .cierre-neto-val{text-shadow:0 0 22px var(--ac-glow)}
+.caja-th-cierre .liquidacion-btn{border-color:var(--ac);color:var(--ac);background:color-mix(in srgb,var(--ac) 14%,transparent)}
 /* ── CONFIRMACIÓN DE BORRADO ──────────────────────────────────── */
 .confirm-cancel-btn {
   flex: 1; height: 52px; border-radius: var(--radius-2xl);
@@ -2599,15 +2639,24 @@ function getRange(){
   return{s,e};
 }
 
+function iconoDe(n,def){
+  n=String(n||'').toLowerCase();
+  const m=[['corte|pelo|cabello|peinad|barb','✂️'],['uñ|manicur|pedicur','💅'],['ceja|pestaña|depil|cera ','🪮'],['facial|cara|limpieza facial|botox|relleno','🧖'],['masaje|spa','💆'],['tinte|color|mecha','🎨'],['tatu|piercing','🖋️'],['consult|revisi|terapia|sesi','🩺'],['clase|curso','📚'],['alquiler|silla|local|renta','🪑'],['luz|electric','💡'],['agua','💧'],['producto|gel|champ|crema|aceite','🧴'],['material|herramient|cuchill|lima|insumo','🧰'],['limpiez|aseo','🧽'],['internet|wifi|telef|movil|móvil','📶'],['publicidad|anuncio|marketing|redes','📣'],['impuesto|iva|gestor|autónomo|autonomo|seguro|cuota','🏛️'],['sueldo|nómina|nomina|empleado','👥'],['transport|gasolina|combustible','🚗']];
+  for(const [k,i] of m) if(new RegExp(k).test(n)) return i;
+  return def;
+}
+const iconoServicio=n=>iconoDe(n,'✨');
+const iconoGasto=n=>iconoDe(n,'🧾');
 async function pgCaja(el){
   const esIndividual=profile&&profile.tipo_cuenta==='individual';
   const{s,e}=getRange();
   const pr=getPrevRange();
-  const[{data:a},{data:x},{data:pa},{data:px}]=await Promise.all([
+  const[{data:a},{data:x},{data:pa},{data:px},{data:hx}]=await Promise.all([
     sb.from('appointments').select('*').eq('status','completed').eq('user_id',user.id).gte('appointment_date',s).lte('appointment_date',e),
     sb.from('expenses').select('*').eq('user_id',user.id).gte('expense_date',s).lte('expense_date',e),
     ctab==='caja'?sb.from('appointments').select('price').eq('status','completed').eq('user_id',user.id).gte('appointment_date',pr.s).lte('appointment_date',pr.e):Promise.resolve({data:[]}),
-    ctab==='caja'?sb.from('expenses').select('amount').eq('user_id',user.id).gte('expense_date',pr.s).lte('expense_date',pr.e):Promise.resolve({data:[]})
+    ctab==='caja'?sb.from('expenses').select('amount').eq('user_id',user.id).gte('expense_date',pr.s).lte('expense_date',pr.e):Promise.resolve({data:[]}),
+    ctab==='gastos'?sb.from('expenses').select('category,amount,payment_method,recurrente,expense_date').eq('user_id',user.id).order('expense_date',{ascending:false}).order('created_at',{ascending:false}).limit(120):Promise.resolve({data:[]})
   ]);
   const ap=a||[],ex=x||[];
   window._liqAp=ap;
@@ -2625,8 +2674,8 @@ async function pgCaja(el){
   const perBtns=ctab==='cierre'?'':pers.map(p=>`<button class="period-pill ${cper===p?'on':''}" onclick="setCper('${p}')">${perL[p]}</button>`).join('');
   const datePickerRow=(ctab==='cierre'||cper==='dia')?`<div style="margin-bottom:.75rem;display:flex;align-items:center;gap:.625rem"><span style="font-size:.75rem;color:var(--muted-foreground);font-weight:600">Fecha:</span><input type="date" class="date-inp" value="${dt}" onchange="chDate(this.value)" style="height:40px;font-size:.85rem"/></div>`:'';
   const periodoLabel=cper==='dia'?new Date(dt+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'}):({hoy:'Hoy',semana:'Esta semana',mes:'Este mes',trimestre:'Este trimestre'})[cper];
-  const tabBtns=`<button class="caja-tab caja-tab-caja ${ctab==='caja'?'on':''}" onclick="setCtab('caja')"><span class="caja-tab-ico">👜</span><span class="caja-tab-lbl">Caja</span></button><button class="caja-tab caja-tab-gastos ${ctab==='gastos'?'on':''}" onclick="setCtab('gastos')"><span class="caja-tab-ico">📋</span><span class="caja-tab-lbl">Gastos</span></button>${esIndividual?'':'<button class="caja-tab caja-tab-liq" onclick="showLiquidacion()"><span class="caja-tab-ico">✂️</span><span class="caja-tab-lbl">Liquidación<br>barberos</span></button>'}`;
-  const cierreBtn=`<button class="caja-tab caja-tab-cierre ${ctab==='cierre'?'on':''}" onclick="setCtab('cierre')"><span class="caja-tab-ico">🔒</span><span class="caja-tab-lbl">Cierre<br>del día</span></button>`;
+  const tabBtns=`<button class="caja-tab caja-tab-caja ${ctab==='caja'?'on':''}" onclick="setCtab('caja')"><span class="caja-tab-ico">👜</span><span class="caja-tab-lbl">Caja</span></button><button class="caja-tab caja-tab-gastos ${ctab==='gastos'?'on':''}" onclick="setCtab('gastos')"><span class="caja-tab-ico">🧾</span><span class="caja-tab-lbl">Gastos</span></button>${esIndividual?'':'<button class="caja-tab caja-tab-liq" onclick="showLiquidacion()"><span class="caja-tab-ico">✂️</span><span class="caja-tab-lbl">Liquidación</span></button>'}`;
+  const cierreBtn=`<button class="caja-tab caja-tab-cierre ${ctab==='cierre'?'on':''}" onclick="setCtab('cierre')"><span class="caja-tab-ico">🔒</span><span class="caja-tab-lbl">Cierre</span></button>`;
 
   let content='';
   if(ctab==='cierre'){
@@ -2663,13 +2712,14 @@ async function pgCaja(el){
       const hora=(r.start_time||'').slice(0,5);
       const fecha=cper==='hoy'?'':new Date(r.appointment_date+'T12:00:00').toLocaleDateString('es-ES',{weekday:'short',day:'numeric'}).replace('.','')+'<br>';
       return `<div class="caja-mv" onclick="editarCobro('${r.id}')">
-        <div class="caja-mv-t">${fecha}${hora}</div>
-        <div class="caja-mv-x"><b>${esc(r.service||'Sin servicio')}</b><small>${esc(r.client_name||'')}${(!esIndividual&&r.barbero)?' · '+esc(r.barbero):''}</small></div>
+        <div class="caja-ic">${iconoServicio(r.service)}</div>
+        <div class="caja-mv-x"><b>${esc(r.service||'Sin servicio')}</b><small>${(fecha+hora).replace('<br>',' · ')}${r.client_name?' · '+esc(r.client_name):''}${(!esIndividual&&r.barbero)?' · '+esc(r.barbero):''}</small></div>
         <div class="caja-mv-p">${eur(r.price)}<small>${icoM[m]||''}</small></div>
       </div>`;
     };
     content=`
     <div class="caja-hero">
+      <div class="caja-hero-i">💰</div>
       <div class="caja-hero-l">Ganancia neta · ${periodoLabel.toLowerCase()}</div>
       <div class="caja-hero-v">${eur(neto)}</div>
       <div class="caja-hero-f">Cobrado ${eur(tot)} − Gastos ${eur(gas)}</div>
@@ -2687,49 +2737,46 @@ async function pgCaja(el){
     ${lista.length===0?'<div class="caja-empty">No hay cobros en este periodo</div>':mostrados.map(filaCobro).join('')}
     ${(!cvermas&&lista.length>6)?`<button class="caja-more" onclick="cvermas=true;loadPg()">Ver los ${lista.length-6} restantes</button>`:''}`;
   }else{
-    const lst=ex.length===0
-      ?`<div style="text-align:center;color:var(--muted-foreground);padding:1.5rem;font-size:.875rem">No hay gastos registrados</div>`
-      :ex.map(x=>`<div class="gitem">
-          <div style="flex:1">
-            <div class="gi-cat">${x.category}</div>
-            <div class="gi-note">${x.expense_date}${x.note?' · '+x.note:''}</div>
-          </div>
-          <div class="gi-amt">${eur(x.amount)}</div>
-          <button class="gi-del" onclick="delExp('${x.id}')" aria-label="Eliminar">${ICON_TRASH}</button>
-        </div>`).join('');
+    const nomM={efectivo:'Efectivo',tarjeta:'Tarjeta',transferencia:'Transferencia'};
+    const icoM={efectivo:'💵',tarjeta:'💳',transferencia:'🏦'};
+    const mg=r=>icoM[r.payment_method]?r.payment_method:'efectivo';
+    const porMg={efectivo:0,tarjeta:0,transferencia:0};
+    ex.forEach(r=>{porMg[mg(r)]+=Number(r.amount)||0;});
+    // sugerencias (último gasto de cada nombre) y recurrentes que ya tocan
+    const vistos={},sug=[],vencidos=[];
+    (hx||[]).forEach(r=>{
+      const k=(r.category||'').trim().toLowerCase();if(!k||vistos[k])return;vistos[k]=1;sug.push(r);
+      if(r.recurrente){
+        const d=new Date(r.expense_date+'T12:00:00');
+        if(r.recurrente==='semanal')d.setDate(d.getDate()+7);else d.setMonth(d.getMonth()+1);
+        if(fechaLocal(d)<=today())vencidos.push(r);
+      }
+    });
+    window._gSug=sug.slice(0,12);window._gDue=vencidos;window._gastos=ex;
+    const aviso=vencidos.length===0?'':`<div class="caja-alert"><div class="caja-alert-h">🔔 Gastos recurrentes por registrar</div>${vencidos.map((r,i)=>{
+      const dias=Math.round((new Date(today()+'T12:00:00')-new Date(r.expense_date+'T12:00:00'))/864e5);
+      return `<div class="caja-al"><div class="caja-al-i">${iconoGasto(r.category)}</div><div class="caja-al-x">${esc(r.category)} · ${eur(r.amount)}<small>Último pago hace ${dias} día${dias===1?'':'s'} (${r.recurrente})</small></div><button class="caja-al-go" onclick="registrarRecurrente(${i})">Registrar</button></div>`;}).join('')}</div>`;
+    const lst=ex.slice().sort((x,y)=>String(y.expense_date).localeCompare(String(x.expense_date))||String(y.created_at||'').localeCompare(String(x.created_at||''))).map(r=>{
+      const fch=r.expense_date===today()?'hoy':new Date(r.expense_date+'T12:00:00').toLocaleDateString('es-ES',{weekday:'short',day:'numeric'}).replace('.','');
+      return `<div class="caja-mv" onclick="abrirGasto('${r.id}')">
+        <div class="caja-ic">${iconoGasto(r.category)}</div>
+        <div class="caja-mv-x"><b>${esc(r.category||'Gasto')}${r.recurrente?' 🔁':''}</b><small>${fch}${r.note?' · '+esc(r.note):''}</small></div>
+        <div class="caja-mv-p">−${eur(r.amount)}<small>${icoM[mg(r)]}</small></div>
+      </div>`;}).join('');
     content=`
-    <div class="gform">
-      <div class="gform-title">Nuevo gasto</div>
-      <div class="gform-row">
-        <div class="fg">
-          <label class="fg-lbl">Categoría</label>
-          <select id="ec" class="fg-sel" style="color-scheme:dark">${esIndividual?
-  '<option style="background:#1c1d21;color:#fff">Material de barbería</option><option style="background:#1c1d21;color:#fff">Alquiler de local</option><option style="background:#1c1d21;color:#fff">Alquiler de silla</option><option style="background:#1c1d21;color:#fff">Otros</option>'
-  :
-  '<option style="background:#1c1d21;color:#fff">Material de Barbería</option><option style="background:#1c1d21;color:#fff">Alquiler</option><option style="background:#1c1d21;color:#fff">Luz y agua</option><option style="background:#1c1d21;color:#fff">Otros</option>'
-}</select>
-        </div>
-        <div class="fg">
-          <label class="fg-lbl">Importe (${simboloMoneda()})</label>
-          <input id="ea" class="fg-inp" inputmode="decimal" placeholder="0.00" oninput="formatearInputCO(this)"/>
-        </div>
-        <div class="fg">
-          <label class="fg-lbl">Nota</label>
-          <input id="en" class="fg-inp" placeholder="Ej: Compra de cuchillas"/>
-        </div>
-        <button class="gadd-btn" onclick="addExp()">+ Añadir</button>
-      </div>
+    ${aviso}
+    <div class="caja-hero">
+      <div class="caja-hero-i">🧾</div>
+      <div class="caja-hero-l">Gastos · ${periodoLabel.toLowerCase()}</div>
+      <div class="caja-hero-v">−${eur(gas)}</div>
     </div>
-    <div class="glist">
-      <div class="glist-hd">
-        <div class="glist-hd-t">Gastos del periodo</div>
-        <div class="glist-total">−${eur(gas)}</div>
-      </div>
-      ${lst}
-    </div>`;
+    <div class="caja-m3">${['efectivo','tarjeta','transferencia'].map(m=>`<div class="caja-mk" style="cursor:default"><span class="caja-mk-i">${icoM[m]}</span><span class="caja-mk-n">${nomM[m]}</span><span class="caja-mk-a">${eur(porMg[m])}</span></div>`).join('')}</div>
+    <button class="caja-add" onclick="abrirGasto()">＋ Gasto</button>
+    <div class="caja-sec"><span>${ex.length} gasto${ex.length===1?'':'s'}</span></div>
+    ${ex.length===0?'<div class="caja-empty">Aún no hay gastos en este periodo</div>':lst}`;
   }
 
-  el.innerHTML=`<div class="page">
+  el.innerHTML=`<div class="page caja-th caja-th-${ctab}">
     <div class="pg-tag">Panel de Caja</div>
     <div class="caja-head"><h1 class="pg-title" style="margin:0">Caja</h1><button class="caja-exp" onclick="abrirExportar()">⬇ Exportar</button></div>
     <p style="font-size:.82rem;color:var(--muted-foreground);margin-bottom:1rem">${ap.length} cita${ap.length===1?'':'s'} · ${ex.length} gasto${ex.length===1?'':'s'} en el periodo</p>
@@ -2798,7 +2845,7 @@ async function calcularCierreLive(fecha){
   return{
     efectivo:int,tarjeta_transferencia:of,total:of+int,
     ingreso_negocio:ingresoNegocio,dinero_barberos:dineroBarberos,
-    gastos_total:gastosTotal,ganancia_neta:ingresoNegocio-gastosTotal,
+    gastos_total:gastosTotal,gastos_efectivo:ex.filter(g=>(g.payment_method||'efectivo')==='efectivo').reduce((t,g)=>t+Number(g.amount||0),0),ganancia_neta:ingresoNegocio-gastosTotal,
     gastos_detalle:ex.map(g=>({category:g.category,amount:Number(g.amount),note:g.note||''})),
     citas_count:ap.length,gastos_count:ex.length
   };
@@ -2829,6 +2876,13 @@ async function renderCierreDiario(){
     <div class="cierre-tag">CIERRE DE CAJA</div>
     <div class="cierre-fecha">${fechaLbl}</div>
     ${badge}
+
+    <div class="caja-hero" style="margin-top:1rem">
+      <div class="caja-hero-i">💵</div>
+      <div class="caja-hero-l">Efectivo que debe haber en caja</div>
+      <div class="caja-hero-v">${eur((Number(live.efectivo)||0)-(Number(live.gastos_efectivo)||0))}</div>
+      <div class="caja-hero-f">Cobros en efectivo ${eur(live.efectivo)} − gastos en efectivo ${eur(live.gastos_efectivo||0)}</div>
+    </div>
 
     <div class="sec-label" style="margin-top:1.25rem">Ingresos del día</div>
     <div class="cards2">
@@ -2980,16 +3034,105 @@ async function guardarCobro(){
   document.getElementById('cobro-modal')?.remove();
   toast('Cobro corregido ✓','success');loadPg();
 }
-async function addExp(){
-  const cat=document.getElementById('ec')?.value;
-  const amount=parseImporte(document.getElementById('ea')?.value);
-  const note=document.getElementById('en')?.value||'';
-  if(!amount||amount<=0)return toast('Importe inválido','error');
-  const{error}=await sb.from('expenses').insert({user_id:user.id,category:cat,amount,note,expense_date:today()});
-  if(error)return toast(traducirError(error.message),'error');
-  toast('Gasto registrado ✓','success');loadPg();
+function renderGastoModal(){
+  const st=window._eg;if(!st)return;
+  const old=document.getElementById('gasto-modal');if(old)old.remove();
+  const bloq=!!st.locked;
+  const metBtn=(m,ico,nom)=>`<button class="pay-meth${st.m===m?' on':''}" ${bloq?'disabled style="opacity:.6;cursor:default"':`onclick="selGm('${m}')"`}><span class="pay-meth-icon">${ico}</span>${nom}</button>`;
+  const q=(st.nom||'').trim().toLowerCase();
+  const chips=st.id?'':(window._gSug||[]).map((r,i)=>({r,i})).filter(o=>!q||String(o.r.category).toLowerCase().includes(q)).slice(0,5).map(o=>`<button onclick="gPick(${o.i})">${iconoGasto(o.r.category)} ${esc(o.r.category)}</button>`).join('');
+  const div=document.createElement('div');div.id='gasto-modal';
+  div.innerHTML=`
+  <div class="overlay" onclick="document.getElementById('gasto-modal').remove()">
+    <div class="modal gx-modal" onclick="event.stopPropagation()" style="max-width:440px">
+      <div class="modal-body">
+        <button class="modal-close" onclick="document.getElementById('gasto-modal').remove()">✕</button>
+        <div class="m-tag">Gasto</div>
+        <div class="m-title" style="font-size:1.4rem">${st.id?iconoGasto(st.nom)+' '+esc(st.nom):'🧾 Nuevo gasto'}</div>
+        ${st.id?'':`<label class="m-label" style="margin-top:.75rem">Qué has pagado</label>`}
+        ${st.id?'':`<input id="eg-nom" class="m-input" placeholder="Escribe el gasto" value="${esc(st.nom||'')}" oninput="gFiltrar()" autocomplete="off"/><div class="gx-sug" id="eg-sug">${chips}</div>`}
+        <label class="m-label">Importe (${simboloMoneda()})</label>
+        <input id="eg-imp" class="m-input" inputmode="decimal" placeholder="0" value="${esc(st.imp||'')}" ${bloq?'disabled':'oninput="formatearInputCO(this)"'}/>
+        <label class="m-label" style="margin-top:.875rem">Cómo se pagó</label>
+        <div class="pay-meths">${metBtn('efectivo','💵','Efectivo')}${metBtn('tarjeta','💳','Tarjeta')}${metBtn('transferencia','🏦','Transferencia')}</div>
+        <label class="m-label">Nota (opcional)</label>
+        <input id="eg-nota" class="m-input" value="${esc(st.nota||'')}" ${bloq?'disabled':''}/>
+        ${bloq?'':`<button class="gx-rec${st.rec?' on':''}" onclick="togGRec()"><i>${st.rec?'✓':''}</i>🔁 Se repite (avísame cuando toque)</button>
+        ${st.rec?`<div class="gx-freq"><button class="${st.rec==='semanal'?'on':''}" onclick="setGFreq('semanal')">Cada semana</button><button class="${st.rec==='mensual'?'on':''}" onclick="setGFreq('mensual')">Cada mes</button></div>`:''}`}
+        ${bloq?'<div class="caja-lock">🔒 Este día ya está cerrado y no se puede modificar.</div>':''}
+      </div>
+      <div class="modal-actions pay-acts">
+        ${bloq
+          ?`<button class="pay-ok" onclick="document.getElementById('gasto-modal').remove()">Cerrar</button>`
+          :`${st.id?`<button class="pay-del-btn" onclick="delExp('${st.id}')" aria-label="Eliminar">${ICON_TRASH}</button>`:`<button class="confirm-cancel-btn" onclick="document.getElementById('gasto-modal').remove()">Cancelar</button>`}<button class="pay-ok" style="flex:1" onclick="guardarGasto()">${st.id?'Guardar cambios':'Guardar gasto'}</button>`}
+      </div>
+    </div>
+  </div>`;
+  document.body.appendChild(div);
+  if(!st.id&&!st.nom){const n=document.getElementById('eg-nom');if(n&&window.innerWidth>700)n.focus();}
 }
-async function delExp(id){await sb.from('expenses').delete().eq('id',id).eq('user_id',user.id);toast('Eliminado','info');loadPg();}
+function abrirGasto(id){
+  if(!id){window._eg={id:null,nom:'',imp:'',nota:'',m:'efectivo',rec:''};return renderGastoModal();}
+  const r=(window._gastos||[]).find(x=>x.id===id);if(!r)return;
+  window._eg={id,nom:r.category||'',imp:valorInputImporte(Number(r.amount)),nota:r.note||'',m:r.payment_method||'efectivo',rec:r.recurrente==='semanal'?'semanal':r.recurrente==='mensual'?'mensual':'',locked:r.expense_date!==today()};
+  renderGastoModal();
+}
+function gSync(){
+  const st=window._eg;if(!st)return;
+  const n=document.getElementById('eg-nom'),i=document.getElementById('eg-imp'),t=document.getElementById('eg-nota');
+  if(n)st.nom=n.value;if(i)st.imp=i.value;if(t)st.nota=t.value;
+}
+function selGm(m){if(window._eg){gSync();window._eg.m=m;renderGastoModal();}}
+function togGRec(){const st=window._eg;if(!st)return;gSync();st.rec=st.rec?'':'mensual';renderGastoModal();}
+function setGFreq(f){if(window._eg){gSync();window._eg.rec=f;renderGastoModal();}}
+function gFiltrar(){
+  const st=window._eg;if(!st)return;
+  const nom=document.getElementById('eg-nom');st.nom=nom?nom.value:'';
+  const q=st.nom.trim().toLowerCase();
+  const box=document.getElementById('eg-sug');if(!box)return;
+  box.innerHTML=(window._gSug||[]).map((r,i)=>({r,i})).filter(o=>!q||String(o.r.category).toLowerCase().includes(q)).slice(0,5).map(o=>`<button onclick="gPick(${o.i})">${iconoGasto(o.r.category)} ${esc(o.r.category)}</button>`).join('');
+}
+function gPick(i){
+  const r=(window._gSug||[])[i];const st=window._eg;if(!r||!st)return;
+  st.nom=r.category;st.imp=valorInputImporte(Number(r.amount));st.m=r.payment_method||'efectivo';st.rec=r.recurrente||'';
+  renderGastoModal();
+}
+async function guardarGasto(){
+  const st=window._eg;if(!st)return;
+  const n=document.getElementById('eg-nom'),i=document.getElementById('eg-imp'),t=document.getElementById('eg-nota');
+  if(n)st.nom=n.value;if(i)st.imp=i.value;if(t)st.nota=t.value;
+  const nombre=(st.nom||'').trim();
+  const amount=parseImporte(st.imp);
+  if(!nombre)return toast('Escribe qué has pagado','error');
+  if(!amount||amount<=0)return toast('Importe inválido','error');
+  const fila={category:nombre,amount,note:st.nota||'',payment_method:st.m||'efectivo',recurrente:st.rec||null};
+  let error;
+  if(st.id){
+    const r=(window._gastos||[]).find(x=>x.id===st.id);
+    if(r&&r.expense_date!==today())return toast('Este día ya está cerrado','error');
+    ({error}=await sb.from('expenses').update(fila).eq('id',st.id).eq('user_id',user.id));
+  }else{
+    ({error}=await sb.from('expenses').insert({...fila,user_id:user.id,expense_date:today()}));
+  }
+  if(error)return toast(traducirError(error.message),'error');
+  document.getElementById('gasto-modal')?.remove();
+  toast(st.id?'Gasto corregido ✓':'Gasto registrado ✓','success');loadPg();
+}
+async function registrarRecurrente(i){
+  const r=(window._gDue||[])[i];if(!r)return;
+  const{error}=await sb.from('expenses').insert({user_id:user.id,category:r.category,amount:Number(r.amount),note:'',expense_date:today(),payment_method:r.payment_method||'efectivo',recurrente:r.recurrente});
+  if(error)return toast(traducirError(error.message),'error');
+  toast('Registrado: '+r.category+' ✓','success');loadPg();
+}
+async function delExp(id){
+  const r=(window._gastos||[]).find(x=>x.id===id);
+  if(r&&r.expense_date!==today())return toast('Este día ya está cerrado','error');
+  if(!window._egDel||window._egDel!==id){window._egDel=id;toast('Toca otra vez la papelera para eliminar','info');setTimeout(()=>{if(window._egDel===id)window._egDel=null;},4000);return;}
+  window._egDel=null;
+  await sb.from('expenses').delete().eq('id',id).eq('user_id',user.id);
+  document.getElementById('gasto-modal')?.remove();
+  toast('Gasto eliminado','info');loadPg();
+}
 
 function actualizarBtnExport(){
   const btn=document.getElementById('exp-btn');
