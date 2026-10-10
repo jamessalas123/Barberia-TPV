@@ -630,6 +630,44 @@ input, select { font-family: inherit; outline: none; border: none; }
 .pay-ok:hover { box-shadow: 0 6px 28px var(--primary-glow); opacity: .92; }
 .pay-ok:active { transform: scale(.99); }
 
+/* ── INDIVIDUAL: servicios guardados ──────────────────────────── */
+.svc-msg { font-size: .85rem; line-height: 1.5; text-align: center; color: var(--muted-foreground); margin: 0 0 .875rem; }
+.svc-add {
+  width: 100%; height: 56px; border-radius: var(--radius-xl); margin-bottom: 1rem;
+  background: transparent; border: 1.5px solid var(--primary); color: var(--primary);
+  font-size: 1.05rem; font-weight: 800; touch-action: manipulation; cursor: pointer; transition: all .2s;
+}
+.svc-add:hover { background: var(--primary); color: var(--primary-foreground); box-shadow: 0 4px 20px var(--primary-glow); }
+.svc-add:active { transform: scale(.99); }
+.svc-lbl { font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted-foreground); margin: 0 0 .5rem; }
+.svc-row {
+  display: flex; align-items: center; gap: .625rem; min-height: 56px; padding: .5rem .5rem .5rem 1rem;
+  margin-bottom: .5rem; border-radius: var(--radius-xl); cursor: pointer;
+  background: transparent; border: 1.5px solid rgba(255,255,255,0.75); transition: all .2s;
+}
+.svc-row:hover { border-color: var(--primary); background: rgba(255,255,255,0.06); }
+.svc-row:active { transform: scale(.99); }
+.svc-n { flex: 1; min-width: 0; font-size: 1rem; font-weight: 600; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.svc-p { font-size: 1.05rem; font-weight: 800; color: var(--primary); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.svc-ed {
+  width: 40px; height: 40px; flex-shrink: 0; border-radius: var(--radius-lg); display: grid; place-items: center;
+  background: transparent; border: 1.5px solid rgba(255,255,255,0.45); color: #fff; font-size: 1rem; touch-action: manipulation; cursor: pointer;
+}
+.svc-ed:hover { border-color: var(--primary); color: var(--primary); }
+.svc-form { border: 1.5px solid var(--primary); border-radius: var(--radius-xl); padding: 1rem 1rem .25rem; margin-bottom: 1rem; }
+.svc-form-t { text-align: center; font-weight: 800; margin-bottom: .75rem; }
+.svc-form .m-input { margin-bottom: .875rem; }
+.svc-btns { display: flex; gap: .5rem; margin-bottom: .875rem; }
+.svc-btns button { flex: 1; height: 48px; border-radius: var(--radius-xl); font-weight: 700; font-size: .95rem; touch-action: manipulation; cursor: pointer; }
+.svc-save { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); }
+.svc-cancel { background: transparent; border: 1.5px solid rgba(255,255,255,0.45); color: #fff; font-weight: 500 !important; }
+.svc-del { display: block; width: 100%; height: 44px; margin-bottom: .625rem; background: none; border: none; color: var(--destructive); font-weight: 600; font-size: .9rem; cursor: pointer; }
+.svc-del-yes { background: oklch(0.62 0.22 25 / 0.14) !important; border: 1.5px solid oklch(0.62 0.22 25 / 0.5) !important; color: var(--destructive) !important; }
+.svc-sum { text-align: center; border: 1.5px solid rgba(255,255,255,0.75); border-radius: var(--radius-xl); padding: 1rem; margin-bottom: .75rem; }
+.svc-sum-n { font-size: .95rem; color: #fff; opacity: .85; margin-bottom: .15rem; }
+.svc-sum-p { font-size: 2.25rem; font-weight: 900; color: var(--primary); font-variant-numeric: tabular-nums; }
+.svc-link { display: block; margin: 0 auto 1rem; background: none; border: none; color: var(--primary); font-size: .85rem; font-weight: 700; text-decoration: underline; cursor: pointer; touch-action: manipulation; }
+
 /* ── CONFIRMACIÓN DE BORRADO ──────────────────────────────────── */
 .confirm-cancel-btn {
   flex: 1; height: 52px; border-radius: var(--radius-2xl);
@@ -2243,6 +2281,7 @@ function openPay(id,t){
   const esIndividual=profile&&profile.tipo_cuenta==='individual';
   const items=(window._byT||{})[t]||[];
   const a=items.find(x=>x.id===id)||{};
+  if(esIndividual)return openPayInd(id,t,a);
   const bloqueReparto=esIndividual?'':`
         <div class="reparto-box">
           <div class="reparto-lbl">Reparto</div>
@@ -2304,6 +2343,152 @@ function openPay(id,t){
     }
   },80);
 }
+/* ── COBRO INDIVIDUAL: lista de "Mis servicios" ───────────────── */
+let _servicios=null; /* null = aún sin cargar */
+let _pi=null;        /* estado del cobro individual abierto */
+async function cargarServicios(){
+  try{
+    const{data,error}=await sb.from('servicios').select('id,nombre,precio,usado_en').eq('user_id',user.id).order('usado_en',{ascending:false});
+    if(error)throw error;
+    _servicios=data||[];
+  }catch(e){
+    console.warn('No se pudieron cargar los servicios',e);
+    _servicios=[];
+  }
+}
+function valorInputImporte(n){
+  const pais=(profile&&profile.pais)||'ES';
+  return pais==='CO'?Math.round(n).toLocaleString('es-CO'):Number(n).toFixed(2);
+}
+function openPayInd(id,t,a){
+  meth='efectivo';
+  _pi={id,t,a,step:1,form:null,editId:null,fn:'',fp:'',cd:false,svc:null};
+  renderPayInd();
+  if(_servicios===null){
+    cargarServicios().then(()=>{if(_pi&&_pi.id===id)renderPayInd();});
+  }
+}
+function renderPayInd(){
+  if(!_pi)return;
+  const a=_pi.a||{},id=_pi.id;
+  const cab=`
+        <button class="modal-close" onclick="closeM()">✕</button>
+        <div class="m-tag">Finalizar cita</div>
+        <div class="m-title">${esc(a.client_name)||''}</div>
+        <div class="m-sub">${esc(_pi.t)}</div>`;
+  let html;
+  if(_pi.step===2&&_pi.svc){
+    const s=_pi.svc;
+    html=`
+  <div class="overlay" onclick="closeM()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-body">
+        ${cab}
+        <div class="svc-sum"><div class="svc-sum-n">${esc(s.nombre)}</div><div class="svc-sum-p">${eur(s.precio)}</div></div>
+        <button class="svc-link" onclick="payIndVolver()">Cambiar servicio</button>
+        <input type="hidden" id="pa" value="${esc(valorInputImporte(s.precio))}"/>
+        <input type="hidden" id="psrv" value="${esc(s.nombre)}"/>
+        <label class="m-label" style="margin-bottom:.5rem">Método de pago</label>
+        <div class="pay-meths">
+          <button class="pay-meth${meth==='efectivo'?' on':''}" id="pm-efectivo" onclick="selM('efectivo')"><span class="pay-meth-icon">💵</span>Efectivo</button>
+          <button class="pay-meth${meth==='tarjeta'?' on':''}" id="pm-tarjeta" onclick="selM('tarjeta')"><span class="pay-meth-icon">💳</span>Tarjeta</button>
+          <button class="pay-meth${meth==='transferencia'?' on':''}" id="pm-transferencia" onclick="selM('transferencia')"><span class="pay-meth-icon">🏦</span>Transferencia</button>
+        </div>
+      </div>
+      <div class="modal-actions pay-acts">
+        <button class="pay-del-btn" onclick="delAppt('${id}')" aria-label="Eliminar cita">${ICON_TRASH}</button>
+        <button class="pay-ok" onclick="doPay('${id}')">Cobrar y cerrar</button>
+      </div>
+    </div>
+  </div>`;
+  }else{
+    const lista=_servicios||[];
+    let cuerpo='';
+    if(_servicios===null){
+      cuerpo='<p class="svc-msg">Cargando tus servicios…</p>';
+    }else{
+      if(!lista.length&&!_pi.form){
+        cuerpo+='<p class="svc-msg">✨ Guarda tus servicios y quedarán guardados.<br>La próxima vez solo tendrás que tocar uno para cobrar.</p>';
+      }
+      if(_pi.form){
+        const edit=_pi.form==='edit';
+        cuerpo+=`
+        <div class="svc-form">
+          <div class="svc-form-t">${edit?'Editar servicio':'Nuevo servicio'}</div>
+          <label class="m-label">Nombre</label>
+          <input id="svc-fn" class="m-input" placeholder="Escribe tu servicio" maxlength="80" value="${esc(_pi.fn)}" oninput="_pi.fn=this.value"/>
+          <label class="m-label">Precio (${simboloMoneda()})</label>
+          <input id="svc-fp" class="m-input" inputmode="decimal" placeholder="0" value="${esc(_pi.fp)}" oninput="formatearInputCO(this);_pi.fp=this.value"/>
+          <div class="svc-btns">
+            <button class="svc-save" onclick="payIndGuardar()">${edit?'Guardar cambios':'Guardar servicio'}</button>
+            <button class="svc-cancel" onclick="payIndCerrarForm()">Cancelar</button>
+          </div>
+          ${edit?(_pi.cd
+            ?`<div class="svc-btns"><button class="svc-cancel" onclick="_pi.cd=false;renderPayInd()">No</button><button class="svc-save svc-del-yes" onclick="payIndEliminar()">Sí, eliminar</button></div>`
+            :`<button class="svc-del" onclick="_pi.cd=true;renderPayInd()">Eliminar servicio</button>`):''}
+        </div>`;
+      }else{
+        cuerpo+='<button class="svc-add" onclick="payIndNuevo()">＋ Servicio</button>';
+      }
+      if(lista.length){
+        cuerpo+='<div class="svc-lbl">Mis servicios · toca uno para cobrar</div>';
+        cuerpo+=lista.map(s=>`
+        <div class="svc-row" onclick="payIndElegir('${s.id}')">
+          <span class="svc-n">${esc(s.nombre)}</span>
+          <span class="svc-p">${eur(s.precio)}</span>
+          <button class="svc-ed" aria-label="Editar ${esc(s.nombre)}" onclick="event.stopPropagation();payIndEditar('${s.id}')">✎</button>
+        </div>`).join('');
+      }
+    }
+    html=`
+  <div class="overlay" onclick="closeM()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-body">
+        ${cab}
+        ${cuerpo}
+      </div>
+    </div>
+  </div>`;
+  }
+  document.getElementById('mr').innerHTML=html;
+  if(_pi.step===1&&_pi.form)setTimeout(()=>document.getElementById('svc-fn')?.focus(),60);
+}
+function payIndNuevo(){_pi.form='new';_pi.editId=null;_pi.fn='';_pi.fp='';_pi.cd=false;renderPayInd();}
+function payIndEditar(sid){
+  const s=(_servicios||[]).find(x=>x.id===sid);if(!s)return;
+  _pi.form='edit';_pi.editId=sid;_pi.fn=s.nombre;_pi.fp=valorInputImporte(s.precio);_pi.cd=false;renderPayInd();
+}
+function payIndCerrarForm(){_pi.form=null;_pi.cd=false;renderPayInd();}
+async function payIndGuardar(){
+  const n=(_pi.fn||'').trim();
+  if(!n)return toast('Escribe el nombre del servicio','error');
+  const p=parseImporte(_pi.fp);
+  if(!p||p<=0)return toast('Escribe el precio','error');
+  let error;
+  if(_pi.form==='edit'){
+    ({error}=await sb.from('servicios').update({nombre:n,precio:p}).eq('id',_pi.editId).eq('user_id',user.id));
+  }else{
+    ({error}=await sb.from('servicios').insert({user_id:user.id,nombre:n,precio:p}));
+  }
+  if(error)return toast(traducirError(error.message),'error');
+  await cargarServicios();
+  _pi.form=null;_pi.cd=false;
+  toast('Servicio guardado ✓','success');
+  renderPayInd();
+}
+async function payIndEliminar(){
+  const{error}=await sb.from('servicios').delete().eq('id',_pi.editId).eq('user_id',user.id);
+  if(error)return toast(traducirError(error.message),'error');
+  await cargarServicios();
+  _pi.form=null;_pi.cd=false;
+  renderPayInd();
+}
+function payIndElegir(sid){
+  const s=(_servicios||[]).find(x=>x.id===sid);if(!s)return;
+  _pi.svc=s;_pi.step=2;meth='efectivo';renderPayInd();
+}
+function payIndVolver(){_pi.step=1;_pi.svc=null;renderPayInd();}
+
 function onServicioSelect(v){
   const txt=document.getElementById('psrv');
   if(v==='__otro__'){
@@ -2372,6 +2557,11 @@ async function doPay(id){
   const type=meth==='efectivo'?'interno':'oficial';
   const{error}=await sb.from('appointments').update({status:'completed',payment_method:meth,payment_type:type,price:p,service:servicio,valor_barbero:vb||null,comision_local:cl||null,completed_at:new Date().toISOString()}).eq('id',id);
   if(error)return toast(traducirError(error.message),'error');
+  if(esIndividual&&_pi&&_pi.svc&&_pi.svc.id){
+    /* el servicio usado sube al principio de la lista */
+    sb.from('servicios').update({usado_en:new Date().toISOString()}).eq('id',_pi.svc.id).eq('user_id',user.id).then(()=>{_servicios=null;});
+  }
+  _pi=null;
   toast('Cobrado ✓','success');closeM();loadPg();
 }
 
