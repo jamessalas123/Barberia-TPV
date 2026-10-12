@@ -757,6 +757,28 @@ input, select { font-family: inherit; outline: none; border: none; }
 .caja-tab.on .caja-medal{background:linear-gradient(145deg,color-mix(in srgb,var(--tc) 100%,#fff 18%),color-mix(in srgb,var(--tc) 100%,#000 28%));color:#101010;border-color:transparent;box-shadow:0 6px 16px color-mix(in srgb,var(--tc) 40%,transparent),inset 0 1px 0 rgba(255,255,255,.4)}
 .caja-tab-liq .caja-medal{color:var(--tc)}
 .caja-tab-liq .caja-tab-lbl{color:var(--tc)}
+/* ventas de productos */
+.caja-th-ventas{--ac:oklch(0.72 0.16 295);--ac-glow:oklch(0.72 0.16 295 / .4)}
+.caja-door-ventas,.caja-tab-ventas{--tc:oklch(0.72 0.16 295)}
+.caja-tab-ventas.on{border-color:var(--tc)!important;background:color-mix(in srgb,var(--tc) 16%,transparent)!important;box-shadow:0 0 18px color-mix(in srgb,var(--tc) 40%,transparent)!important}.caja-tab-ventas.on .caja-tab-lbl{color:var(--tc)}
+.caja-tabs-row.c4{grid-template-columns:repeat(4,1fr);gap:.5rem}
+.caja-box{display:flex;align-items:center;justify-content:space-between;gap:.75rem;width:100%;border:1.5px solid var(--ac);border-radius:var(--radius-xl);background:transparent;color:#fff;padding:.8rem 1rem;margin-bottom:.9rem;cursor:pointer;touch-action:manipulation;font-size:.95rem;font-weight:700;text-align:left}
+.caja-box-n{font-size:.82rem;font-weight:700;color:var(--ac);white-space:nowrap;font-style:normal}.caja-box-n.ok{color:rgba(255,255,255,.65);font-weight:600}
+#vt-modal{--ac:oklch(0.72 0.16 295);--ac-glow:oklch(0.72 0.16 295 / .4)}
+#vt-modal .pay-meth.on{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 22%,transparent);color:#fff}
+#vt-modal .pay-ok{background:var(--ac);color:#101010;box-shadow:0 0 18px var(--ac-glow)}
+#vt-modal .modal-close{color:#fff}
+#vt-modal .vt-list{max-height:52vh;overflow-y:auto;margin-top:.6rem}
+.vt-st{display:inline-block;border-radius:999px;padding:.05rem .55rem;font-size:.7rem;font-weight:700;border:1px solid rgba(255,255,255,.4);margin-top:.15rem}.vt-st.low{border-color:var(--destructive);color:var(--destructive)}.vt-st.out{border-color:var(--destructive);background:color-mix(in srgb,var(--destructive) 15%,transparent);color:var(--destructive)}.vt-st.na{opacity:.6}
+.vt-pen{width:2.3rem;height:2.3rem;border:1.5px solid rgba(255,255,255,.4);border-radius:.65rem;background:none;color:#fff;font-size:.9rem;cursor:pointer;flex-shrink:0;margin-left:.5rem}
+.vt-step{display:flex;align-items:center;justify-content:center;gap:1.1rem;margin:.4rem 0}.vt-step button{width:3.2rem;height:3.2rem;border-radius:.95rem;border:1.5px solid var(--ac);color:var(--ac);background:none;font-size:1.6rem;cursor:pointer}.vt-step b{font-size:2.1rem;min-width:3.6rem;text-align:center;font-variant-numeric:tabular-nums}
+.vt-total{text-align:center;font-size:.75rem;opacity:.8;margin-bottom:.4rem}.vt-total b{display:block;font-size:1.9rem;color:var(--ac);font-weight:900;opacity:1}
+.vt-math{border:1.5px dashed rgba(255,255,255,.3);border-radius:var(--radius-xl);padding:.7rem .8rem;margin:.8rem 0 .4rem}.vt-math h5{font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;opacity:.75;margin:0 0 .5rem;font-weight:700}
+.vt-eq{display:flex;align-items:center;justify-content:space-between;text-align:center}.vt-eq div{flex:1}.vt-eq b{display:block;font-size:1.25rem;font-variant-numeric:tabular-nums}.vt-eq small{font-size:.66rem;opacity:.7}.vt-eq span{opacity:.6;font-size:1.1rem}.vt-eq .res b{color:var(--ac)}
+.vt-ben{display:flex;justify-content:space-between;gap:.5rem;font-size:.82rem;margin:.55rem 0 .2rem;padding-top:.55rem;border-top:1px solid rgba(255,255,255,.14)}.vt-ben b{color:var(--success);white-space:nowrap}
+.vt-chk{display:flex;align-items:center;gap:.6rem;font-size:.85rem;cursor:pointer;margin:.7rem 0;background:none;border:none;color:#fff;padding:0;text-align:left}.vt-chk i{width:1.4rem;height:1.4rem;border:1.5px solid var(--ac);border-radius:.45rem;display:flex;align-items:center;justify-content:center;font-style:normal;color:var(--ac);flex-shrink:0}.vt-chk.on i{background:color-mix(in srgb,var(--ac) 25%,transparent)}
+.vt-chips{display:flex;gap:.5rem;margin:.4rem 0 .6rem}.vt-chips button{flex:1;border:1.5px solid var(--ac);color:var(--ac);background:none;border-radius:.75rem;padding:.55rem;font-weight:700;cursor:pointer}
+.vt-hint{font-size:.74rem;opacity:.65;margin:.3rem 0 .5rem;line-height:1.4}
 /* cierre verde */
 .caja-th-cierre .cierre-num{color:var(--ac);text-shadow:0 0 12px var(--ac-glow)}
 .caja-th-cierre .cierre-badge{color:var(--ac);border-color:var(--ac)}
@@ -2671,7 +2693,8 @@ const TAB_SVG={
   caja:'<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
   gastos:'<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/>',
   cierre:'<path d="M8 2v4M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/>',
-  equipo:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'
+  equipo:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  ventas:'<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>'
 };
 const tabMedal=k=>`<span class="caja-medal"><svg viewBox="0 0 24 24" aria-hidden="true">${TAB_SVG[k]}</svg></span>`;
 function sigRecurrente(fecha,tipo){
@@ -2687,18 +2710,26 @@ function iconoDe(n,def){
 }
 const iconoServicio=n=>iconoDe(n,'✨');
 const iconoGasto=n=>iconoDe(n,'🧾');
+const iconoProducto=n=>{const l=String(n||'').toLowerCase();if(/tinta/.test(l))return'🖋️';if(/esmalte|laca/.test(l))return'💅';if(/perfume/.test(l))return'🌸';if(/cepillo|peine/.test(l))return'🪮';return iconoDe(n,'🛍️');};
+const hhmm=d=>{const t=new Date(d);return String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');};
+const vSum=r=>(r||[]).reduce((t,v)=>t+(Number(v.cantidad)||0)*(Number(v.precio_unit)||0),0);
 async function pgCaja(el){
   const esIndividual=profile&&profile.tipo_cuenta==='individual';
   const{s,e}=getRange();
   const pr=getPrevRange();
-  const[{data:a},{data:x},{data:pa},{data:px},{data:hx}]=await Promise.all([
+  const[{data:a},{data:x},{data:pa},{data:px},{data:hx},{data:vv},{data:vpv},{data:pvv}]=await Promise.all([
     sb.from('appointments').select('*').eq('status','completed').eq('user_id',user.id).gte('appointment_date',s).lte('appointment_date',e),
     sb.from('expenses').select('*').eq('user_id',user.id).gte('expense_date',s).lte('expense_date',e),
     ctab==='caja'?sb.from('appointments').select('price').eq('status','completed').eq('user_id',user.id).gte('appointment_date',pr.s).lte('appointment_date',pr.e):Promise.resolve({data:[]}),
     ctab==='caja'?sb.from('expenses').select('amount').eq('user_id',user.id).gte('expense_date',pr.s).lte('expense_date',pr.e):Promise.resolve({data:[]}),
-    ctab==='gastos'?sb.from('expenses').select('category,amount,payment_method,recurrente,expense_date').eq('user_id',user.id).order('expense_date',{ascending:false}).order('created_at',{ascending:false}).limit(120):Promise.resolve({data:[]})
+    ctab==='gastos'?sb.from('expenses').select('category,amount,payment_method,recurrente,expense_date').eq('user_id',user.id).order('expense_date',{ascending:false}).order('created_at',{ascending:false}).limit(120):Promise.resolve({data:[]}),
+    (ctab==='caja'||ctab==='ventas')?sb.from('ventas_productos').select('*').eq('user_id',user.id).gte('fecha',s).lte('fecha',e).order('created_at',{ascending:false}):Promise.resolve({data:[]}),
+    ctab==='ventas'?sb.from('productos').select('*').eq('user_id',user.id).order('created_at',{ascending:true}):Promise.resolve({data:[]}),
+    ctab==='caja'?sb.from('ventas_productos').select('cantidad,precio_unit').eq('user_id',user.id).gte('fecha',pr.s).lte('fecha',pr.e):Promise.resolve({data:[]})
   ]);
   const ap=a||[],ex=x||[];
+  const vt=vv||[];window._vtV=vt;if(ctab==='ventas')window._vtP=vpv||[];
+  const vtot=vSum(vt);
   window._liqAp=ap;
   window._cajaAp=ap;
   let of=0,int=0,ingresoNegocio=0,dineroBarberos=0;
@@ -2711,11 +2742,12 @@ async function pgCaja(el){
   const tot=of+int,gas=ex.reduce((s,x)=>s+Number(x.amount||0),0);
   const pers=['hoy','semana','mes','trimestre'];
   const perL={dia:'📅 Día',hoy:'Hoy',semana:'Semana',mes:'Mes',trimestre:'Trimestre'};
-  const perBtns=(ctab!=='caja'&&ctab!=='gastos')?'':pers.map(p=>`<button class="period-pill ${cper===p?'on':''}" onclick="setCper('${p}')">${perL[p]}</button>`).join('');
-  const datePickerRow=(ctab==='cierre'||((ctab==='caja'||ctab==='gastos')&&cper==='dia'))?`<div style="margin-bottom:.75rem;display:flex;align-items:center;gap:.625rem"><span style="font-size:.75rem;color:var(--muted-foreground);font-weight:600">Fecha:</span><input type="date" class="date-inp" value="${dt}" onchange="chDate(this.value)" style="height:40px;font-size:.85rem"/></div>`:'';
+  const perBtns=(ctab!=='caja'&&ctab!=='gastos'&&ctab!=='ventas')?'':pers.map(p=>`<button class="period-pill ${cper===p?'on':''}" onclick="setCper('${p}')">${perL[p]}</button>`).join('');
+  const datePickerRow=(ctab==='cierre'||((ctab==='caja'||ctab==='gastos'||ctab==='ventas')&&cper==='dia'))?`<div style="margin-bottom:.75rem;display:flex;align-items:center;gap:.625rem"><span style="font-size:.75rem;color:var(--muted-foreground);font-weight:600">Fecha:</span><input type="date" class="date-inp" value="${dt}" onchange="chDate(this.value)" style="height:40px;font-size:.85rem"/></div>`:'';
   const periodoLabel=cper==='dia'?new Date(dt+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'}):({hoy:'Hoy',semana:'Esta semana',mes:'Este mes',trimestre:'Este trimestre'})[cper];
   window._periodoLbl=periodoLabel;
-  const tabBtns=`<button class="caja-tab caja-tab-caja ${ctab==='caja'?'on':''}" onclick="setCtab('caja')">${tabMedal('caja')}<span class="caja-tab-lbl">Caja</span></button><button class="caja-tab caja-tab-gastos ${ctab==='gastos'?'on':''}" onclick="setCtab('gastos')">${tabMedal('gastos')}<span class="caja-tab-lbl">Gastos</span></button>${esIndividual?'':`<button class="caja-tab caja-tab-liq" onclick="showLiquidacion()">${tabMedal('equipo')}<span class="caja-tab-lbl">Liquidación</span></button>`}`;
+  const tabBtns=`<button class="caja-tab caja-tab-caja ${ctab==='caja'?'on':''}" onclick="setCtab('caja')">${tabMedal('caja')}<span class="caja-tab-lbl">Caja</span></button><button class="caja-tab caja-tab-gastos ${ctab==='gastos'?'on':''}" onclick="setCtab('gastos')">${tabMedal('gastos')}<span class="caja-tab-lbl">Gastos</span></button><button class="caja-tab caja-tab-ventas ${ctab==='ventas'?'on':''}" onclick="setCtab('ventas')">${tabMedal('ventas')}<span class="caja-tab-lbl">Ventas</span></button>`;
+  const liqBtn=esIndividual?'':`<button class="caja-tab caja-tab-liq" onclick="showLiquidacion()">${tabMedal('equipo')}<span class="caja-tab-lbl">Liquidación</span></button>`;
   const cierreBtn=`<button class="caja-tab caja-tab-cierre ${ctab==='cierre'?'on':''}" onclick="setCtab('cierre')">${tabMedal('cierre')}<span class="caja-tab-lbl">Cierre</span></button>`;
 
   let content='';
@@ -2725,9 +2757,10 @@ async function pgCaja(el){
     const metodoDe=r=>r.payment_method||(r.payment_type==='interno'?'efectivo':'tarjeta');
     const porM={efectivo:[0,0],tarjeta:[0,0],transferencia:[0,0]};
     ap.forEach(r=>{const m=porM[metodoDe(r)]?metodoDe(r):'tarjeta';porM[m][0]+=Number(r.price)||0;porM[m][1]++;});
-    const neto=tot-gas;
-    const netoPrev=(pa||[]).reduce((t,r)=>t+(Number(r.price)||0),0)-(px||[]).reduce((t,r)=>t+(Number(r.amount)||0),0);
-    const hayPrev=(pa||[]).length>0||(px||[]).length>0;
+    vt.forEach(v=>{const m=porM[v.metodo]?v.metodo:'efectivo';porM[m][0]+=(Number(v.cantidad)||0)*(Number(v.precio_unit)||0);porM[m][1]++;});
+    const neto=tot+vtot-gas;
+    const netoPrev=(pa||[]).reduce((t,r)=>t+(Number(r.price)||0),0)+vSum(pvv)-(px||[]).reduce((t,r)=>t+(Number(r.amount)||0),0);
+    const hayPrev=(pa||[]).length>0||(px||[]).length>0||(pvv||[]).length>0;
     const etqPrev={dia:'el día anterior',hoy:'ayer',semana:'la semana pasada',mes:'el mes anterior',trimestre:'el trimestre anterior'}[cper];
     let chip='';
     if(hayPrev&&netoPrev!==0){
@@ -2745,8 +2778,9 @@ async function pgCaja(el){
         <span class="caja-mk-a">${eur(porM[m][0])}</span>
         <span class="caja-mk-c">${porM[m][1]} cobro${porM[m][1]===1?'':'s'}</span>
       </button>`).join('');
-    const lista=ap.filter(r=>!cmeth||metodoDe(r)===cmeth)
-      .sort((x,y)=>(y.appointment_date+(y.start_time||'')).localeCompare(x.appointment_date+(x.start_time||'')));
+    const lista=[...ap.map(r=>({t:'c',r,k:r.appointment_date+(r.start_time||'').slice(0,5)})),...vt.map(v=>({t:'v',r:v,k:v.fecha+(v.created_at?hhmm(v.created_at):'')}))]
+      .filter(o=>!cmeth||(o.t==='c'?metodoDe(o.r):(o.r.metodo||'efectivo'))===cmeth)
+      .sort((x,y)=>y.k.localeCompare(x.k));
     const mostrados=cvermas?lista:lista.slice(0,6);
     const filaCobro=r=>{
       const m=metodoDe(r);
@@ -2758,12 +2792,22 @@ async function pgCaja(el){
         <div class="caja-mv-p">${eur(r.price)}<small>${icoM[m]||''}</small></div>
       </div>`;
     };
+    const filaVenta=v=>{
+      const m=icoM[v.metodo]?v.metodo:'efectivo';
+      const hora=v.created_at?hhmm(v.created_at):'';
+      const fecha=cper==='hoy'?'':new Date(v.fecha+'T12:00:00').toLocaleDateString('es-ES',{weekday:'short',day:'numeric'}).replace('.','')+' · ';
+      return `<div class="caja-mv" onclick="setCtab('ventas')">
+        <div class="caja-ic">${iconoProducto(v.nombre)}</div>
+        <div class="caja-mv-x"><b>${v.cantidad} × ${esc(v.nombre)}</b><small>${fecha}${hora} · Venta de producto</small></div>
+        <div class="caja-mv-p">${eur((Number(v.cantidad)||0)*(Number(v.precio_unit)||0))}<small>${icoM[m]}</small></div>
+      </div>`;
+    };
     content=`
     <div class="caja-hero">
       <div class="caja-hero-i">💰</div>
       <div class="caja-hero-l">Ganancia neta · ${periodoLabel.toLowerCase()}</div>
       <div class="caja-hero-v">${eur(neto)}</div>
-      <div class="caja-hero-f">Cobrado ${eur(tot)} − Gastos ${eur(gas)}</div>
+      <div class="caja-hero-f">Cobrado ${eur(tot)}${vtot>0?` + Ventas ${eur(vtot)}`:''} − Gastos ${eur(gas)}</div>
       ${chip}
     </div>
     <div class="caja-m3">${metodosHtml}</div>
@@ -2775,7 +2819,7 @@ async function pgCaja(el){
       <div class="meth-kard"><div class="meth-head">Dinero de barberos <span>✂️</span></div><div class="meth-val">${eur(dineroBarberos)}</div><div class="meth-sub">Pasa por caja, no es tu ingreso</div></div>
     </div>`}
     <div class="caja-sec"><span>Movimientos · ${lista.length}</span>${cmeth?`<button class="caja-fchip" onclick="setCmeth('${cmeth}')">${nomM[cmeth]} ✕</button>`:''}</div>
-    ${lista.length===0?'<div class="caja-empty">No hay cobros en este periodo</div>':mostrados.map(filaCobro).join('')}
+    ${lista.length===0?'<div class="caja-empty">No hay cobros en este periodo</div>':mostrados.map(o=>o.t==='c'?filaCobro(o.r):filaVenta(o.r)).join('')}
     ${(!cvermas&&lista.length>6)?`<button class="caja-more" onclick="cvermas=true;loadPg()">Ver los ${lista.length-6} restantes</button>`:''}`;
   }else if(ctab==='gastos'){
     const nomM={efectivo:'Efectivo',tarjeta:'Tarjeta',transferencia:'Transferencia'};
@@ -2813,24 +2857,50 @@ async function pgCaja(el){
     <div class="caja-m3">${['efectivo','tarjeta','transferencia'].map(m=>`<div class="caja-mk" style="cursor:default"><span class="caja-mk-i">${icoM[m]}</span><span class="caja-mk-n">${nomM[m]}</span><span class="caja-mk-a">${eur(porMg[m])}</span></div>`).join('')}</div>
     <div class="caja-sec"><span>${ex.length} gasto${ex.length===1?'':'s'}</span></div>
     ${ex.length===0?'<div class="caja-empty">Aún no hay gastos en este periodo</div>':lst}`;
+  }else if(ctab==='ventas'){
+    const prods=window._vtP||[];
+    const nomM={efectivo:'Efectivo',tarjeta:'Tarjeta',transferencia:'Transferencia'};
+    const icoM={efectivo:'💵',tarjeta:'💳',transferencia:'🏦'};
+    const porMv={efectivo:0,tarjeta:0,transferencia:0};
+    vt.forEach(v=>{const m=porMv[v.metodo]!==undefined?v.metodo:'efectivo';porMv[m]+=(Number(v.cantidad)||0)*(Number(v.precio_unit)||0);});
+    const unid=vt.reduce((t,v)=>t+(Number(v.cantidad)||0),0);
+    const conCosto=vt.some(v=>v.costo_unit!=null);
+    const gan=vt.reduce((t,v)=>t+(v.costo_unit!=null?(Number(v.cantidad)||0)*((Number(v.precio_unit)||0)-(Number(v.costo_unit)||0)):0),0);
+    const cnt={};vt.forEach(v=>{cnt[v.nombre]=(cnt[v.nombre]||0)+(Number(v.cantidad)||0);});
+    const mejor=Object.keys(cnt).sort((x,y)=>cnt[y]-cnt[x])[0];
+    const bajos=prods.filter(vtBajo).length;
+    window._vtBajos=bajos;
+    content=`
+    <div class="caja-cta"><button class="caja-add caja-add-lg" onclick="vtNuevo()">＋ Nuevo producto</button></div>
+    <button class="caja-box" onclick="vtRaiz('low')"><span>📦 Stock bajo</span><i class="caja-box-n${bajos?'':' ok'}">${prods.length===0?'Sin productos':bajos?bajos+' por reponer':'Todo en orden ✓'} ›</i></button>
+    <div class="caja-hero">
+      <div class="caja-hero-i">🛍️</div>
+      <div class="caja-hero-l">Ventas · ${periodoLabel.toLowerCase()}</div>
+      <div class="caja-hero-v">${eur(vtot)}</div>
+      <div class="caja-hero-f">${unid} unidad${unid===1?'':'es'} vendida${unid===1?'':'s'}${conCosto?' · ganancia '+eur(gan):''}${mejor?'<br>🏆 Más vendido: '+esc(mejor):''}</div>
+    </div>
+    <div class="caja-m3">${['efectivo','tarjeta','transferencia'].map(m=>`<div class="caja-mk" style="cursor:default"><span class="caja-mk-i">${icoM[m]}</span><span class="caja-mk-n">${nomM[m]}</span><span class="caja-mk-a">${eur(porMv[m])}</span></div>`).join('')}</div>
+    <button class="caja-box" style="margin-top:.9rem" onclick="vtRaiz('plist')"><span>🛍️ Mis productos</span><i class="caja-box-n">${prods.length} · toca para vender ›</i></button>
+    <button class="caja-box" onclick="vtRaiz('vlist')"><span>🧾 Ventas realizadas</span><i class="caja-box-n">${vt.length} en el periodo ›</i></button>`;
   }
 
   el.innerHTML=`<div class="page caja-th caja-th-${ctab||'caja'}">
     <div class="pg-tag">Panel de Caja</div>
     <div class="caja-head"><h1 class="pg-title" style="margin:0">Caja</h1><button class="caja-exp" onclick="abrirExportar()">⬇ Exportar</button></div>
-    ${ctab?`<p style="font-size:.82rem;color:var(--muted-foreground);margin-bottom:1rem">${ap.length} cita${ap.length===1?'':'s'} · ${ex.length} gasto${ex.length===1?'':'s'} en el periodo</p>`:'<div style="height:.75rem"></div>'}
-    ${(ctab==='caja'||ctab==='gastos')?`<div class="period-row">${perBtns}<button class="period-pill ${cper==='dia'?'on':''}" onclick="setCper('dia')">📅 Día</button></div>`:''}
+    ${ctab?`<p style="font-size:.82rem;color:var(--muted-foreground);margin-bottom:1rem">${ctab==='ventas'?`${vt.length} venta${vt.length===1?'':'s'} en el periodo`:`${ap.length} cita${ap.length===1?'':'s'} · ${ex.length} gasto${ex.length===1?'':'s'} en el periodo`}</p>`:'<div style="height:.75rem"></div>'}
+    ${(ctab==='caja'||ctab==='gastos'||ctab==='ventas')?`<div class="period-row">${perBtns}<button class="period-pill ${cper==='dia'?'on':''}" onclick="setCper('dia')">📅 Día</button></div>`:''}
     ${datePickerRow}
     ${!ctab
       ? `<div class="caja-doors">
           <button class="caja-door caja-door-caja" onclick="setCtab('caja')">${tabMedal('caja')}<span class="caja-door-lbl">Caja</span></button>
           <button class="caja-door caja-door-gastos" onclick="setCtab('gastos')">${tabMedal('gastos')}<span class="caja-door-lbl">Gastos</span></button>
-          <button class="caja-door caja-door-cierre${esIndividual?' solo':''}" onclick="setCtab('cierre')">${tabMedal('cierre')}<span class="caja-door-lbl">Cierre</span></button>
-          ${esIndividual?'':`<button class="caja-door caja-door-liq" onclick="showLiquidacion()">${tabMedal('equipo')}<span class="caja-door-lbl">Liquidación</span></button>`}
+          <button class="caja-door caja-door-ventas" onclick="setCtab('ventas')">${tabMedal('ventas')}<span class="caja-door-lbl">Ventas</span></button>
+          <button class="caja-door caja-door-cierre" onclick="setCtab('cierre')">${tabMedal('cierre')}<span class="caja-door-lbl">Cierre</span></button>
+          ${esIndividual?'':`<button class="caja-door caja-door-liq solo" onclick="showLiquidacion()">${tabMedal('equipo')}<span class="caja-door-lbl">Liquidación</span></button>`}
         </div>`
       : esIndividual
-      ? `<div class="caja-tabs-row">${tabBtns}${cierreBtn}</div>`
-      : `<div class="caja-tabs-row">${tabBtns}</div><div class="caja-tabs-single">${cierreBtn}</div>`}
+      ? `<div class="caja-tabs-row c4">${tabBtns}${cierreBtn}</div>`
+      : `<div class="caja-tabs-row c4">${tabBtns}${cierreBtn}</div><div class="caja-tabs-single">${liqBtn}</div>`}
     ${content}
   </div>`;
 }
@@ -2875,11 +2945,14 @@ function showLiquidacion(){
 }
 
 async function calcularCierreLive(fecha){
-  const[{data:a},{data:x}]=await Promise.all([
+  const[{data:a},{data:x},{data:vd}]=await Promise.all([
     sb.from('appointments').select('*').eq('status','completed').eq('user_id',user.id).eq('appointment_date',fecha),
-    sb.from('expenses').select('*').eq('user_id',user.id).eq('expense_date',fecha)
+    sb.from('expenses').select('*').eq('user_id',user.id).eq('expense_date',fecha),
+    sb.from('ventas_productos').select('cantidad,precio_unit,metodo').eq('user_id',user.id).eq('fecha',fecha)
   ]);
   const ap=a||[],ex=x||[];
+  const vEf=(vd||[]).filter(v=>v.metodo==='efectivo').reduce((t,v)=>t+(Number(v.cantidad)||0)*(Number(v.precio_unit)||0),0);
+  const vTot=vSum(vd),vOf=vTot-vEf;
   let of=0,int=0,ingresoNegocio=0,dineroBarberos=0;
   ap.forEach(a=>{
     const v=Number(a.price)||0;
@@ -2889,9 +2962,9 @@ async function calcularCierreLive(fecha){
   });
   const gastosTotal=ex.reduce((s,g)=>s+Number(g.amount||0),0);
   return{
-    efectivo:int,tarjeta_transferencia:of,total:of+int,
-    ingreso_negocio:ingresoNegocio,dinero_barberos:dineroBarberos,
-    gastos_total:gastosTotal,gastos_efectivo:ex.filter(g=>(g.payment_method||'efectivo')==='efectivo').reduce((t,g)=>t+Number(g.amount||0),0),ganancia_neta:ingresoNegocio-gastosTotal,
+    efectivo:int+vEf,tarjeta_transferencia:of+vOf,total:of+int+vTot,ventas_productos:vTot,
+    ingreso_negocio:ingresoNegocio+vTot,dinero_barberos:dineroBarberos,
+    gastos_total:gastosTotal,gastos_efectivo:ex.filter(g=>(g.payment_method||'efectivo')==='efectivo').reduce((t,g)=>t+Number(g.amount||0),0),ganancia_neta:ingresoNegocio+vTot-gastosTotal,
     gastos_detalle:ex.map(g=>({category:g.category,amount:Number(g.amount),note:g.note||''})),
     citas_count:ap.length,gastos_count:ex.length
   };
@@ -2940,6 +3013,7 @@ async function renderCierreDiario(){
       <span style="font-size:.85rem;font-weight:600">Total ingresado (caja total)</span>
       <span class="cierre-num" style="font-size:1.7rem">${eur(v.total)}</span>
     </div>
+    ${Number(v.ventas_productos)>0?`<div style="margin-top:.5rem;font-size:.8rem;color:var(--muted-foreground);text-align:center">🛍️ Incluye ventas de productos: ${eur(v.ventas_productos)}</div>`:''}
 
     ${esIndividual?'':`
     <div class="sec-label" style="margin-top:1.25rem">Desglose de ese ingreso</div>
@@ -2980,7 +3054,7 @@ async function guardarCierre(fecha){
   const{error}=await sb.from('cierres_caja').upsert({
     user_id:user.id,fecha,
     efectivo:v.efectivo,tarjeta_transferencia:v.tarjeta_transferencia,total:v.total,
-    ingreso_negocio:v.ingreso_negocio,dinero_barberos:v.dinero_barberos,
+    ingreso_negocio:v.ingreso_negocio,dinero_barberos:v.dinero_barberos,ventas_productos:v.ventas_productos||0,
     gastos_total:v.gastos_total,ganancia_neta:v.ganancia_neta,gastos_detalle:v.gastos_detalle
   },{onConflict:'user_id,fecha'});
   if(error)return toast(traducirError(error.message),'error');
@@ -3229,6 +3303,220 @@ async function delExp(id){
   await sb.from('expenses').delete().eq('id',id).eq('user_id',user.id);
   document.getElementById('gasto-modal')?.remove();
   toast('Gasto eliminado','info');loadPg();
+}
+
+/* ══ VENTAS DE PRODUCTOS ═════════════════════════════════════════ */
+const VT_BAJO=3;
+const vtProd=id=>(window._vtP||[]).find(x=>x.id===id);
+const vtBajo=p=>p.stock!=null&&p.stock<=VT_BAJO;
+function vtChip(p){
+  if(p.stock==null)return '<span class="vt-st na">sin control de stock</span>';
+  if(p.stock===0)return '<span class="vt-st out">Agotado</span>';
+  if(p.stock<=VT_BAJO)return `<span class="vt-st low">Quedan ${p.stock}</span>`;
+  return `<span class="vt-st">${p.stock} en stock</span>`;
+}
+function vtDe(){const s=window._vt;if(!s)return null;return (s.k==='plist'||s.k==='vlist')?s.k:(s.back||null);}
+function vtAbrir(k,extra){window._vt=Object.assign({k,back:vtDe()},extra||{});vtRender();}
+function vtRaiz(k){window._vt=null;vtAbrir(k);}
+function vtCerrar(){window._vt=null;const m=document.getElementById('vt-modal');if(m)m.remove();}
+function vtAtras(){const s=window._vt;if(s&&s.back){window._vt={k:s.back};vtRender();}else vtCerrar();}
+function vtSync(){
+  const s=window._vt;if(!s)return;
+  [['vt-nm','nm'],['vt-pr','pr'],['vt-st','st'],['vt-co','co'],['vt-qn','qn']].forEach(([id,k])=>{const e=document.getElementById(id);if(e)s[k]=e.value;});
+}
+function vtBenH(pr,co){
+  if(!(pr>0)||!(co>0))return '<span>Ganancia por unidad</span><b>—</b>';
+  const g=pr-co;return `<span>Ganancia por unidad: ${eur(pr)} − ${eur(co)}</span><b>${eur(g)} (${Math.round(g/pr*100)} %)</b>`;
+}
+function vtUb(){vtSync();const s=window._vt,e=document.getElementById('vt-ben');if(e&&s)e.innerHTML=vtBenH(parseImporte(s.pr),parseImporte(s.co));}
+function vtUr(){
+  vtSync();const s=window._vt;if(!s)return;const p=vtProd(s.id);if(!p)return;
+  const q=Math.max(0,Math.round(parseFloat(s.qn)||0));
+  const a=document.getElementById('vt-rq'),b=document.getElementById('vt-rt'),c=document.getElementById('vt-rgo');
+  if(a)a.textContent=q;if(b)b.textContent=(p.stock||0)+q;if(c)c.style.opacity=q<1?'.45':'1';
+}
+function vtRender(){
+  const old=document.getElementById('vt-modal');if(old)old.remove();
+  const s=window._vt;if(!s)return;
+  const P=window._vtP||[],V=window._vtV||[];
+  const met=(m,ico,nom)=>`<button class="pay-meth${s.m===m?' on':''}" onclick="vtMet('${m}')"><span class="pay-meth-icon">${ico}</span>${nom}</button>`;
+  const icoM={efectivo:'💵',tarjeta:'💳',transferencia:'🏦'};
+  const nomM={efectivo:'Efectivo',tarjeta:'Tarjeta',transferencia:'Transferencia'};
+  const cerrarB=`<button class="pay-ok" style="flex:1" onclick="vtAtras()">Cerrar</button>`;
+  let tag='',title='',body='',acts='';
+  if(s.k==='plist'){
+    tag='Mis productos';title='🛍️ Toca uno para vender';
+    body=`<div class="vt-list">${P.length?P.map(p=>`<div class="caja-mv" onclick="vtVenderAbrir('${p.id}')"><div class="caja-ic">${iconoProducto(p.nombre)}</div><div class="caja-mv-x"><b>${esc(p.nombre)}</b>${vtChip(p)}</div><div class="caja-mv-p">${eur(p.precio)}</div><button class="vt-pen" aria-label="Editar" onclick="event.stopPropagation();vtEditar('${p.id}')">✎</button></div>`).join(''):'<div class="caja-empty">Aún no tienes productos.<br>Pulsa «＋ Nuevo producto» para guardar el primero.</div>'}</div>`;
+    acts=`<button class="confirm-cancel-btn" onclick="vtCerrar()">Cerrar</button><button class="pay-ok" style="flex:1" onclick="vtNuevo()">＋ Nuevo producto</button>`;
+  }else if(s.k==='vlist'){
+    const tot=vSum(V);
+    tag='Ventas realizadas';title='🧾 '+(window._periodoLbl||'');
+    body=`<div class="m-sub">${V.length} venta${V.length===1?'':'s'} · ${eur(tot)} · toca una para eliminarla</div><div class="vt-list">${V.length?V.map(v=>{
+      const fch=v.fecha===today()?'hoy':new Date(v.fecha+'T12:00:00').toLocaleDateString('es-ES',{weekday:'short',day:'numeric'}).replace('.','');
+      const m=icoM[v.metodo]?v.metodo:'efectivo';
+      return `<div class="caja-mv" onclick="vtVentaAbrir('${v.id}')"><div class="caja-ic">${iconoProducto(v.nombre)}</div><div class="caja-mv-x"><b>${v.cantidad} × ${esc(v.nombre)}</b><small>${fch}${v.created_at?' · '+hhmm(v.created_at):''}</small></div><div class="caja-mv-p">${eur((Number(v.cantidad)||0)*(Number(v.precio_unit)||0))}<small>${icoM[m]}</small></div></div>`;}).join(''):'<div class="caja-empty">Aún no hay ventas en este periodo</div>'}</div>`;
+    acts=cerrarB;
+  }else if(s.k==='low'){
+    const lw=P.filter(vtBajo);
+    tag='Stock';title='📦 Stock bajo';
+    body=P.length===0?'<div class="vt-hint" style="text-align:center;margin:.8rem 0">Aún no tienes productos con stock.<br>Al guardar un producto con «Cuántos tienes», aquí te aviso cuando queden pocos (3 o menos).</div>'
+      :lw.length===0?'<div class="m-sub">Todo en orden ✓ — ningún producto está por agotarse.</div>'
+      :`<div class="m-sub">Quedan 3 o menos. Toca para reponer.</div><div class="vt-list">${lw.map(p=>`<div class="caja-mv" onclick="vtRepo('${p.id}')"><div class="caja-ic">${iconoProducto(p.nombre)}</div><div class="caja-mv-x"><b>${esc(p.nombre)}</b><small>${p.stock===0?'Agotado':'Quedan '+p.stock}</small></div><div class="caja-mv-p">Reponer ›</div></div>`).join('')}</div>`;
+    acts=cerrarB;
+  }else if(s.k==='sell'){
+    const p=vtProd(s.id);if(!p){vtCerrar();return;}
+    tag='Venta';title=iconoProducto(p.nombre)+' '+esc(p.nombre);
+    body=`<div class="m-sub">${eur(p.precio)} c/u · ${p.stock==null?'sin control de stock':'quedan '+p.stock}</div>
+      <label class="m-label">Cuántos vendes</label>
+      <div class="vt-step"><button onclick="vtQty(-1)">−</button><b>${s.q}</b><button onclick="vtQty(1)">＋</button></div>
+      <div class="vt-total">Total<b>${eur(s.q*Number(p.precio))}</b></div>
+      <label class="m-label">Cómo paga</label>
+      <div class="pay-meths">${met('efectivo','💵','Efectivo')}${met('tarjeta','💳','Tarjeta')}${met('transferencia','🏦','Transferencia')}</div>
+      ${p.stock!=null?`<div class="vt-hint" style="text-align:center">Después de vender quedarán ${p.stock-s.q}</div>`:''}`;
+    acts=`<button class="confirm-cancel-btn" onclick="vtAtras()">Cancelar</button><button class="pay-ok" style="flex:1" onclick="vtVender()">Vender · ${eur(s.q*Number(p.precio))}</button>`;
+  }else if(s.k==='prod'){
+    const pr=parseImporte(s.pr),co=parseImporte(s.co),p=s.id?vtProd(s.id):null;
+    tag='Producto';title=s.id?'✎ Editar producto':'🛍️ Nuevo producto';
+    body=`<label class="m-label" style="margin-top:.75rem">Nombre</label>
+      <input id="vt-nm" class="m-input" placeholder="Ej: tu producto" value="${esc(s.nm)}" autocomplete="off"/>
+      <label class="m-label">Precio de venta (${simboloMoneda()})</label>
+      <input id="vt-pr" class="m-input" inputmode="decimal" placeholder="0" value="${esc(s.pr)}" oninput="formatearInputCO(this);vtUb()"/>
+      <label class="m-label">Cuántos tienes (opcional)</label>
+      <input id="vt-st" class="m-input" inputmode="numeric" placeholder="Vacío = sin control de stock" value="${esc(s.st)}"/>
+      <div class="vt-hint">Si lo dejas vacío, este producto se vende sin llevar la cuenta del stock.</div>
+      <button class="vt-chk${s.cost?' on':''}" onclick="vtTogCost()"><i>${s.cost?'✓':''}</i>Añadir lo que me cuesta (para ver mi ganancia)</button>
+      ${s.cost?`<label class="m-label">Costo por unidad (${simboloMoneda()})</label><input id="vt-co" class="m-input" inputmode="decimal" placeholder="0" value="${esc(s.co)}" oninput="formatearInputCO(this);vtUb()"/><div class="vt-ben" id="vt-ben">${vtBenH(pr,co)}</div>`:''}
+      ${(p&&p.stock!=null&&s.vend!=null)?`<div class="vt-math"><h5>La cuenta de este producto</h5><div class="vt-eq"><div><b>${p.stock+s.vend}</b><small>Entradas</small></div><span>−</span><div><b>${s.vend}</b><small>Vendidos</small></div><span>=</span><div class="res"><b>${p.stock}</b><small>En stock</small></div></div></div>`:''}
+      ${(p&&p.stock!=null)?`<button class="confirm-cancel-btn" style="width:100%;margin-top:.5rem" onclick="vtRepo('${p.id}')">📥 Reponer stock</button>`:''}`;
+    acts=`${s.id?`<button class="pay-del-btn" onclick="vtDelProd()" aria-label="Eliminar">${ICON_TRASH}</button>`:`<button class="confirm-cancel-btn" onclick="vtAtras()">Cancelar</button>`}<button class="pay-ok" style="flex:1" onclick="vtGuardarProd()">${s.id?'Guardar cambios':'Guardar producto'}</button>`;
+  }else if(s.k==='repo'){
+    const p=vtProd(s.id);if(!p){vtCerrar();return;}
+    const q=Math.max(0,Math.round(parseFloat(s.qn)||0));
+    tag='Reponer';title='📥 '+esc(p.nombre);
+    body=`<div class="m-sub">Ahora tienes ${p.stock||0}</div>
+      <label class="m-label">Cuántas llegan</label>
+      <input id="vt-qn" class="m-input" inputmode="numeric" placeholder="0" value="${esc(s.qn)}" oninput="vtUr()"/>
+      <div class="vt-chips"><button onclick="vtAddQ(5)">+5</button><button onclick="vtAddQ(10)">+10</button><button onclick="vtAddQ(20)">+20</button></div>
+      <label class="m-label">Lo que pagaste por la compra (opcional)</label>
+      <input id="vt-co" class="m-input" inputmode="decimal" placeholder="0" value="${esc(s.co)}" oninput="formatearInputCO(this)"/>
+      <button class="vt-chk${s.gasto?' on':''}" onclick="vtTogGasto()"><i>${s.gasto?'✓':''}</i>Anotarlo también en Gastos</button>
+      <div class="vt-math"><h5>Quedará así</h5><div class="vt-eq"><div><b>${p.stock||0}</b><small>Ahora</small></div><span>＋</span><div><b id="vt-rq">${q}</b><small>Llegan</small></div><span>=</span><div class="res"><b id="vt-rt">${(p.stock||0)+q}</b><small>En stock</small></div></div></div>`;
+    acts=`<button class="confirm-cancel-btn" onclick="vtAtras()">Cancelar</button><button id="vt-rgo" class="pay-ok" style="flex:1;${q<1?'opacity:.45':''}" onclick="vtDoRepo()">Reponer stock</button>`;
+  }else if(s.k==='delv'){
+    const v=V.find(x=>x.id===s.id);if(!v){vtAtras();return;}
+    tag='Venta';title=`${v.cantidad} × ${esc(v.nombre)}`;
+    body=`<div class="m-sub">${eur((Number(v.cantidad)||0)*(Number(v.precio_unit)||0))} · ${nomM[v.metodo]||'Efectivo'}</div>
+      <div class="vt-hint">Si la eliminas, el stock se devuelve (${v.cantidad} vuelven a «en stock»). Si ya guardaste el cierre de hoy, vuelve a guardarlo para que no incluya esta venta.</div>`;
+    acts=`<button class="pay-del-btn" onclick="vtDelVenta()" aria-label="Eliminar">${ICON_TRASH}</button><button class="confirm-cancel-btn" style="flex:1" onclick="vtAtras()">Cancelar</button>`;
+  }else if(s.k==='lock'){
+    tag='Venta';title='Día cerrado';
+    body='<div class="caja-lock">🔒 Este día ya está cerrado y no se puede modificar.</div>';
+    acts=cerrarB;
+  }
+  const div=document.createElement('div');div.id='vt-modal';
+  div.innerHTML=`<div class="overlay" onclick="vtAtras()"><div class="modal" onclick="event.stopPropagation()" style="max-width:440px"><div class="modal-body"><button class="modal-close" onclick="vtAtras()">✕</button><div class="m-tag">${tag}</div><div class="m-title" style="font-size:1.35rem">${title}</div>${body}</div><div class="modal-actions pay-acts">${acts}</div></div></div>`;
+  document.body.appendChild(div);
+}
+/* — vender — */
+function vtVenderAbrir(id){
+  const p=vtProd(id);if(!p)return;
+  if(p.stock===0)return toast('Agotado: repón stock primero','error');
+  vtAbrir('sell',{id,q:1,m:'efectivo'});
+}
+function vtQty(d){const s=window._vt,p=vtProd(s.id);const n=s.q+d;if(n<1)return;if(p.stock!=null&&n>p.stock)return;s.q=n;vtRender();}
+function vtMet(m){window._vt.m=m;vtRender();}
+async function vtVender(){
+  const s=window._vt,p=vtProd(s.id);if(!s||!p||window._vtBusy)return;
+  if(p.stock!=null&&s.q>p.stock)return toast('No hay suficiente stock','error');
+  window._vtBusy=true;
+  try{
+    const fila={user_id:user.id,producto_id:p.id,nombre:p.nombre,cantidad:s.q,precio_unit:Number(p.precio),costo_unit:p.costo==null?null:Number(p.costo),metodo:s.m,fecha:today()};
+    const{data,error}=await sb.from('ventas_productos').insert(fila).select().single();
+    if(error)return toast(traducirError(error.message),'error');
+    if(p.stock!=null){
+      const{error:e2}=await sb.from('productos').update({stock:p.stock-s.q}).eq('id',p.id).eq('user_id',user.id);
+      if(e2)toast('Venta guardada, pero no se pudo actualizar el stock','error');else p.stock-=s.q;
+    }
+    (window._vtV=window._vtV||[]).unshift(data);
+    toast(`Vendido: ${s.q} × ${p.nombre} ✓`,'success');
+    vtAtras();loadPg();
+  }finally{window._vtBusy=false;}
+}
+/* — productos — */
+function vtNuevo(){vtAbrir('prod',{id:null,nm:'',pr:'',st:'',co:'',cost:false});}
+async function vtEditar(id){
+  const p=vtProd(id);if(!p)return;
+  vtAbrir('prod',{id,nm:p.nombre,pr:valorInputImporte(Number(p.precio)),st:p.stock==null?'':String(p.stock),co:p.costo==null?'':valorInputImporte(Number(p.costo)),cost:p.costo!=null,vend:null});
+  const{data}=await sb.from('ventas_productos').select('cantidad').eq('producto_id',id).eq('user_id',user.id);
+  const s=window._vt;
+  if(s&&s.k==='prod'&&s.id===id){s.vend=(data||[]).reduce((t,v)=>t+(Number(v.cantidad)||0),0);vtSync();vtRender();}
+}
+function vtTogCost(){vtSync();window._vt.cost=!window._vt.cost;vtRender();}
+async function vtGuardarProd(){
+  vtSync();const s=window._vt;if(!s)return;
+  const nombre=(s.nm||'').trim(),precio=parseImporte(s.pr);
+  if(!nombre)return toast('Escribe el nombre del producto','error');
+  if(!(precio>0))return toast('Pon el precio de venta','error');
+  const stock=String(s.st).trim()===''?null:Math.max(0,Math.round(parseFloat(s.st)||0));
+  const c=s.cost&&String(s.co).trim()!==''?parseImporte(s.co):0;
+  const costo=c>0?c:null;
+  const fila={nombre,precio,costo,stock};
+  let error,data;
+  if(s.id){({error}=await sb.from('productos').update(fila).eq('id',s.id).eq('user_id',user.id));
+    if(!error){const p=vtProd(s.id);if(p)Object.assign(p,fila);}}
+  else{({data,error}=await sb.from('productos').insert({...fila,user_id:user.id}).select().single());
+    if(!error&&data)(window._vtP=window._vtP||[]).push(data);}
+  if(error)return toast(traducirError(error.message),'error');
+  toast(s.id?'Producto actualizado ✓':'Producto guardado ✓','success');
+  vtAtras();loadPg();
+}
+async function vtDelProd(){
+  const s=window._vt;if(!s||!s.id)return;
+  if(window._vtDel!==s.id){window._vtDel=s.id;toast('Toca otra vez la papelera para eliminar','info');setTimeout(()=>{if(window._vtDel===s.id)window._vtDel=null;},4000);return;}
+  window._vtDel=null;
+  const{error}=await sb.from('productos').delete().eq('id',s.id).eq('user_id',user.id);
+  if(error)return toast(traducirError(error.message),'error');
+  window._vtP=(window._vtP||[]).filter(x=>x.id!==s.id);
+  toast('Producto eliminado','info');vtAtras();loadPg();
+}
+/* — reponer — */
+function vtRepo(id){vtAbrir('repo',{id,qn:'',co:'',gasto:true});}
+function vtAddQ(n){vtSync();const s=window._vt;s.qn=String((Math.round(parseFloat(s.qn)||0))+n);vtRender();}
+function vtTogGasto(){vtSync();window._vt.gasto=!window._vt.gasto;vtRender();}
+async function vtDoRepo(){
+  vtSync();const s=window._vt,p=vtProd(s.id);if(!s||!p)return;
+  const q=Math.round(parseFloat(s.qn)||0);if(q<1)return toast('Pon cuántas llegan','error');
+  const nuevo=(p.stock||0)+q;
+  const{error}=await sb.from('productos').update({stock:nuevo}).eq('id',p.id).eq('user_id',user.id);
+  if(error)return toast(traducirError(error.message),'error');
+  p.stock=nuevo;
+  const co=parseImporte(s.co);let g=false;
+  if(co>0&&s.gasto){
+    const{error:e2}=await sb.from('expenses').insert({user_id:user.id,category:'Compra de '+p.nombre,amount:co,note:'Reposición de stock',payment_method:'efectivo',expense_date:today()});
+    if(e2)toast('Stock repuesto, pero no se pudo anotar el gasto','error');else g=true;
+  }
+  toast(`+${q} en stock${g?' · gasto anotado':''} ✓`,'success');
+  vtAtras();loadPg();
+}
+/* — eliminar venta — */
+function vtVentaAbrir(id){
+  const v=(window._vtV||[]).find(x=>x.id===id);if(!v)return;
+  if(v.fecha!==today())return vtAbrir('lock');
+  vtAbrir('delv',{id});
+}
+async function vtDelVenta(){
+  const s=window._vt;const v=(window._vtV||[]).find(x=>x.id===s.id);if(!v)return;
+  if(v.fecha!==today())return toast('Este día ya está cerrado','error');
+  const{error}=await sb.from('ventas_productos').delete().eq('id',v.id).eq('user_id',user.id);
+  if(error)return toast(traducirError(error.message),'error');
+  const p=v.producto_id?vtProd(v.producto_id):null;
+  if(p&&p.stock!=null){
+    const n=p.stock+Number(v.cantidad);
+    const{error:e2}=await sb.from('productos').update({stock:n}).eq('id',p.id).eq('user_id',user.id);
+    if(!e2)p.stock=n;
+  }
+  window._vtV=(window._vtV||[]).filter(x=>x.id!==v.id);
+  toast('Venta eliminada · stock devuelto','info');vtAtras();loadPg();
 }
 
 function actualizarBtnExport(){
