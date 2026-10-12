@@ -765,6 +765,8 @@ input, select { font-family: inherit; outline: none; border: none; }
 .caja-box{display:flex;align-items:center;justify-content:space-between;gap:.75rem;width:100%;border:1.5px solid var(--ac);border-radius:var(--radius-xl);background:transparent;color:#fff;padding:.8rem 1rem;margin-bottom:.9rem;cursor:pointer;touch-action:manipulation;font-size:.95rem;font-weight:700;text-align:left}
 .caja-box-n{font-size:.82rem;font-weight:700;color:var(--ac);white-space:nowrap;font-style:normal}.caja-box-n.ok{color:rgba(255,255,255,.65);font-weight:600}
 #vt-modal{--ac:oklch(0.72 0.16 295);--ac-glow:oklch(0.72 0.16 295 / .4)}
+#mov-modal{--ac:var(--primary);--ac-glow:var(--primary-glow)}
+#mov-modal .mov-list{max-height:55vh;overflow-y:auto;margin-top:.6rem}
 #vt-modal .pay-meth.on{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 22%,transparent);color:#fff}
 #vt-modal .pay-ok{background:var(--ac);color:#101010;box-shadow:0 0 18px var(--ac-glow)}
 #vt-modal .modal-close{color:#fff}
@@ -2727,6 +2729,7 @@ async function pgCaja(el){
     ctab==='ventas'?sb.from('productos').select('*').eq('user_id',user.id).order('created_at',{ascending:true}):Promise.resolve({data:[]}),
     ctab==='caja'?sb.from('ventas_productos').select('cantidad,precio_unit').eq('user_id',user.id).gte('fecha',pr.s).lte('fecha',pr.e):Promise.resolve({data:[]})
   ]);
+  if(ctab!=='caja'){window._mov=null;const mm=document.getElementById('mov-modal');if(mm)mm.remove();}
   const ap=a||[],ex=x||[];
   const vt=vv||[];window._vtV=vt;if(ctab==='ventas')window._vtP=vpv||[];
   const vtot=vSum(vt);
@@ -2747,7 +2750,7 @@ async function pgCaja(el){
   const periodoLabel=cper==='dia'?new Date(dt+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'}):({hoy:'Hoy',semana:'Esta semana',mes:'Este mes',trimestre:'Este trimestre'})[cper];
   window._periodoLbl=periodoLabel;
   const tabBtns=`<button class="caja-tab caja-tab-caja ${ctab==='caja'?'on':''}" onclick="setCtab('caja')">${tabMedal('caja')}<span class="caja-tab-lbl">Caja</span></button><button class="caja-tab caja-tab-gastos ${ctab==='gastos'?'on':''}" onclick="setCtab('gastos')">${tabMedal('gastos')}<span class="caja-tab-lbl">Gastos</span></button><button class="caja-tab caja-tab-ventas ${ctab==='ventas'?'on':''}" onclick="setCtab('ventas')">${tabMedal('ventas')}<span class="caja-tab-lbl">Ventas</span></button>`;
-  const liqBtn=esIndividual?'':`<button class="caja-tab caja-tab-liq" onclick="showLiquidacion()">${tabMedal('equipo')}<span class="caja-tab-lbl">Liquidación</span></button>`;
+
   const cierreBtn=`<button class="caja-tab caja-tab-cierre ${ctab==='cierre'?'on':''}" onclick="setCtab('cierre')">${tabMedal('cierre')}<span class="caja-tab-lbl">Cierre</span></button>`;
 
   let content='';
@@ -2796,7 +2799,7 @@ async function pgCaja(el){
       const m=icoM[v.metodo]?v.metodo:'efectivo';
       const hora=v.created_at?hhmm(v.created_at):'';
       const fecha=cper==='hoy'?'':new Date(v.fecha+'T12:00:00').toLocaleDateString('es-ES',{weekday:'short',day:'numeric'}).replace('.','')+' · ';
-      return `<div class="caja-mv" onclick="setCtab('ventas')">
+      return `<div class="caja-mv" onclick="cerrarMov();setCtab('ventas')">
         <div class="caja-ic">${iconoProducto(v.nombre)}</div>
         <div class="caja-mv-x"><b>${v.cantidad} × ${esc(v.nombre)}</b><small>${fecha}${hora} · Venta de producto</small></div>
         <div class="caja-mv-p">${eur((Number(v.cantidad)||0)*(Number(v.precio_unit)||0))}<small>${icoM[m]}</small></div>
@@ -2818,9 +2821,10 @@ async function pgCaja(el){
       <div class="meth-kard meth-kard-accent"><div class="meth-head">Ingreso del negocio <span>💰</span></div><div class="meth-val" style="color:var(--primary)">${eur(ingresoNegocio)}</div><div class="meth-sub">Suma de comisión local</div></div>
       <div class="meth-kard"><div class="meth-head">Dinero de barberos <span>✂️</span></div><div class="meth-val">${eur(dineroBarberos)}</div><div class="meth-sub">Pasa por caja, no es tu ingreso</div></div>
     </div>`}
-    <div class="caja-sec"><span>Movimientos · ${lista.length}</span>${cmeth?`<button class="caja-fchip" onclick="setCmeth('${cmeth}')">${nomM[cmeth]} ✕</button>`:''}</div>
-    ${lista.length===0?'<div class="caja-empty">No hay cobros en este periodo</div>':mostrados.map(o=>o.t==='c'?filaCobro(o.r):filaVenta(o.r)).join('')}
-    ${(!cvermas&&lista.length>6)?`<button class="caja-more" onclick="cvermas=true;loadPg()">Ver los ${lista.length-6} restantes</button>`:''}`;
+    <button class="caja-box" onclick="abrirMovimientos()"><span>🧾 Movimientos</span><i class="caja-box-n">${lista.length}${cmeth?' · '+nomM[cmeth]:''} · toca para ver ›</i></button>`;
+    window._mov={n:lista.length,lbl:periodoLabel,cm:cmeth?nomM[cmeth]:'',
+      tot:lista.reduce((t,o)=>t+(o.t==='c'?(Number(o.r.price)||0):(Number(o.r.cantidad)||0)*(Number(o.r.precio_unit)||0)),0),
+      rows:lista.length===0?'<div class="caja-empty">No hay cobros en este periodo</div>':lista.map(o=>o.t==='c'?filaCobro(o.r):filaVenta(o.r)).join('')};
   }else if(ctab==='gastos'){
     const nomM={efectivo:'Efectivo',tarjeta:'Tarjeta',transferencia:'Transferencia'};
     const icoM={efectivo:'💵',tarjeta:'💳',transferencia:'🏦'};
@@ -2900,9 +2904,10 @@ async function pgCaja(el){
         </div>`
       : esIndividual
       ? `<div class="caja-tabs-row c4">${tabBtns}${cierreBtn}</div>`
-      : `<div class="caja-tabs-row c4">${tabBtns}${cierreBtn}</div><div class="caja-tabs-single">${liqBtn}</div>`}
+      : `<div class="caja-tabs-row c4">${tabBtns}${cierreBtn}</div>`}
     ${content}
   </div>`;
+  if(ctab==='caja'&&document.getElementById('mov-modal'))abrirMovimientos();
 }
 
 function showLiquidacion(){
@@ -3304,6 +3309,15 @@ async function delExp(id){
   document.getElementById('gasto-modal')?.remove();
   toast('Gasto eliminado','info');loadPg();
 }
+
+function abrirMovimientos(){
+  const m=window._mov;if(!m)return;
+  const old=document.getElementById('mov-modal');if(old)old.remove();
+  const div=document.createElement('div');div.id='mov-modal';
+  div.innerHTML=`<div class="overlay" onclick="cerrarMov()"><div class="modal" onclick="event.stopPropagation()" style="max-width:440px"><div class="modal-body"><button class="modal-close" onclick="cerrarMov()">✕</button><div class="m-tag">Movimientos</div><div class="m-title" style="font-size:1.35rem">🧾 ${esc(m.lbl)}</div><div class="m-sub">${m.n} movimiento${m.n===1?'':'s'} · ${eur(m.tot)}${m.cm?' · '+m.cm:''}</div><div class="mov-list">${m.rows}</div></div><div class="modal-actions pay-acts"><button class="pay-ok" style="flex:1" onclick="cerrarMov()">Cerrar</button></div></div></div>`;
+  document.body.appendChild(div);
+}
+function cerrarMov(){const m=document.getElementById('mov-modal');if(m)m.remove();}
 
 /* ══ VENTAS DE PRODUCTOS ═════════════════════════════════════════ */
 const VT_BAJO=3;
