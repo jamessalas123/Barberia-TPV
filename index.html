@@ -25,9 +25,9 @@
   --popover-foreground:     oklch(0.97 0.005 270);
 
   /* Marca — ÁMBAR */
-  --primary:                oklch(0.78 0.20 75);
-  --primary-foreground:     oklch(0.18 0.02 75);
-  --primary-glow:           oklch(0.78 0.16 75 / 0.32);
+  --primary:                oklch(0.75 0.13 200);
+  --primary-foreground:     oklch(0.18 0.02 200);
+  --primary-glow:           oklch(0.75 0.13 200 / 0.32);
 
   /* Neutros */
   --secondary:              oklch(0.27 0.016 270);
@@ -44,13 +44,13 @@
   --success:                oklch(0.68 0.22 145);
   --success-foreground:     oklch(0.15 0.02 145);
   --success-glow:           oklch(0.68 0.18 145 / 0.28);
-  --warning:                oklch(0.78 0.16 75);
-  --warning-foreground:     oklch(0.18 0.02 75);
+  --warning:                oklch(0.75 0.13 200);
+  --warning-foreground:     oklch(0.18 0.02 200);
 
   /* Estructurales */
   --border:                 oklch(0.30 0.014 270);
   --input:                  oklch(0.28 0.014 270);
-  --ring:                   oklch(0.78 0.16 75);
+  --ring:                   oklch(0.75 0.13 200);
 
   /* Radios escalados desde --radius (0.875rem = 14px) */
   --radius-sm:  calc(var(--radius) - 4px);   /* ≈ 10px */
@@ -61,15 +61,15 @@
   --radius-3xl: calc(var(--radius) + 14px);  /* ≈ 28px */
 
   /* Charts */
-  --chart-1: oklch(0.78 0.16 75);
+  --chart-1: oklch(0.75 0.13 200);
   --chart-2: oklch(0.68 0.18 145);
   --chart-3: oklch(0.65 0.20 25);
   --chart-4: oklch(0.70 0.15 240);
   --chart-5: oklch(0.72 0.16 310);
 
   /* Nav colores por sección */
-  --nav-agenda:          oklch(0.78 0.16 75);
-  --nav-agenda-glow:     oklch(0.78 0.16 75 / 0.38);
+  --nav-agenda:          oklch(0.75 0.13 200);
+  --nav-agenda-glow:     oklch(0.75 0.13 200 / 0.38);
   --nav-caja:            oklch(0.68 0.18 145);
   --nav-caja-glow:       oklch(0.68 0.18 145 / 0.38);
   --nav-analiticas:      oklch(0.70 0.15 240);
@@ -307,14 +307,14 @@ input, select { font-family: inherit; outline: none; border: none; }
 }
 .trabajo-card:active { transform: scale(.98); }
 .trabajo-card-on {
-  border-color: var(--primary); background: linear-gradient(135deg, oklch(0.78 0.16 75 / 0.14), var(--card));
+  border-color: var(--primary); background: linear-gradient(135deg, oklch(0.75 0.13 200 / 0.14), var(--card));
   box-shadow: 0 0 28px var(--primary-glow);
 }
 @media (hover: hover) {
   .trabajo-card:hover:not(.trabajo-card-on) {
-    border-color: oklch(0.78 0.16 75 / 0.6);
-    background: linear-gradient(135deg, oklch(0.78 0.16 75 / 0.08), var(--card));
-    box-shadow: 0 0 18px oklch(0.78 0.16 75 / 0.25);
+    border-color: oklch(0.75 0.13 200 / 0.6);
+    background: linear-gradient(135deg, oklch(0.75 0.13 200 / 0.08), var(--card));
+    box-shadow: 0 0 18px oklch(0.75 0.13 200 / 0.25);
   }
 }
 .trabajo-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: .75rem; }
@@ -414,12 +414,12 @@ input, select { font-family: inherit; outline: none; border: none; }
   box-shadow: 0 4px 20px var(--destructive-glow);
 }
 .slot.paid {
-  background: linear-gradient(oklch(0.78 0.16 75 / 0.32), oklch(0.78 0.16 75 / 0.32)), rgba(18,18,18,0.5);
-  border: 1.5px solid oklch(0.78 0.16 75);
+  background: linear-gradient(oklch(0.75 0.13 200 / 0.32), oklch(0.75 0.13 200 / 0.32)), rgba(18,18,18,0.5);
+  border: 1.5px solid oklch(0.75 0.13 200);
 }
 .slot.paid:hover {
-  background: linear-gradient(oklch(0.78 0.16 75 / 0.3), oklch(0.78 0.16 75 / 0.3)), rgba(18,18,18,0.55);
-  border-color: oklch(0.78 0.16 75 / 0.58);
+  background: linear-gradient(oklch(0.75 0.13 200 / 0.3), oklch(0.75 0.13 200 / 0.3)), rgba(18,18,18,0.55);
+  border-color: oklch(0.75 0.13 200 / 0.58);
   box-shadow: 0 4px 20px var(--primary-glow);
 }
 
@@ -497,21 +497,21 @@ input, select { font-family: inherit; outline: none; border: none; }
   touch-action: manipulation;
 }
 .slot.paid .btn-plus, .slot.paid .btn-del-slot {
-  background: oklch(0.78 0.16 75 / 0.14); color: var(--primary);
-  border-color: oklch(0.78 0.16 75 / 0.4);
+  background: oklch(0.75 0.13 200 / 0.14); color: var(--primary);
+  border-color: oklch(0.75 0.13 200 / 0.4);
 }
 .slot.busy .btn-plus, .slot.busy .btn-del-slot {
   background: oklch(0.62 0.22 25 / 0.14); color: var(--destructive);
   border-color: oklch(0.62 0.22 25 / 0.4);
 }
-.slot.paid .btn-plus:hover, .slot.paid .btn-del-slot:hover { background: oklch(0.78 0.16 75 / 0.22); }
+.slot.paid .btn-plus:hover, .slot.paid .btn-del-slot:hover { background: oklch(0.75 0.13 200 / 0.22); }
 .slot.busy .btn-plus:hover, .slot.busy .btn-del-slot:hover { background: oklch(0.62 0.22 25 / 0.22); }
 .btn-plus:hover { background: var(--success); color: var(--success-foreground); box-shadow: 0 0 18px var(--success-glow); }
 .btn-plus:active { transform: scale(.97); }
 
 .check-icon {
   width: 40px; height: 40px; border-radius: 50%;
-  background: oklch(0.78 0.16 75 / 0.14); border: 2px solid oklch(0.78 0.16 75 / 0.4);
+  background: oklch(0.75 0.13 200 / 0.14); border: 2px solid oklch(0.75 0.13 200 / 0.4);
   display: grid; place-items: center; color: var(--primary); font-size: .95rem;
 }
 
@@ -839,7 +839,7 @@ input, select { font-family: inherit; outline: none; border: none; }
 }
 .caja-tab-ico { font-size: 1.5rem; }
 .caja-tab-lbl { color: #fff; }
-.caja-tab-caja { background: rgba(255,255,255,0.06); border-color: oklch(0.78 0.16 75); }
+.caja-tab-caja { background: rgba(255,255,255,0.06); border-color: oklch(0.75 0.13 200); }
 .caja-tab-gastos { background: rgba(255,255,255,0.06); border-color: oklch(0.62 0.22 25); }
 .caja-tab-liq { background: oklch(0.75 0.15 250 / 0.2); border-color: oklch(0.75 0.15 250); box-shadow: 0 0 16px oklch(0.75 0.15 250 / 0.35); font-size: .82rem; }
 .caja-tab-cierre { background: rgba(255,255,255,0.06); border-color: oklch(0.68 0.18 145); box-shadow: 0 0 16px var(--success-glow); font-size: .82rem; }
@@ -884,14 +884,14 @@ input, select { font-family: inherit; outline: none; border: none; }
 .export-btn:active { transform: scale(.99); }
 .cash-btn {
   width: 100%; height: 60px; border-radius: var(--radius-2xl);
-  background: oklch(0.78 0.16 75 / 0.18); color: #fff;
+  background: oklch(0.75 0.13 200 / 0.18); color: #fff;
   font-weight: 800; font-size: .95rem;
   display: flex; align-items: center; justify-content: center; gap: .5rem; transition: all .2s;
-  border: 1.5px solid oklch(0.78 0.16 75);
-  box-shadow: 0 0 16px oklch(0.78 0.16 75 / 0.22); margin-top: .5rem;
+  border: 1.5px solid oklch(0.75 0.13 200);
+  box-shadow: 0 0 16px oklch(0.75 0.13 200 / 0.22); margin-top: .5rem;
   touch-action: manipulation;
 }
-.cash-btn:hover { box-shadow: 0 0 22px oklch(0.78 0.16 75 / 0.32); }
+.cash-btn:hover { box-shadow: 0 0 22px oklch(0.75 0.13 200 / 0.32); }
 .cash-btn:active { transform: scale(.99); }
 
 .meth-kard-accent { border-color: var(--primary); box-shadow: 0 0 18px var(--primary-glow); }
@@ -1765,7 +1765,7 @@ function normalizarTelefono(raw){
 function pantallaCodigoConfirmacion(email,telefono,pais,nombre){
   document.getElementById('root').innerHTML=`
   <div class="auth-wrap"><div class="auth-card" style="max-width:440px;text-align:center">
-    <div style="width:72px;height:72px;border-radius:50%;background:oklch(0.78 0.16 75 / 0.14);border:2px solid oklch(0.78 0.16 75 / 0.4);display:grid;place-items:center;margin:0 auto 1.25rem">
+    <div style="width:72px;height:72px;border-radius:50%;background:oklch(0.75 0.13 200 / 0.14);border:2px solid oklch(0.75 0.13 200 / 0.4);display:grid;place-items:center;margin:0 auto 1.25rem">
       <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="34" height="34"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
     </div>
     <h1 class="auth-h1" style="margin-bottom:.5rem">Escribe tu código</h1>
@@ -1782,7 +1782,7 @@ function pantallaCodigoConfirmacion(email,telefono,pais,nombre){
     </div>
     <div id="err-otp" class="f-err" style="margin-bottom:.75rem"></div>
     <button class="auth-btn" id="otp-btn" style="width:100%;margin-bottom:.75rem" onclick="confirmarCodigoOtp('${email}','${telefono}','${pais}','${esc(nombre)}')" ontouchend="event.preventDefault();confirmarCodigoOtp('${email}','${telefono}','${pais}','${esc(nombre)}')">Confirmar código</button>
-    <div style="background:oklch(0.78 0.16 75 / 0.1);border:1px solid oklch(0.78 0.16 75 / 0.3);border-radius:var(--radius-lg);padding:.875rem 1rem;font-size:.8rem;color:var(--foreground);text-align:left;margin-bottom:.75rem">
+    <div style="background:oklch(0.75 0.13 200 / 0.1);border:1px solid oklch(0.75 0.13 200 / 0.3);border-radius:var(--radius-lg);padding:.875rem 1rem;font-size:.8rem;color:var(--foreground);text-align:left;margin-bottom:.75rem">
       📩 <strong>¿No lo ves en tu bandeja de entrada?</strong> Revisa la carpeta de <strong>Spam / Correo no deseado</strong>.
     </div>
     <button style="background:none;border:none;color:var(--primary);font-size:.82rem;font-weight:700;text-decoration:underline;cursor:pointer" id="resend-otp-btn" onclick="reenviarCodigoOtp('${email}')" ontouchend="event.preventDefault();reenviarCodigoOtp('${email}')">Reenviar código</button>
@@ -1931,7 +1931,7 @@ async function doRecover(){
 function pantallaCodigoRecuperacion(email){
   document.getElementById('root').innerHTML=`
   <div class="auth-wrap"><div class="auth-card" style="max-width:440px;text-align:center">
-    <div style="width:72px;height:72px;border-radius:50%;background:oklch(0.78 0.16 75 / 0.14);border:2px solid oklch(0.78 0.16 75 / 0.4);display:grid;place-items:center;margin:0 auto 1.25rem">
+    <div style="width:72px;height:72px;border-radius:50%;background:oklch(0.75 0.13 200 / 0.14);border:2px solid oklch(0.75 0.13 200 / 0.4);display:grid;place-items:center;margin:0 auto 1.25rem">
       <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="34" height="34"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
     </div>
     <h1 class="auth-h1" style="margin-bottom:.5rem">Escribe tu código</h1>
@@ -1948,7 +1948,7 @@ function pantallaCodigoRecuperacion(email){
     </div>
     <div id="err-otp-rec" class="f-err" style="margin-bottom:.75rem"></div>
     <button class="auth-btn" id="otp-rec-btn" style="width:100%;margin-bottom:.75rem" onclick="confirmarCodigoRecuperacion('${email}')" ontouchend="event.preventDefault();confirmarCodigoRecuperacion('${email}')">Confirmar código</button>
-    <div style="background:oklch(0.78 0.16 75 / 0.1);border:1px solid oklch(0.78 0.16 75 / 0.3);border-radius:var(--radius-lg);padding:.875rem 1rem;font-size:.8rem;color:var(--foreground);text-align:left;margin-bottom:.75rem">
+    <div style="background:oklch(0.75 0.13 200 / 0.1);border:1px solid oklch(0.75 0.13 200 / 0.3);border-radius:var(--radius-lg);padding:.875rem 1rem;font-size:.8rem;color:var(--foreground);text-align:left;margin-bottom:.75rem">
       📩 <strong>¿No lo ves en tu bandeja de entrada?</strong> Revisa la carpeta de <strong>Spam / Correo no deseado</strong>.
     </div>
     <button style="background:none;border:none;color:var(--primary);font-size:.82rem;font-weight:700;text-decoration:underline;cursor:pointer" onclick="reenviarCodigoRecuperacion('${email}')" ontouchend="event.preventDefault();reenviarCodigoRecuperacion('${email}')">Reenviar código</button>
@@ -2089,7 +2089,7 @@ async function iniciarDemo(){
 function pantallaBienvenida(onContinuar){
   document.getElementById('root').innerHTML=`
   <div class="auth-wrap"><div style="max-width:420px;width:100%;text-align:center">
-    <img src="logo-huella.png" alt="" style="width:150px;height:auto;object-fit:contain;margin:0 auto 1.5rem;display:block;filter:drop-shadow(0 0 24px oklch(0.78 0.16 75 / 0.35))"/>
+    <img src="logo-huella.png" alt="" style="width:150px;height:auto;object-fit:contain;margin:0 auto 1.5rem;display:block;filter:drop-shadow(0 0 24px oklch(0.75 0.13 200 / 0.35))"/>
     <div class="auth-brand" style="font-size:2.3rem;margin-bottom:1.25rem">
       <span class="parte1">Caja </span><span class="parte2">digital</span>
     </div>
@@ -2159,7 +2159,7 @@ function appScreen(){
   document.getElementById('root').innerHTML=`
   <div class="app">
     <nav class="sidebar">
-      ${navBtn('agenda',ICON_CAL,'Agenda','oklch(0.78 0.16 75)','oklch(0.78 0.16 75 / 0.38)')}
+      ${navBtn('agenda',ICON_CAL,'Agenda','oklch(0.75 0.13 200)','oklch(0.75 0.13 200 / 0.38)')}
       ${navBtn('caja',ICON_WALLET,'Caja','oklch(0.68 0.18 145)','oklch(0.68 0.18 145 / 0.38)')}
       ${navBtn('analiticas',ICON_BAR,'Stats','oklch(0.70 0.15 240)','oklch(0.70 0.15 240 / 0.38)')}
       <div class="nav-spacer"></div>
@@ -2284,8 +2284,8 @@ async function pgAgenda(el){
       <div class="agendar-box" onclick="abrirSelectorFecha()" ontouchend="event.preventDefault();abrirSelectorFecha()">
         <svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true">
           <rect x="8" y="6" width="32" height="34" rx="6" fill="#fafafb"/>
-          <rect x="8" y="6" width="32" height="10" rx="6" fill="#e8b854"/>
-          <rect x="8" y="12" width="32" height="4" fill="#e8b854"/>
+          <rect x="8" y="6" width="32" height="10" rx="6" fill="#2fc4d4"/>
+          <rect x="8" y="12" width="32" height="4" fill="#2fc4d4"/>
           <text x="24" y="14" font-size="7" font-weight="700" fill="#1c1d21" text-anchor="middle">${mesCorto(dt)}</text>
           <text x="24" y="32" font-size="18" font-weight="700" fill="#1c1d21" text-anchor="middle">${dt.slice(8,10)}</text>
         </svg>
@@ -3657,7 +3657,7 @@ async function pgAnaliticas(el){
   };
   if(charts.c){try{charts.c.destroy();}catch(e){}}
   if(charts.i){try{charts.i.destroy();}catch(e){}}
-  charts.c=new Chart(document.getElementById('cc'),{type:'bar',data:{labels:DAYS,datasets:[{data:cd,backgroundColor:'oklch(0.78 0.16 75)',borderRadius:8,borderSkipped:false}]},options:cfg});
+  charts.c=new Chart(document.getElementById('cc'),{type:'bar',data:{labels:DAYS,datasets:[{data:cd,backgroundColor:'oklch(0.75 0.13 200)',borderRadius:8,borderSkipped:false}]},options:cfg});
   charts.i=new Chart(document.getElementById('ci'),{type:'bar',data:{labels:DAYS,datasets:[{data:id2,backgroundColor:'oklch(0.68 0.18 145)',borderRadius:8,borderSkipped:false}]},options:cfg});
 
   const bbBtn = document.getElementById('bb-btn');
