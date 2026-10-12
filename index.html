@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="color-scheme" content="dark"/>
 <meta name="theme-color" content="#1a1b23"/>
-<title>Barbería TPV</title>
+<title>Caja digital</title>
 <style>
 /* ══════════════════════════════════════════════════════════════
    BARBERÍA TPV v15 — Sistema de diseño OKLCH
@@ -1532,10 +1532,10 @@ function blockScreen(trialVencido){
     <div class="block-icon">🔒</div>
     <div class="block-title">${trialVencido?'Tu prueba ha terminado':'Suscripción inactiva'}</div>
     <p class="block-sub">${trialVencido
-      ?'Tus 30 días de prueba gratuita han finalizado. Suscríbete para seguir usando Barbería TPV sin interrupciones.'
+      ?'Tus 30 días de prueba gratuita han finalizado. Suscríbete para seguir usando Caja digital sin interrupciones.'
       :'Tu suscripción no está activa en este momento. Suscríbete para reactivar tu cuenta.'}</p>
     <button id="pagar-btn" class="block-btn" onclick="irAPagar()" ontouchend="event.preventDefault();irAPagar()">Suscribirme ahora — ${precioSuscripcionTexto()}</button>
-    <button class="block-btn" style="background:transparent;border:1.5px solid var(--border);color:var(--muted-foreground);margin-top:.5rem" onclick="window.open('https://wa.me/34689042653?text=Hola,%20tengo%20una%20duda%20con%20mi%20suscripci%C3%B3n%20de%20Barber%C3%ADa%20TPV','_blank')">¿Dudas? Escríbenos por WhatsApp</button>
+    <button class="block-btn" style="background:transparent;border:1.5px solid var(--border);color:var(--muted-foreground);margin-top:.5rem" onclick="window.open('https://wa.me/34689042653?text=Hola,%20tengo%20una%20duda%20con%20mi%20suscripci%C3%B3n%20de%20Caja%20digital','_blank')">¿Dudas? Escríbenos por WhatsApp</button>
     <button class="block-btn-out" onclick="doOut()">Cerrar sesión</button>
     <div style="margin-top:1.25rem;font-size:.68rem;color:var(--muted-foreground);text-align:center;line-height:1.6">
       ${enlacesLegales(profile&&profile.pais)}
@@ -1586,9 +1586,9 @@ function authScreen(view='login'){
   if(view==='login'){
     document.getElementById('root').innerHTML=`
     <div class="auth-wrap"><div class="auth-card">
-      <img src="logo-huella.png" alt="Barbería TPV" class="auth-logo-img"/>
-      <div class="auth-brand"><span class="parte1">Barbería </span><span class="parte2">TPV</span></div>
-      <p class="auth-sub">Acceso privado del barbero</p>
+      <img src="logo-huella.png" alt="Caja digital" class="auth-logo-img"/>
+      <div class="auth-brand"><span class="parte1">Caja </span><span class="parte2">digital</span></div>
+      <p class="auth-sub">Acceso privado</p>
       <div class="auth-tabs">
         <button class="auth-tab active" onclick="authScreen('login')" ontouchend="event.preventDefault();authScreen('login')">Iniciar sesión</button>
         <button class="auth-tab" onclick="authScreen('register')" ontouchend="event.preventDefault();authScreen('register')">Registrarse</button>
@@ -1615,7 +1615,7 @@ function authScreen(view='login'){
   if(view==='register'){
     document.getElementById('root').innerHTML=`
     <div class="auth-wrap"><div class="auth-card">
-      <img src="logo-huella.png" alt="Barbería TPV" class="auth-logo-img"/>
+      <img src="logo-huella.png" alt="Caja digital" class="auth-logo-img"/>
       <h1 class="auth-h1">Crear cuenta</h1>
       <p class="auth-sub">30 días de prueba gratis</p>
       <div class="auth-tabs">
@@ -1655,7 +1655,7 @@ function authScreen(view='login'){
   if(view==='newpass'){
     document.getElementById('root').innerHTML=`
     <div class="auth-wrap"><div class="auth-card">
-      <img src="logo-huella.png" alt="Barbería TPV" class="auth-logo-img"/>
+      <img src="logo-huella.png" alt="Caja digital" class="auth-logo-img"/>
       <h1 class="auth-h1" style="font-size:1.35rem">Nueva contraseña</h1>
       <p class="auth-sub">Escribe tu nueva contraseña para ${sess?.email||'tu cuenta'}</p>
       <label class="f-label">Nueva contraseña <span style="color:var(--muted-foreground);font-weight:400">(mín. 6 caracteres)</span></label>
@@ -1683,7 +1683,7 @@ function authScreen(view='login'){
       <button class="auth-back" onclick="authScreen('login')" ontouchend="event.preventDefault();authScreen('login')">
         ${ICON_BACK_SVG} Volver al login
       </button>
-      <img src="logo-huella.png" alt="Barbería TPV" class="auth-logo-img"/>
+      <img src="logo-huella.png" alt="Caja digital" class="auth-logo-img"/>
       <h1 class="auth-h1" style="font-size:1.35rem">Recuperar acceso</h1>
       <p class="auth-sub">Te enviaremos un código a tu correo</p>
       <label class="f-label">Correo electrónico</label>
@@ -2084,7 +2084,7 @@ function pantallaBienvenida(onContinuar){
   <div class="auth-wrap"><div style="max-width:420px;width:100%;text-align:center">
     <img src="logo-huella.png" alt="" style="width:150px;height:auto;object-fit:contain;margin:0 auto 1.5rem;display:block;filter:drop-shadow(0 0 24px oklch(0.78 0.16 75 / 0.35))"/>
     <div class="auth-brand" style="font-size:2.3rem;margin-bottom:1.25rem">
-      <span class="parte1">Un corte, </span><span class="parte2">una huella</span>
+      <span class="parte1">Caja </span><span class="parte2">digital</span>
     </div>
     <div style="display:flex;align-items:center;gap:.75rem;justify-content:center;margin-bottom:1.25rem">
       <span style="width:70px;height:1px;background:var(--primary)"></span>
@@ -2101,17 +2101,17 @@ function pantallaBienvenida(onContinuar){
 function pantallaComoTrabajas(onElegido){
   document.getElementById('root').innerHTML=`
   <div class="auth-wrap"><div class="auth-card" style="max-width:640px;text-align:center">
-    <p style="font-size:.7rem;letter-spacing:.08em;color:var(--muted-foreground);text-transform:uppercase;margin:0 0 .375rem">Barbería TPV</p>
+    <p style="font-size:.7rem;letter-spacing:.08em;color:var(--muted-foreground);text-transform:uppercase;margin:0 0 .375rem">Caja digital</p>
     <h1 class="auth-h1" style="margin-bottom:1.5rem">¿Cómo trabajas?</h1>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:.875rem">
       <button type="button" class="trabajo-card" id="ct-individual" onclick="elegirTrabajo('individual')" ontouchend="event.preventDefault();elegirTrabajo('individual')">
-        <img src="barbero-individual.png" alt="Barbero trabajando individualmente" class="trabajo-img"/>
+        <img src="barbero-individual.png" alt="Trabajo individual" class="trabajo-img"/>
         <div class="trabajo-titulo">Individual</div>
         <div class="trabajo-sub">Tu caja personal</div>
         <div class="trabajo-check" id="ct-check-individual"></div>
       </button>
       <button type="button" class="trabajo-card" id="ct-local" onclick="elegirTrabajo('local')" ontouchend="event.preventDefault();elegirTrabajo('local')">
-        <img src="barbero-local.png" alt="Local con varios barberos trabajando" class="trabajo-img"/>
+        <img src="barbero-local.png" alt="Local con varios profesionales" class="trabajo-img"/>
         <div class="trabajo-titulo">Local</div>
         <div class="trabajo-sub">Una caja para todo el local</div>
         <div class="trabajo-check" id="ct-check-local"></div>
@@ -2156,7 +2156,7 @@ function appScreen(){
       ${navBtn('caja',ICON_WALLET,'Caja','oklch(0.68 0.18 145)','oklch(0.68 0.18 145 / 0.38)')}
       ${navBtn('analiticas',ICON_BAR,'Stats','oklch(0.70 0.15 240)','oklch(0.70 0.15 240 / 0.38)')}
       <div class="nav-spacer"></div>
-      <button class="nav-item" onclick="window.open('https://wa.me/34689042653?text=Hola,%20tengo%20una%20duda%20con%20Barber%C3%ADa%20TPV','_blank')" ontouchend="event.preventDefault();window.open('https://wa.me/34689042653?text=Hola,%20tengo%20una%20duda%20con%20Barber%C3%ADa%20TPV','_blank')">
+      <button class="nav-item" onclick="window.open('https://wa.me/34689042653?text=Hola,%20tengo%20una%20duda%20con%20Caja%20digital','_blank')" ontouchend="event.preventDefault();window.open('https://wa.me/34689042653?text=Hola,%20tengo%20una%20duda%20con%20Caja%20digital','_blank')">
         <div class="nav-icon-wrap" style="background:transparent;box-shadow:none">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </div>
@@ -2324,7 +2324,7 @@ function toggleAnonimo(){
 function openNew(t){
   const esIndividual=profile&&profile.tipo_cuenta==='individual';
   const campoBarbero=esIndividual?'':`
-        <label class="m-label">Barbero <span style="font-weight:400;color:var(--muted-foreground)">(opcional)</span></label>
+        <label class="m-label">Quién atiende <span style="font-weight:400;color:var(--muted-foreground)">(opcional)</span></label>
         <input id="nb" class="m-input" placeholder="Nombre de quien atiende" onkeydown="if(event.key==='Enter')saveAppt('${t}')"/>`;
   document.getElementById('mr').innerHTML=`
   <div class="overlay" onclick="closeM()">
@@ -2408,7 +2408,7 @@ function bloqueRepartoHtml(){
           <div class="reparto-lbl">Reparto</div>
           <div class="reparto-row">
             <div class="fg" style="flex:1">
-              <label class="fg-lbl">Valor barbero</label>
+              <label class="fg-lbl">Parte del profesional</label>
               <input id="pvb" class="fg-inp" inputmode="decimal" placeholder="0,00" oninput="onImporteInput('pvb','vb')"/>
             </div>
             <div class="fg" style="flex:1">
@@ -2819,7 +2819,7 @@ async function pgCaja(el){
     <div class="sec-label">Desglose por tipo de dinero</div>
     <div class="meth3">
       <div class="meth-kard meth-kard-accent"><div class="meth-head">Ingreso del negocio <span>💰</span></div><div class="meth-val" style="color:var(--primary)">${eur(ingresoNegocio)}</div><div class="meth-sub">Suma de comisión local</div></div>
-      <div class="meth-kard"><div class="meth-head">Dinero de barberos <span>✂️</span></div><div class="meth-val">${eur(dineroBarberos)}</div><div class="meth-sub">Pasa por caja, no es tu ingreso</div></div>
+      <div class="meth-kard"><div class="meth-head">Dinero del equipo <span>👥</span></div><div class="meth-val">${eur(dineroBarberos)}</div><div class="meth-sub">Pasa por caja, no es tu ingreso</div></div>
     </div>`}
     <button class="caja-box" onclick="abrirMovimientos()"><span>🧾 Movimientos</span><i class="caja-box-n">${lista.length}${cmeth?' · '+nomM[cmeth]:''} · toca para ver ›</i></button>`;
     window._mov={n:lista.length,lbl:periodoLabel,cm:cmeth?nomM[cmeth]:'',
@@ -2926,10 +2926,10 @@ function showLiquidacion(){
     <div class="liq-item">
       <div>
         <div class="liq-name">${esc(n)}</div>
-        <div class="liq-cortes">${porBarbero[n].cortes} corte${porBarbero[n].cortes===1?'':'s'} realizado${porBarbero[n].cortes===1?'':'s'}</div>
+        <div class="liq-cortes">${porBarbero[n].cortes} servicio${porBarbero[n].cortes===1?'':'s'} realizado${porBarbero[n].cortes===1?'':'s'}</div>
       </div>
       <div class="liq-valwrap">
-        <div class="liq-lbl">Pago del barbero</div>
+        <div class="liq-lbl">Pago del profesional</div>
         <div class="liq-val">${eur(porBarbero[n].valor)}</div>
       </div>
     </div>`).join('');
@@ -2940,7 +2940,7 @@ function showLiquidacion(){
     <div class="modal" onclick="event.stopPropagation()" style="max-width:440px">
       <div class="modal-body">
         <button class="modal-close" onclick="document.getElementById('liq-modal').remove()">✕</button>
-        <div class="m-tag">Liquidación de barberos</div>
+        <div class="m-tag">Liquidación del equipo</div>
         <div class="m-title" style="font-size:1.3rem">${esc(window._periodoLbl||'Este periodo')}</div>
         <div class="liqlist">${rows}</div>
       </div>
@@ -3024,7 +3024,7 @@ async function renderCierreDiario(){
     <div class="sec-label" style="margin-top:1.25rem">Desglose de ese ingreso</div>
     <div class="cards2">
       <div class="kard"><div class="kard-lbl">Ingreso del negocio</div><div class="cierre-num">${eur(v.ingreso_negocio)}</div><div class="kard-sub">Comisión local</div></div>
-      <div class="kard"><div class="kard-lbl">Dinero de barberos</div><div class="cierre-num">${eur(v.dinero_barberos)}</div><div class="kard-sub">No es ingreso del negocio</div></div>
+      <div class="kard"><div class="kard-lbl">Dinero del equipo</div><div class="cierre-num">${eur(v.dinero_barberos)}</div><div class="kard-sub">No es ingreso del negocio</div></div>
     </div>`}
 
     <div class="sec-label" style="margin-top:1.25rem">Gastos del día</div>
@@ -3565,7 +3565,7 @@ async function exportCSV(){
   let totDig=0;digital.forEach(r=>{totDig+=Number(r.price)||0;});
   const gas=ex.reduce((s,r)=>s+Number(r.amount||0),0);
   const rows=[['Fecha','Concepto','Método','Tipo','Importe']];
-  digital.forEach(r=>rows.push([r.appointment_date,'Servicio de barbería',r.payment_method||'',r.payment_type||'',Number(r.price||0).toFixed(2)]));
+  digital.forEach(r=>rows.push([r.appointment_date,'Servicio',r.payment_method||'',r.payment_type||'',Number(r.price||0).toFixed(2)]));
   ex.forEach(r=>rows.push([r.expense_date,`Gasto: ${r.category}${r.note?' - '+r.note:''}`,'-','gasto',(-Number(r.amount)).toFixed(2)]));
   rows.push(['','','','','']);
   rows.push(['','TOTAL INGRESOS DIGITALES','','',totDig.toFixed(2)]);
