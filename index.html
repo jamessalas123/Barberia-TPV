@@ -782,6 +782,13 @@ input, select { font-family: inherit; outline: none; border: none; }
 .vt-chips{display:flex;gap:.5rem;margin:.4rem 0 .6rem}.vt-chips button{flex:1;border:1.5px solid var(--ac);color:var(--ac);background:none;border-radius:.75rem;padding:.55rem;font-weight:700;cursor:pointer}
 .vt-hint{font-size:.74rem;opacity:.65;margin:.3rem 0 .5rem;line-height:1.4}
 /* cierre verde */
+.ci-tiles{grid-template-columns:1fr 1fr;margin-bottom:.9rem}
+.ci-tiles .caja-mk{cursor:default;min-height:5.6rem;justify-content:center;gap:.2rem;padding:.8rem .4rem}
+.ci-tiles .caja-mk-n{white-space:nowrap;font-size:.72rem;opacity:.9}
+.ci-tiles .caja-mk-a{font-size:1.3rem;color:var(--ac);text-shadow:0 0 12px var(--ac-glow)}
+.ci-tiles .caja-mk.wide{grid-column:1/-1;min-height:5rem}
+.ci-tiles .caja-mk-c{font-size:.7rem;opacity:.7}
+.caja-th-cierre .cierre-neto{text-align:center}
 .caja-th-cierre .cierre-num{color:var(--ac);text-shadow:0 0 12px var(--ac-glow)}
 .caja-th-cierre .cierre-badge{color:var(--ac);border-color:var(--ac)}
 .caja-th-cierre .cierre-badge-pendiente{color:#fff;border-color:rgba(255,255,255,.4)}
@@ -2983,7 +2990,7 @@ async function renderCierreDiario(){
   const fechaLbl=new Date(dt+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
   const gastosRows=(v.gastos_detalle||[]).length===0
     ?`<div style="text-align:center;color:var(--muted-foreground);padding:1rem;font-size:.82rem">Sin gastos ese día</div>`
-    :v.gastos_detalle.map(g=>`<div style="display:flex;justify-content:space-between;align-items:center;font-size:.82rem;padding:.5rem 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted-foreground)">${g.category}${g.note?' · '+g.note:''}</span><span class="cierre-num" style="font-size:1.05rem">−${eur(g.amount)}</span></div>`).join('');
+    :v.gastos_detalle.map(g=>`<div class="caja-mv" style="cursor:default"><div class="caja-ic">${iconoGasto(g.category)}</div><div class="caja-mv-x"><b>${esc(g.category||'Gasto')}</b>${g.note?`<small>${esc(g.note)}</small>`:''}</div><div class="caja-mv-p">−${eur(g.amount)}</div></div>`).join('');
 
   const esHoy=dt===today();
   const badge=guardado
@@ -3010,28 +3017,23 @@ async function renderCierreDiario(){
     </div>
 
     <div class="sec-label" style="margin-top:1.25rem">Ingresos del día</div>
-    <div class="cards2">
-      <div class="kard"><div class="kard-lbl">Efectivo</div><div class="cierre-num">${eur(v.efectivo)}</div></div>
-      <div class="kard"><div class="kard-lbl">Tarjeta/Transferencia</div><div class="cierre-num">${eur(v.tarjeta_transferencia)}</div></div>
+    <div class="caja-m3 ci-tiles">
+      <div class="caja-mk"><span class="caja-mk-i">💵</span><span class="caja-mk-n">Efectivo</span><span class="caja-mk-a">${eur(v.efectivo)}</span></div>
+      <div class="caja-mk"><span class="caja-mk-i">💳</span><span class="caja-mk-n">Pagos digitales</span><span class="caja-mk-a">${eur(v.tarjeta_transferencia)}</span></div>
+      <div class="caja-mk wide"><span class="caja-mk-i">💰</span><span class="caja-mk-n">Total ingresado</span><span class="caja-mk-a">${eur(v.total)}</span>${Number(v.ventas_productos)>0?`<span class="caja-mk-c">🛍️ incluye ventas de productos ${eur(v.ventas_productos)}</span>`:''}</div>
     </div>
-    <div class="kard" style="margin-top:.625rem;display:flex;justify-content:space-between;align-items:center">
-      <span style="font-size:.85rem;font-weight:600">Total ingresado (caja total)</span>
-      <span class="cierre-num" style="font-size:1.7rem">${eur(v.total)}</span>
-    </div>
-    ${Number(v.ventas_productos)>0?`<div style="margin-top:.5rem;font-size:.8rem;color:var(--muted-foreground);text-align:center">🛍️ Incluye ventas de productos: ${eur(v.ventas_productos)}</div>`:''}
 
     ${esIndividual?'':`
     <div class="sec-label" style="margin-top:1.25rem">Desglose de ese ingreso</div>
-    <div class="cards2">
-      <div class="kard"><div class="kard-lbl">Ingreso del negocio</div><div class="cierre-num">${eur(v.ingreso_negocio)}</div><div class="kard-sub">Comisión local</div></div>
-      <div class="kard"><div class="kard-lbl">Dinero del equipo</div><div class="cierre-num">${eur(v.dinero_barberos)}</div><div class="kard-sub">No es ingreso del negocio</div></div>
+    <div class="caja-m3 ci-tiles">
+      <div class="caja-mk"><span class="caja-mk-i">🏪</span><span class="caja-mk-n">Ingreso del negocio</span><span class="caja-mk-a">${eur(v.ingreso_negocio)}</span></div>
+      <div class="caja-mk"><span class="caja-mk-i">👥</span><span class="caja-mk-n">Dinero del equipo</span><span class="caja-mk-a">${eur(v.dinero_barberos)}</span></div>
     </div>`}
 
     <div class="sec-label" style="margin-top:1.25rem">Gastos del día</div>
-    <div class="kard">${gastosRows}</div>
-    <div class="kard" style="margin-top:.625rem;display:flex;justify-content:space-between;align-items:center">
-      <span style="font-size:.85rem;font-weight:600">Total gastos</span>
-      <span class="cierre-num" style="font-size:1.7rem">−${eur(v.gastos_total)}</span>
+    ${gastosRows}
+    <div class="caja-m3 ci-tiles" style="margin-top:.5rem">
+      <div class="caja-mk wide"><span class="caja-mk-i">🧾</span><span class="caja-mk-n">Total gastos</span><span class="caja-mk-a">−${eur(v.gastos_total)}</span></div>
     </div>
 
     <div class="cierre-neto">
