@@ -1,6 +1,6 @@
 /*
  * Webhook de WhatsApp Business Platform (Cloud API de Meta).
- * PRUEBA TÉCNICA: verifica el webhook y responde con un eco.
+ * PRUEBA TÉCNICA: verifica el webhook y responde con un eco (v2: tras cargar variables de entorno).
  * Aún no usa IA ni toca la agenda.
  *
  * Variables de entorno (Vercel):
