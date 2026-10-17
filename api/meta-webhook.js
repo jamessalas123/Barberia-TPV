@@ -46,6 +46,7 @@ async function enviarTexto(phoneNumberId, destino, texto) {
     })
   });
   if (!r.ok) console.error('[meta-webhook] envío falló', r.status, await r.text());
+  else console.log('[meta-webhook] respuesta enviada OK');
 }
 
 module.exports = Object.assign(async (req, res) => {
@@ -67,7 +68,9 @@ module.exports = Object.assign(async (req, res) => {
 
   /* 2. Eventos: comprobamos que vienen de Meta con la firma HMAC */
   const cuerpo = await leerCuerpo(req);
+  console.log('[meta-webhook] POST recibido, bytes=' + cuerpo.length + ', firma=' + (req.headers['x-hub-signature-256'] ? 'presente' : 'ausente'));
   if (!firmaValida(cuerpo, req.headers['x-hub-signature-256'])) {
+    console.error('[meta-webhook] firma inválida (revisar META_APP_SECRET)');
     res.status(403).send('Firma inválida');
     return;
   }
@@ -85,6 +88,7 @@ module.exports = Object.assign(async (req, res) => {
       for (const cambio of entrada.changes || []) {
         const v = cambio.value || {};
         const phoneNumberId = v.metadata && v.metadata.phone_number_id;
+        console.log('[meta-webhook] cambio campo=' + cambio.field + ' mensajes=' + (v.messages || []).length + ' estados=' + (v.statuses || []).length);
         for (const m of v.messages || []) {
           if (m.type !== 'text' || !phoneNumberId) continue;
           await enviarTexto(
