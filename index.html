@@ -1177,6 +1177,56 @@ input, select { font-family: inherit; outline: none; border: none; }
   .btn-cobrar { height: 44px; padding: 0 .875rem; font-size: .82rem; min-width: 72px; }
   .btn-del-slot, .btn-plus { width: 44px; height: 44px; }
 }
+
+/* ── Asistente virtual de citas ───────────────────────────────── */
+:root { --asis: oklch(0.72 0.16 295); }
+.dur-lbl { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
+.dur-hint { font-size: .7rem; color: var(--muted-foreground); font-weight: 500; text-align: right; }
+.dur-chips { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .875rem; }
+.dur-chip { height: 40px; padding: 0 .8rem; border-radius: var(--radius-lg); background: transparent; border: 1.5px solid rgba(255,255,255,0.45); color: #fff; font-weight: 600; font-size: .88rem; cursor: pointer; touch-action: manipulation; width: auto; }
+.dur-chip.on { border-color: var(--primary); color: var(--primary); background: rgba(255,255,255,0.05); }
+.dur-otro { display: flex; align-items: center; gap: .5rem; margin-bottom: .875rem; font-size: .85rem; color: var(--muted-foreground); }
+.dur-otro .m-input { width: 110px; height: 48px; margin-bottom: 0; }
+.svc-d { display: block; font-size: .72rem; font-weight: 500; color: var(--muted-foreground); margin-top: .1rem; }
+.svc-n { line-height: 1.2; }
+.asis-intro { border: 1.5px solid var(--asis); border-radius: var(--radius-xl); padding: .9rem 1rem; margin-bottom: 1rem; background: color-mix(in srgb, var(--asis) 10%, transparent); font-size: .92rem; line-height: 1.5; }
+.asis-intro b { color: var(--asis); }
+.asis-prog { font-size: .75rem; color: var(--muted-foreground); margin: 0 0 .4rem; }
+.asis-bar { height: 6px; background: rgba(255,255,255,.12); border-radius: 6px; margin-bottom: 1rem; overflow: hidden; }
+.asis-bar i { display: block; height: 100%; background: var(--asis); border-radius: 6px; transition: width .3s; }
+.asis-step { display: flex; gap: .7rem; align-items: center; width: 100%; text-align: left; background: transparent; color: inherit; border: 1.5px solid rgba(255,255,255,.22); border-radius: var(--radius-xl); padding: .85rem .9rem; margin-bottom: .6rem; cursor: pointer; touch-action: manipulation; min-height: 64px; }
+.asis-step .n { width: 1.9rem; height: 1.9rem; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: .85rem; border: 1.5px solid rgba(255,255,255,.4); flex-shrink: 0; }
+.asis-step .t { flex: 1; min-width: 0; }
+.asis-step .t b { display: block; font-size: .95rem; }
+.asis-step .t small { opacity: .65; font-size: .74rem; }
+.asis-step .st { font-size: .72rem; font-weight: 700; opacity: .7; text-align: right; max-width: 7.5rem; }
+.asis-step.done { border-color: var(--success); }
+.asis-step.done .n { background: var(--success); color: var(--success-foreground); border-color: var(--success); }
+.asis-step.done .st { color: var(--success); opacity: 1; }
+.asis-step.now { border-color: var(--asis); }
+.asis-step.now .n { border-color: var(--asis); color: var(--asis); }
+.asis-step.now .st { color: var(--asis); opacity: 1; }
+.asis-step.lock { opacity: .45; cursor: default; }
+.asis-back { background: none; border: 0; color: var(--primary); font-weight: 700; font-size: .9rem; padding: .25rem 0; margin-bottom: .5rem; cursor: pointer; width: auto; height: auto; touch-action: manipulation; }
+.asis-note { font-size: .8rem; color: var(--muted-foreground); line-height: 1.5; margin: .2rem 0 1rem; }
+.asis-btn { width: 100%; min-height: 56px; border-radius: var(--radius-xl); margin-bottom: .75rem; background: var(--asis); color: oklch(0.2 0.05 295); border: 0; font-size: 1.02rem; font-weight: 800; cursor: pointer; touch-action: manipulation; }
+.asis-btn:disabled { opacity: .45; cursor: default; }
+.asis-btn.alt { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); }
+.asis-card { border: 1.5px solid rgba(255,255,255,.2); border-radius: var(--radius-xl); padding: .9rem 1rem; margin-bottom: 1rem; background: rgba(255,255,255,.03); }
+.asis-card h3 { font-size: .72rem; letter-spacing: .09em; text-transform: uppercase; opacity: .7; margin-bottom: .6rem; font-weight: 700; }
+.asis-soon { border: 1.5px dashed var(--asis); border-radius: var(--radius-xl); padding: 1rem; font-size: .9rem; line-height: 1.5; margin-bottom: 1rem; }
+.hor-row { display: grid; grid-template-columns: 4.6rem 3.2rem 1fr 1fr; gap: .4rem; align-items: center; padding: .5rem 0; border-bottom: 1px solid rgba(255,255,255,.1); }
+.hor-row:last-of-type { border-bottom: 0; }
+.hor-d { font-weight: 700; font-size: .88rem; }
+.hor-sel { height: 44px; border-radius: var(--radius-lg); background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.5); color: #fff; font-size: .9rem; padding: 0 .4rem; width: 100%; }
+.hor-cerr { grid-column: 3 / 5; font-size: .85rem; color: var(--muted-foreground); }
+.hor-sw { width: 3.2rem; height: 30px; border-radius: 16px; border: 1.5px solid rgba(255,255,255,.5); background: transparent; position: relative; cursor: pointer; padding: 0; touch-action: manipulation; }
+.hor-sw::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,.7); transition: all .2s; }
+.hor-sw.on { background: color-mix(in srgb, var(--asis) 35%, transparent); border-color: var(--asis); }
+.hor-sw.on::after { left: calc(100% - 23px); background: var(--asis); }
+.eq-chip { display: inline-flex; align-items: center; gap: .4rem; border: 1.5px solid rgba(255,255,255,.5); border-radius: 12px; padding: .4rem .4rem .4rem .8rem; margin: 0 .4rem .5rem 0; font-size: .92rem; font-weight: 600; }
+.eq-chip button { width: 28px; height: 28px; border-radius: 8px; background: transparent; border: 1.5px solid rgba(255,255,255,.35); color: #fff; font-size: .9rem; cursor: pointer; padding: 0; }
+.agenda-cerrado { border: 1.5px solid rgba(255,255,255,.35); border-radius: var(--radius-xl); padding: .7rem 1rem; margin-bottom: .9rem; font-size: .85rem; color: var(--muted-foreground); line-height: 1.45; }
 </style>
 </head>
 <body style="background-color:oklch(0.16 0.012 270)">
@@ -1254,6 +1304,47 @@ window.addEventListener('unhandledrejection',(e)=>{
    código en el navegador (XSS). Usar siempre con datos escritos por el usuario. */
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 const SLOT=30,DS=9*60,DE=21*60;
+/* ── Horario de apertura y duración de servicios ─────────────────
+   horario (profiles.horario): null = por defecto (9:00–21:00 todos los días).
+   Si existe: {"0":null,"1":{"a":"10:00","c":"20:00"},…} con 0 = domingo. */
+const DIAS_SEM=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const ORDEN_SEM=[1,2,3,4,5,6,0];
+const DUR_OPCIONES=[15,30,45,60,90,120];
+function minAHHMM(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
+function hhmmAMin(s){const p=String(s).split(':');return (parseInt(p[0],10)||0)*60+(parseInt(p[1],10)||0);}
+function etqDuracion(m){
+  m=Number(m)||30;
+  if(m<60)return m+' min';
+  const h=Math.floor(m/60),r=m%60;
+  return r?h+' h '+r+' min':h+' h';
+}
+/* {s,e} en minutos · null = cerrado ese día · undefined = el negocio no ha definido horario */
+function horarioDia(fecha){
+  const h=profile&&profile.horario;
+  if(!h||typeof h!=='object')return undefined;
+  const d=h[new Date(fecha+'T12:00:00').getDay()];
+  if(!d||!d.a||!d.c)return null;
+  const s=hhmmAMin(d.a),e=hhmmAMin(d.c);
+  return e>s?{s,e}:null;
+}
+/* Chips de duración. st = objeto de estado con fd (minutos) y fdOtro; fn = función global que recibe minutos (0 = "Otro") */
+function durChipsHtml(st,fn,inputId){
+  const chips=DUR_OPCIONES.map(m=>`<button type="button" class="dur-chip${(!st.fdOtro&&Number(st.fd)===m)?' on':''}" onclick="${fn}(${m})">${etqDuracion(m).replace(' min',' min')}</button>`).join('')
+    +`<button type="button" class="dur-chip${st.fdOtro?' on':''}" onclick="${fn}(0)">Otro…</button>`;
+  const otro=st.fdOtro?`<div class="dur-otro"><input id="${inputId}" class="m-input" inputmode="numeric" maxlength="3" placeholder="Ej. 40" value="${esc(st.fd||'')}" oninput="${fn}Otro(this.value)"/> minutos (de 5 a 480)</div>`:'';
+  return `<label class="m-label dur-lbl">Duración <span class="dur-hint">Tiempo que se reserva en la agenda</span></label>
+          <div class="dur-chips">${chips}</div>${otro}`;
+}
+function durInicial(st,min){
+  const m=Number(min)||30;
+  st.fd=m;st.fdOtro=!DUR_OPCIONES.includes(m);
+}
+function durValida(st){
+  const m=parseInt(st.fd,10);
+  if(!m||m<5||m>480)return null;
+  return m;
+}
+
 const MESES_CORTOS=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
 const mesCorto=(f)=>MESES_CORTOS[parseInt(f.slice(5,7),10)-1];
 const fechaCorta=(f)=>`${f.slice(8,10)}/${f.slice(5,7)}/${f.slice(2,4)}`;
@@ -1311,7 +1402,7 @@ const ICON_GEAR=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
    Sesión gestionada por Supabase (persistente, multi-dispositivo).
    ══════════════════════════════════════════════════════════════ */
 
-let sess=null,user=null,profile=null,pg='agenda',dt=today(),rs=DS,re=DE,ctab=null,cper='hoy',meth='efectivo',cmeth=null,cvermas=false;
+let sess=null,user=null,profile=null,pg='agenda',dt=today(),rsExt=0,reExt=0,ctab=null,cper='hoy',meth='efectivo',cmeth=null,cvermas=false;
 let charts={};
 
 function toast(m,k='info'){
@@ -1430,7 +1521,7 @@ async function draw(){
   let intentos=vieneDePago?6:1;
   let data,error;
   for(let i=0;i<intentos;i++){
-    ({data,error}=await sb.from('profiles').select('plan_status,trial_ends_at,session_token,pais,tipo_cuenta,nombre').eq('id',user.id).single());
+    ({data,error}=await sb.from('profiles').select('plan_status,trial_ends_at,session_token,pais,tipo_cuenta,nombre,horario,asistente').eq('id',user.id).single());
     if(data&&data.plan_status==='active')break;
     if(i<intentos-1)await new Promise(r=>setTimeout(r,1000));
   }
@@ -2160,6 +2251,7 @@ function appScreen(){
     <nav class="sidebar">
       ${navBtn('agenda',ICON_CAL,'Agenda','oklch(0.75 0.13 200)','oklch(0.75 0.13 200 / 0.38)')}
       ${navBtn('caja',ICON_WALLET,'Caja','oklch(0.68 0.18 145)','oklch(0.68 0.18 145 / 0.38)')}
+      ${navBtn('asistente',ICON_BOT,'Asistente','oklch(0.72 0.16 295)','oklch(0.72 0.16 295 / 0.38)')}
       ${navBtn('analiticas',ICON_BAR,'Stats','oklch(0.70 0.15 240)','oklch(0.70 0.15 240 / 0.38)')}
       <div class="nav-spacer"></div>
       <button class="nav-item" onclick="window.open('https://wa.me/34689042653?text=Hola,%20tengo%20una%20duda%20con%20Caja%20digital','_blank')" ontouchend="event.preventDefault();window.open('https://wa.me/34689042653?text=Hola,%20tengo%20una%20duda%20con%20Caja%20digital','_blank')">
@@ -2195,7 +2287,7 @@ function actualizarPistaScrollSidebar(){
   nav.onscroll=revisar;
   window.addEventListener('resize',revisar);
 }
-function goPg(p){pg=p;if(p==='caja'){ctab=null;cmeth=null;cvermas=false;}Object.values(charts).forEach(c=>c.destroy());charts={};appScreen();}
+function goPg(p){pg=p;if(p==='caja'){ctab=null;cmeth=null;cvermas=false;}if(p==='asistente'){_as.vista='lista';_as.form=null;_as.h=null;}Object.values(charts).forEach(c=>c.destroy());charts={};appScreen();}
 async function doOut(){
   if(!confirm('¿Cerrar sesión?'))return;
   if(sessionCheckInterval){clearInterval(sessionCheckInterval);sessionCheckInterval=null;}
@@ -2209,7 +2301,249 @@ async function loadPg(){
   const el=document.getElementById('mc');
   if(pg==='agenda')await pgAgenda(el);
   else if(pg==='caja')await pgCaja(el);
+  else if(pg==='asistente')await pgAsistente(el);
   else await pgAnaliticas(el);
+}
+
+/* ══ ASISTENTE VIRTUAL DE CITAS ══════════════════════════════════
+   Pantalla de configuración (servicios con duración, horario, equipo).
+   La conexión con WhatsApp Business todavía no está disponible. */
+const ICON_BOT=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="11" rx="3"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/><path d="M9.5 16.5h5"/></svg>`;
+const HORAS_OPC=(()=>{const a=[];for(let m=300;m<=1440;m+=30)a.push(minAHHMM(m));return a;})();
+let _as={vista:'lista',form:null,editId:null,fn:'',fp:'',fd:30,fdOtro:false,cd:false,h:null,eqTxt:''};
+
+function asisCfg(){return (profile&&profile.asistente)||{};}
+function asisEsLocal(){return !(profile&&profile.tipo_cuenta==='individual');}
+async function asisGuardarPerfil(campos){
+  const{error}=await sb.from('profiles').update(campos).eq('id',user.id);
+  if(error){toast(traducirError(error.message),'error');return false;}
+  Object.assign(profile,campos);
+  return true;
+}
+async function asisGuardarCfg(parche){
+  return asisGuardarPerfil({asistente:{...asisCfg(),...parche}});
+}
+function asisPasos(){
+  const cfg=asisCfg();
+  const nServ=(_servicios||[]).length;
+  const p=[
+    {id:'servicios',t:'Servicios y duración',s:'Qué ofreces y cuánto dura cada uno',ok:!!cfg.servicios_ok&&nServ>0},
+    {id:'horario',t:'Horario de apertura',s:'Qué días y a qué horas atiendes',ok:!!profile.horario}
+  ];
+  if(asisEsLocal())p.push({id:'equipo',t:'Profesionales',s:'Quién atiende en tu negocio',ok:!!cfg.equipo_ok&&(cfg.equipo||[]).length>0});
+  return p;
+}
+function asisIr(v){_as.vista=v;_as.form=null;_as.cd=false;_as.eqTxt='';loadPg();window.scrollTo(0,0);}
+
+async function pgAsistente(el){
+  if(_servicios===null)await cargarServicios();
+  if(_as.vista==='servicios')return asisVistaServicios(el);
+  if(_as.vista==='horario')return asisVistaHorario(el);
+  if(_as.vista==='equipo')return asisVistaEquipo(el);
+  return asisVistaLista(el);
+}
+
+function asisVistaLista(el){
+  const pasos=asisPasos();
+  const listos=pasos.filter(p=>p.ok).length;
+  const todos=listos===pasos.length;
+  let primero=pasos.findIndex(p=>!p.ok);
+  const filas=pasos.map((p,i)=>{
+    const cls=p.ok?'done':(i===primero?'now':'');
+    return `<button class="asis-step ${cls}" onclick="asisIr('${p.id}')">
+      <span class="n">${p.ok?'✓':i+1}</span>
+      <span class="t"><b>${p.t}</b><small>${p.s}</small></span>
+      <span class="st">${p.ok?'Listo':'Pendiente'}</span>
+    </button>`;
+  }).join('');
+  const n=pasos.length+1;
+  const filaConectar=`<div class="asis-step lock" style="${todos?'opacity:1;border-color:var(--asis)':''}">
+      <span class="n">${n}</span>
+      <span class="t"><b>Conectar WhatsApp Business</b><small>Tu número de siempre, con tu confirmación</small></span>
+      <span class="st">${todos?'Próximamente':'Primero completa los pasos anteriores'}</span>
+    </div>`;
+  const soon=todos?`<div class="asis-soon"><b>¡Todo listo por tu parte!</b><br>Tus servicios, duraciones y horario ya quedan guardados. Estamos terminando la conexión con WhatsApp Business y te avisaremos en cuanto puedas activarla. No tendrás que volver a configurar nada.</div>`:'';
+  el.innerHTML=`<div class="page">
+    <div class="pg-header"><div><div class="pg-tag">Asistente virtual</div><h1 class="pg-title">Asistente de citas</h1></div></div>
+    <div class="asis-intro">Si deseas usar el <b>asistente virtual</b>, necesitas agregar tus <b>servicios y su duración</b>. Así tu asistente podrá agendar citas con tus clientes desde tu <b>WhatsApp Business</b>.</div>
+    <p class="asis-prog">Pasos listos: ${listos} de ${pasos.length}</p>
+    <div class="asis-bar"><i style="width:${Math.round(listos/pasos.length*100)}%"></i></div>
+    ${filas}${filaConectar}${soon}
+  </div>`;
+}
+
+/* ── Paso: servicios y duración ───────────────────────────────── */
+function asisVistaServicios(el){
+  const lista=_servicios||[];
+  let cab=`<button class="asis-back" onclick="asisIr('lista')">‹ Asistente</button>
+    <div class="pg-tag">Paso 1 · Servicios y duración</div>
+    <h1 class="pg-title" style="font-size:1.6rem">Mis servicios</h1>
+    <p class="asis-note">Es la misma lista que usas al cobrar: si cambias algo aquí, cambia también en Caja. La duración reserva ese tiempo en la agenda. Revisa que cada una sea la real.</p>`;
+  let form='';
+  if(_as.form){
+    const edit=_as.form==='edit';
+    form=`<div class="svc-form">
+      <div class="svc-form-t">${edit?'Editar servicio':'Nuevo servicio'}</div>
+      <label class="m-label">Nombre</label>
+      <input id="asv-fn" class="m-input" placeholder="Escribe tu servicio" maxlength="80" value="${esc(_as.fn)}" oninput="_as.fn=this.value"/>
+      <label class="m-label">Precio (${simboloMoneda()})</label>
+      <input id="asv-fp" class="m-input" inputmode="decimal" placeholder="0" value="${esc(_as.fp)}" oninput="formatearInputCO(this);_as.fp=this.value"/>
+      ${durChipsHtml(_as,'asisDur','asv-fd')}
+      <div class="svc-btns">
+        <button class="svc-save" onclick="asisSvGuardar()">${edit?'Guardar cambios':'Guardar servicio'}</button>
+        <button class="svc-cancel" onclick="asisSvCerrar()">Cancelar</button>
+      </div>
+      ${edit?(_as.cd
+        ?`<div class="svc-btns"><button class="svc-cancel" onclick="_as.cd=false;loadPg()">No</button><button class="svc-save svc-del-yes" onclick="asisSvEliminar()">Sí, eliminar</button></div>`
+        :`<button class="svc-del" onclick="_as.cd=true;loadPg()">Eliminar servicio</button>`):''}
+    </div>`;
+  }else{
+    form='<button class="svc-add" onclick="asisSvNuevo()">＋ Servicio</button>';
+  }
+  const filas=lista.map(s=>`
+    <div class="svc-row" style="cursor:default">
+      <span class="svc-n">${esc(s.nombre)}<span class="svc-d">${etqDuracion(s.duracion_min)}</span></span>
+      <span class="svc-p">${eur(s.precio)}</span>
+      <button class="svc-ed" aria-label="Editar ${esc(s.nombre)}" onclick="asisSvEditar('${s.id}')">✎</button>
+    </div>`).join('');
+  const vacio=!lista.length&&!_as.form?'<p class="svc-msg">Aún no tienes servicios. Añade el primero para empezar.</p>':'';
+  el.innerHTML=`<div class="page">${cab}${vacio}${form}
+    ${lista.length?'<div class="svc-lbl">Mis servicios</div>'+filas:''}
+    <div style="height:.75rem"></div>
+    <button class="asis-btn" onclick="asisServiciosOk()" ${lista.length?'':'disabled'}>Todo correcto, continuar</button>
+  </div>`;
+  if(_as.form)setTimeout(()=>document.getElementById('asv-fn')?.focus(),60);
+}
+function asisDur(m){
+  if(m===0){_as.fdOtro=true;}else{_as.fdOtro=false;_as.fd=m;}
+  loadPg().then(()=>{if(_as.fdOtro)document.getElementById('asv-fd')?.focus();});
+}
+function asisDurOtro(v){_as.fd=parseInt(String(v).replace(/\D/g,''),10)||'';}
+function asisSvNuevo(){_as.form='new';_as.editId=null;_as.fn='';_as.fp='';durInicial(_as,30);_as.cd=false;loadPg();}
+function asisSvEditar(id){
+  const s=(_servicios||[]).find(x=>x.id===id);if(!s)return;
+  _as.form='edit';_as.editId=id;_as.fn=s.nombre;_as.fp=valorInputImporte(s.precio);durInicial(_as,s.duracion_min);_as.cd=false;loadPg();
+}
+function asisSvCerrar(){_as.form=null;_as.cd=false;loadPg();}
+async function asisSvGuardar(){
+  const n=(_as.fn||'').trim();
+  if(!n)return toast('Escribe el nombre del servicio','error');
+  const p=parseImporte(_as.fp);
+  if(!p||p<=0)return toast('Escribe el precio','error');
+  const d=durValida(_as);
+  if(!d)return toast('La duración debe estar entre 5 y 480 minutos','error');
+  let error;
+  if(_as.form==='edit'){
+    ({error}=await sb.from('servicios').update({nombre:n,precio:p,duracion_min:d}).eq('id',_as.editId).eq('user_id',user.id));
+  }else{
+    ({error}=await sb.from('servicios').insert({user_id:user.id,nombre:n,precio:p,duracion_min:d}));
+  }
+  if(error)return toast(traducirError(error.message),'error');
+  await cargarServicios();
+  _as.form=null;_as.cd=false;
+  toast('Servicio guardado ✓','success');
+  loadPg();
+}
+async function asisSvEliminar(){
+  const{error}=await sb.from('servicios').delete().eq('id',_as.editId).eq('user_id',user.id);
+  if(error)return toast(traducirError(error.message),'error');
+  await cargarServicios();
+  _as.form=null;_as.cd=false;
+  if(!(_servicios||[]).length)await asisGuardarCfg({servicios_ok:false});
+  loadPg();
+}
+async function asisServiciosOk(){
+  if(!(_servicios||[]).length)return toast('Añade al menos un servicio','error');
+  if(await asisGuardarCfg({servicios_ok:true})){toast('Servicios confirmados ✓','success');asisIr('lista');}
+}
+
+/* ── Paso: horario de apertura ────────────────────────────────── */
+function asisHorarioInicial(){
+  const h={};
+  for(let d=0;d<7;d++){
+    const o=profile.horario&&profile.horario[d];
+    if(profile.horario)h[d]=o&&o.a&&o.c?{a:o.a,c:o.c}:null;
+    else h[d]={a:'09:00',c:'21:00'};
+  }
+  return h;
+}
+function asisVistaHorario(el){
+  if(!_as.h)_as.h=asisHorarioInicial();
+  const opts=(sel)=>HORAS_OPC.map(x=>`<option value="${x}"${x===sel?' selected':''}>${x}</option>`).join('');
+  const filas=ORDEN_SEM.map(d=>{
+    const v=_as.h[d];
+    return `<div class="hor-row">
+      <span class="hor-d">${DIAS_SEM[d]}</span>
+      <button class="hor-sw${v?' on':''}" aria-label="${v?'Abierto':'Cerrado'}: ${DIAS_SEM[d]}" onclick="asisHorTog(${d})"></button>
+      ${v?`<select class="hor-sel" aria-label="Abre ${DIAS_SEM[d]}" onchange="asisHorSet(${d},'a',this.value)">${opts(v.a)}</select>
+           <select class="hor-sel" aria-label="Cierra ${DIAS_SEM[d]}" onchange="asisHorSet(${d},'c',this.value)">${opts(v.c)}</select>`
+        :`<span class="hor-cerr">Cerrado</span>`}
+    </div>`;
+  }).join('');
+  el.innerHTML=`<div class="page">
+    <button class="asis-back" onclick="asisHorSalir()">‹ Asistente</button>
+    <div class="pg-tag">Paso 2 · Horario de apertura</div>
+    <h1 class="pg-title" style="font-size:1.6rem">Horario</h1>
+    <p class="asis-note">Elige a qué hora abres y cierras cada día. El asistente solo ofrecerá huecos dentro de este horario, y tu agenda también lo mostrará así.</p>
+    <div class="asis-card">${filas}</div>
+    <button class="asis-btn alt" onclick="asisHorCopiar()">Copiar el lunes a los demás días</button>
+    <button class="asis-btn" onclick="asisHorGuardar()">Guardar horario</button>
+  </div>`;
+}
+function asisHorSalir(){_as.h=null;asisIr('lista');}
+function asisHorTog(d){
+  _as.h[d]=_as.h[d]?null:{a:'09:00',c:'21:00'};
+  loadPg();
+}
+function asisHorSet(d,k,v){if(_as.h[d])_as.h[d][k]=v;}
+function asisHorCopiar(){
+  const l=_as.h[1];
+  for(let d=0;d<7;d++)_as.h[d]=l?{a:l.a,c:l.c}:null;
+  loadPg();
+}
+async function asisHorGuardar(){
+  const out={};let abiertos=0;
+  for(let d=0;d<7;d++){
+    const v=_as.h[d];
+    if(!v){out[d]=null;continue;}
+    if(hhmmAMin(v.c)<=hhmmAMin(v.a))return toast('En '+DIAS_SEM[d]+' la hora de cierre debe ser posterior a la de apertura','error');
+    out[d]={a:v.a,c:v.c};abiertos++;
+  }
+  if(!abiertos)return toast('Abre al menos un día','error');
+  if(await asisGuardarPerfil({horario:out})){toast('Horario guardado ✓','success');_as.h=null;asisIr('lista');}
+}
+
+/* ── Paso: profesionales (solo negocios con equipo) ───────────── */
+function asisVistaEquipo(el){
+  const eq=asisCfg().equipo||[];
+  const chips=eq.map((n,i)=>`<span class="eq-chip">${esc(n)}<button aria-label="Quitar ${esc(n)}" onclick="asisEqQuitar(${i})">✕</button></span>`).join('');
+  el.innerHTML=`<div class="page">
+    <button class="asis-back" onclick="asisIr('lista')">‹ Asistente</button>
+    <div class="pg-tag">Paso 3 · Profesionales</div>
+    <h1 class="pg-title" style="font-size:1.6rem">Tu equipo</h1>
+    <p class="asis-note">Escribe el nombre de cada persona que atiende, tal como lo usas en la agenda. Así el asistente podrá preguntar al cliente con quién quiere su cita.</p>
+    <div class="asis-card"><h3>Profesionales</h3>${chips||'<p class="svc-msg" style="margin:0">Aún no has añadido a nadie.</p>'}</div>
+    <label class="m-label">Nombre</label>
+    <input id="eq-n" class="m-input" maxlength="40" placeholder="Escribe un nombre" value="${esc(_as.eqTxt)}" oninput="_as.eqTxt=this.value" onkeydown="if(event.key==='Enter'){event.preventDefault();asisEqAnadir()}"/>
+    <button class="asis-btn alt" onclick="asisEqAnadir()">＋ Añadir profesional</button>
+    <button class="asis-btn" onclick="asisEqOk()" ${eq.length?'':'disabled'}>Todo correcto, continuar</button>
+  </div>`;
+}
+async function asisEqAnadir(){
+  const n=(_as.eqTxt||'').trim().replace(/\s+/g,' ');
+  if(!n)return toast('Escribe un nombre','error');
+  const eq=asisCfg().equipo||[];
+  if(eq.some(x=>x.toLowerCase()===n.toLowerCase()))return toast('Ese nombre ya está en la lista','error');
+  if(eq.length>=30)return toast('Máximo 30 profesionales','error');
+  if(await asisGuardarCfg({equipo:[...eq,n]})){_as.eqTxt='';loadPg();}
+}
+async function asisEqQuitar(i){
+  const eq=(asisCfg().equipo||[]).slice();eq.splice(i,1);
+  if(await asisGuardarCfg({equipo:eq,equipo_ok:eq.length?asisCfg().equipo_ok:false}))loadPg();
+}
+async function asisEqOk(){
+  if(!(asisCfg().equipo||[]).length)return toast('Añade al menos un profesional','error');
+  if(await asisGuardarCfg({equipo_ok:true})){toast('Equipo confirmado ✓','success');asisIr('lista');}
 }
 
 /* ── AGENDA ───────────────────────────────────────────────────── */
@@ -2219,7 +2553,11 @@ async function pgAgenda(el){
   const appts=data||[];
   const byT={};appts.forEach(a=>{const k=a.start_time.slice(0,5);(byT[k]=byT[k]||[]).push(a);});
   window._byT=byT;
-  const slots=[];for(let m=rs;m<re;m+=SLOT){const h=String(Math.floor(m/60)).padStart(2,'0'),mn=String(m%60).padStart(2,'0');slots.push(`${h}:${mn}`);}
+  const hd=horarioDia(dt);
+  let desde=(hd?hd.s:DS)-rsExt,hasta=(hd?hd.e:DE)+reExt;
+  appts.forEach(a=>{const m=hhmmAMin(a.start_time);if(m<desde)desde=Math.floor(m/SLOT)*SLOT;if(m+SLOT>hasta)hasta=Math.ceil((m+SLOT)/SLOT)*SLOT;});
+  desde=Math.max(0,desde);hasta=Math.min(24*60,hasta);
+  const slots=[];for(let m=desde;m<hasta;m+=SLOT){const h=String(Math.floor(m/60)).padStart(2,'0'),mn=String(m%60).padStart(2,'0');slots.push(`${h}:${mn}`);}
   const lbl=new Date(dt+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
 
   const slotsHtml=slots.map(t=>{
@@ -2306,7 +2644,8 @@ async function pgAgenda(el){
         <div class="dot" style="background:var(--primary)"></div>Cobrado
       </div>
     </div>
-    <button class="expand-btn" onclick="expUp()">↑ Adelantar horario · desde ${String(Math.floor(rs/60)).padStart(2,'0')}:${String(rs%60).padStart(2,'0')}</button>
+    ${hd===null?'<div class="agenda-cerrado">Según tu horario, este día tu negocio está cerrado. Puedes añadir citas igualmente.</div>':''}
+    <button class="expand-btn" onclick="expUp()">↑ Adelantar horario · desde ${minAHHMM(desde)}</button>
     ${slotsHtml}
     <button class="expand-btn" onclick="expDown()">↓ Ampliar horario</button>
   </div><div id="mr"></div>`;
@@ -2319,8 +2658,8 @@ function abrirSelectorFecha(){
   inp.focus();
   inp.click();
 }
-function expUp(){rs=Math.max(0,rs-SLOT);loadPg();}
-function expDown(){re=Math.min(24*60,re+SLOT);loadPg();}
+function expUp(){rsExt+=SLOT;loadPg();}
+function expDown(){reExt+=SLOT;loadPg();}
 
 function toggleAnonimo(){
   const campo=document.getElementById('nc');
@@ -2431,7 +2770,7 @@ let _servicios=null; /* null = aún sin cargar */
 let _pi=null;        /* estado del cobro individual abierto */
 async function cargarServicios(){
   try{
-    const{data,error}=await sb.from('servicios').select('id,nombre,precio,usado_en').eq('user_id',user.id).order('usado_en',{ascending:false});
+    const{data,error}=await sb.from('servicios').select('id,nombre,precio,usado_en,duracion_min').eq('user_id',user.id).order('usado_en',{ascending:false});
     if(error)throw error;
     _servicios=data||[];
   }catch(e){
@@ -2445,7 +2784,7 @@ function valorInputImporte(n){
 }
 function openPayInd(id,t,a){
   meth='efectivo';
-  _pi={id,t,a,step:1,form:null,editId:null,fn:'',fp:'',cd:false,svc:null};
+  _pi={id,t,a,step:1,form:null,editId:null,fn:'',fp:'',fd:30,fdOtro:false,cd:false,svc:null};
   renderPayInd();
   if(_servicios===null){
     cargarServicios().then(()=>{if(_pi&&_pi.id===id)renderPayInd();});
@@ -2504,6 +2843,7 @@ function renderPayInd(){
           <input id="svc-fn" class="m-input" placeholder="Escribe tu servicio" maxlength="80" value="${esc(_pi.fn)}" oninput="_pi.fn=this.value"/>
           <label class="m-label">Precio (${simboloMoneda()})</label>
           <input id="svc-fp" class="m-input" inputmode="decimal" placeholder="0" value="${esc(_pi.fp)}" oninput="formatearInputCO(this);_pi.fp=this.value"/>
+          ${durChipsHtml(_pi,'piDur','svc-fd')}
           <div class="svc-btns">
             <button class="svc-save" onclick="payIndGuardar()">${edit?'Guardar cambios':'Guardar servicio'}</button>
             <button class="svc-cancel" onclick="payIndCerrarForm()">Cancelar</button>
@@ -2519,7 +2859,7 @@ function renderPayInd(){
         cuerpo+='<div class="svc-lbl">Mis servicios · toca uno para cobrar</div>';
         cuerpo+=lista.map(s=>`
         <div class="svc-row" onclick="payIndElegir('${s.id}')">
-          <span class="svc-n">${esc(s.nombre)}</span>
+          <span class="svc-n">${esc(s.nombre)}<span class="svc-d">${etqDuracion(s.duracion_min)}</span></span>
           <span class="svc-p">${eur(s.precio)}</span>
           <button class="svc-ed" aria-label="Editar ${esc(s.nombre)}" onclick="event.stopPropagation();payIndEditar('${s.id}')">✎</button>
         </div>`).join('');
@@ -2538,10 +2878,12 @@ function renderPayInd(){
   document.getElementById('mr').innerHTML=html;
   if(_pi.step===1&&_pi.form)setTimeout(()=>document.getElementById('svc-fn')?.focus(),60);
 }
-function payIndNuevo(){_pi.form='new';_pi.editId=null;_pi.fn='';_pi.fp='';_pi.cd=false;renderPayInd();}
+function payIndNuevo(){_pi.form='new';_pi.editId=null;_pi.fn='';_pi.fp='';durInicial(_pi,30);_pi.cd=false;renderPayInd();}
+function piDur(m){if(m===0){_pi.fdOtro=true;}else{_pi.fdOtro=false;_pi.fd=m;}renderPayInd();if(_pi.fdOtro)setTimeout(()=>document.getElementById('svc-fd')?.focus(),60);}
+function piDurOtro(v){_pi.fd=parseInt(String(v).replace(/\D/g,''),10)||'';}
 function payIndEditar(sid){
   const s=(_servicios||[]).find(x=>x.id===sid);if(!s)return;
-  _pi.form='edit';_pi.editId=sid;_pi.fn=s.nombre;_pi.fp=valorInputImporte(s.precio);_pi.cd=false;renderPayInd();
+  _pi.form='edit';_pi.editId=sid;_pi.fn=s.nombre;_pi.fp=valorInputImporte(s.precio);durInicial(_pi,s.duracion_min);_pi.cd=false;renderPayInd();
 }
 function payIndCerrarForm(){_pi.form=null;_pi.cd=false;renderPayInd();}
 async function payIndGuardar(){
@@ -2549,11 +2891,13 @@ async function payIndGuardar(){
   if(!n)return toast('Escribe el nombre del servicio','error');
   const p=parseImporte(_pi.fp);
   if(!p||p<=0)return toast('Escribe el precio','error');
+  const d=durValida(_pi);
+  if(!d)return toast('La duración debe estar entre 5 y 480 minutos','error');
   let error;
   if(_pi.form==='edit'){
-    ({error}=await sb.from('servicios').update({nombre:n,precio:p}).eq('id',_pi.editId).eq('user_id',user.id));
+    ({error}=await sb.from('servicios').update({nombre:n,precio:p,duracion_min:d}).eq('id',_pi.editId).eq('user_id',user.id));
   }else{
-    ({error}=await sb.from('servicios').insert({user_id:user.id,nombre:n,precio:p}));
+    ({error}=await sb.from('servicios').insert({user_id:user.id,nombre:n,precio:p,duracion_min:d}));
   }
   if(error)return toast(traducirError(error.message),'error');
   await cargarServicios();
