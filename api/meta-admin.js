@@ -25,7 +25,28 @@ module.exports = async (req, res) => {
   const version = process.env.META_GRAPH_VERSION || 'v23.0';
   const base = `https://graph.facebook.com/${version}/${WABA_ID}/subscribed_apps`;
   const cabeceras = { Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}` };
+  const APP_ID = '2038331963539603';
+  const appToken = `${APP_ID}|${process.env.META_APP_SECRET}`;
   try {
+    if (q.action === 'appsubs' || q.action === 'appsubscribe') {
+      const url = `https://graph.facebook.com/${version}/${APP_ID}/subscriptions`;
+      let r2;
+      if (q.action === 'appsubs') {
+        r2 = await fetch(`${url}?access_token=${encodeURIComponent(appToken)}`);
+      } else {
+        const body = new URLSearchParams({
+          object: 'whatsapp_business_account',
+          callback_url: 'https://barberia-tpv.vercel.app/api/meta-webhook',
+          verify_token: process.env.META_VERIFY_TOKEN,
+          fields: 'messages',
+          access_token: appToken
+        });
+        r2 = await fetch(url, { method: 'POST', body });
+      }
+      const t2 = await r2.text();
+      res.status(200).json({ accion: q.action, http: r2.status, meta: JSON.parse(t2) });
+      return;
+    }
     let r;
     if (q.action === 'subscribe') r = await fetch(base, { method: 'POST', headers: cabeceras });
     else r = await fetch(base, { headers: cabeceras });
