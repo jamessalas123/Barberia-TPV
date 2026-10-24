@@ -33,12 +33,12 @@ r = p('reservar 1 01/05 10:00 luisa', {});
 ok(!r.accion && /antelación/.test(r.respuesta), 'demasiado lejos', r.respuesta);
 r = p('huecos 9 hoy');
 ok(/No reconozco el servicio/.test(r.respuesta), 'servicio inexistente');
-r = p('huecos 1 domingo');
+r = p('huecos 1 pepito');
 ok(/No reconozco/.test(r.respuesta), 'palabra desconocida');
 r = p('huecos masaje 26/10'); // domingo cerrado (2026-10-25 es domingo; 26 lunes)
 ok(/Masaje corporal/.test(r.respuesta) && /09:00/.test(r.respuesta), 'busca servicio por nombre');
 r = p('huecos 1 mañana'); // domingo cerrado
-ok(/sin huecos/.test(r.respuesta), 'día cerrado sin huecos', r.respuesta);
+ok(/cerrados/.test(r.respuesta), 'día cerrado', r.respuesta);
 const mias = [{ id: 'a1b2c3d4-0000', appointment_date: '2026-10-26', start_time: '10:00:00', service: 'Depilación', barbero: 'Luisa', status: 'scheduled' }];
 ok(/CANCELAR a1b2/.test(p('mis citas', { citasCliente: mias }).respuesta), 'mis citas con código');
 r = p('cancelar a1b2', { citasCliente: mias });
@@ -50,4 +50,13 @@ ok(/persona/i.test(p('persona').respuesta), 'persona');
 const ind = { ...negocio, equipo: [] };
 r = p('reservar 2 hoy 11:00', { negocio: ind });
 ok(r.accion && r.accion.cita.barbero === null, 'individual: sin profesional');
+r = p('Reserva 1 lunes a las 10:30 marta');
+ok(r.accion && r.accion.cita.appointment_date === '2026-10-26' && r.accion.cita.barbero === 'Marta', 'lenguaje natural: reserva 1 lunes a las 10:30', JSON.stringify(r));
+r = p('Quiero reservar la 2 para mañana a las 10:30');
+ok(/cerrados/.test(r.respuesta), 'mañana domingo cerrado', r.respuesta);
+r = p('reservar 1 el lunes a las 10:30 con luisa');
+ok(r.accion && r.accion.cita.barbero === 'Luisa', 'con luisa', JSON.stringify(r));
+ok(parseFecha('lunes', hoy) === '2026-10-26' && parseFecha('sábado', hoy) === '2026-10-31', 'días de la semana');
+r = p('Hueco 1 lunes');
+ok(/Luisa:/.test(r.respuesta), 'alias hueco', r.respuesta);
 process.exit(fallos);

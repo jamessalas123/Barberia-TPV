@@ -7,7 +7,7 @@
  *           MIS CITAS · CANCELAR <código> · PERSONA · (cualquier otra cosa → ayuda)
  * Fechas: hoy, mañana, dd/mm, dd/mm/aaaa. Todas las horas en hora de Madrid.
  */
-const { huecosLibres, SLOT } = require('./_huecos.js');
+const { huecosLibres, horarioDia, SLOT } = require('./_huecos.js');
 
 const MAX_DIAS = 60;
 const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
@@ -23,9 +23,18 @@ function ahoraMadrid(fecha = new Date()) {
   return { fecha: `${p.year}-${p.month}-${p.day}`, min: (+p.hour) * 60 + (+p.minute) };
 }
 
+const DIAS = { domingo: 0, lunes: 1, martes: 2, miercoles: 3, jueves: 4, viernes: 5, sabado: 6 };
+const RELLENO = new Set(['a', 'las', 'la', 'el', 'para', 'de', 'del', 'por', 'favor', 'quiero', 'quisiera', 'me', 'una', 'un', 'cita', 'hora', 'dia', 'en', 'con', 'h', 'reservar', 'reserva']);
+const CMD_ALIAS = { reserva: 'reservar', reservo: 'reservar', quiero: 'reservar', hueco: 'huecos', disponibilidad: 'huecos', libre: 'huecos', libres: 'huecos', servicio: 'servicios', precios: 'servicios', cancela: 'cancelar', anular: 'cancelar', anula: 'cancelar' };
+
 function parseFecha(tok, hoy) {
   const t = norm(tok);
   if (t === 'hoy') return hoy;
+  if (t in DIAS) {
+    const dow = new Date(hoy + 'T12:00:00Z').getUTCDay();
+    let n = (DIAS[t] - dow + 7) % 7; if (n === 0) n = 7;
+    return sumaDias(hoy, n);
+  }
   if (t === 'manana') return sumaDias(hoy, 1);
   const m = t.match(/^(\d{1,2})[\/\-.](\d{1,2})(?:[\/\-.](\d{2,4}))?$/);
   if (!m) return null;
@@ -62,9 +71,10 @@ function procesar({ texto, telefono, nombre, ahora, negocio, citasDia, citasClie
   const nom = negocio.nombre || 'el negocio';
   const servicios = (negocio.servicios || []);
   const equipo = equipoDe(negocio);
-  const tokens = String(texto || '').trim().split(/\s+/).filter(Boolean);
-  const cmd = norm(tokens[0]);
-  const args = tokens.slice(1);
+  const tokens = String(texto || '').trim().replace(/[¿?¡!,]/g, ' ').split(/\s+/).filter(Boolean);
+  let cmd = norm(tokens[0]);
+  cmd = CMD_ALIAS[cmd] || cmd;
+  const args = tokens.slice(1).filter(t => !RELLENO.has(norm(t)));
   const hoy = ahora.fecha;
 
   if (cmd === 'persona') return { respuesta: `De momento no puedo avisar a una persona desde aquí. Contacta directamente con ${nom}. Gracias por tu paciencia 🙏` };
@@ -112,6 +122,7 @@ function procesar({ texto, telefono, nombre, ahora, negocio, citasDia, citasClie
     const dur = serv.duracion_min || 30;
     const citas = citasDia(fecha);
     const pros = equipo.length ? (prof ? [prof] : equipo) : [null];
+    if (horarioDia(negocio.horario, fecha) === null) return { respuesta: `${bonita(fecha)} estamos cerrados. Prueba con otro día 🙂` };
     const calc = (p) => huecosLibres({ fecha, duracion: dur, horario: negocio.horario, citas, profesional: p, ahora });
 
     if (!reservar) {
