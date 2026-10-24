@@ -2859,7 +2859,7 @@ async function pgAgenda(el){
         <div class="slot-body">
           <div class="dz-lbl">✓ Cobrado</div>
           <div class="slot-name">${esc(a.client_name)}${a.barbero?' <span class="slot-barbero">· '+esc(a.barbero)+'</span>':''}</div>
-          <div class="slot-paid-info">✓ ${eur(a.price)} · ${etqMetodo(a.payment_method)}</div>
+          <div class="slot-paid-info">✓ ${etqMetodo(a.payment_method)}</div>
         </div>
         <div class="slot-actions">
           <div class="check-icon">${ICON_CHECK}</div>
@@ -2918,7 +2918,6 @@ async function pgAgenda(el){
         <input type="date" id="agendar-input-real" class="agendar-input" value="${dt}" onchange="chDate(this.value)" aria-label="Seleccionar fecha"/>
       </div>
     </div>
-    <div class="dz-total"><small>${dt===today()?'COBRADO HOY':'COBRADO ESE DÍA'}</small><b>${eur(totCob)}</b></div>
     <div class="legend">
       <div class="leg">
         <div class="dot" style="background:oklch(0.36 0.04 255 / 0.35);border:1.5px solid oklch(0.36 0.04 255 / 0.55)"></div>Libre · ${nLibre}
@@ -3002,7 +3001,7 @@ function openSlotList(t){
         ${a.barbero?`<div class="slotlist-barbero">Atiende: ${esc(a.barbero)}</div>`:''}
       </div>
       ${done
-        ?`<div class="slotlist-paid">✓ ${eur(a.price)}<span class="slotlist-metodo"> · ${etqMetodo(a.payment_method)}</span></div>`
+        ?`<div class="slotlist-paid">✓ Cobrado<span class="slotlist-metodo"> · ${etqMetodo(a.payment_method)}</span></div>`
         :`<button class="btn-cobrar" style="padding:.5rem .9rem;font-size:.72rem" onclick="openPay('${a.id}','${t}')">COBRAR</button>`}
       <button class="btn-del-slot" onclick="delAppt('${a.id}')" aria-label="Eliminar">${ICON_TRASH}</button>
     </div>`;
