@@ -8,6 +8,7 @@
  * Fechas: hoy, mañana, dd/mm, dd/mm/aaaa. Todas las horas en hora de Madrid.
  */
 const { huecosLibres, horarioDia, SLOT } = require('./_huecos.js');
+const { conversar } = require('./_conversar.js');
 
 const MAX_DIAS = 60;
 const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
@@ -25,7 +26,7 @@ function ahoraMadrid(fecha = new Date()) {
 
 const DIAS = { domingo: 0, lunes: 1, martes: 2, miercoles: 3, jueves: 4, viernes: 5, sabado: 6 };
 const RELLENO = new Set(['a', 'las', 'la', 'el', 'para', 'de', 'del', 'por', 'favor', 'quiero', 'quisiera', 'me', 'una', 'un', 'cita', 'hora', 'dia', 'en', 'con', 'h', 'reservar', 'reserva']);
-const CMD_ALIAS = { reserva: 'reservar', reservo: 'reservar', quiero: 'reservar', hueco: 'huecos', disponibilidad: 'huecos', libre: 'huecos', libres: 'huecos', servicio: 'servicios', precios: 'servicios', cancela: 'cancelar', anular: 'cancelar', anula: 'cancelar' };
+const CMD_ALIAS = { reserva: 'reservar', reservo: 'reservar', hueco: 'huecos', disponibilidad: 'huecos', libre: 'huecos', libres: 'huecos', servicio: 'servicios', precios: 'servicios', cancela: 'cancelar', anular: 'cancelar', anula: 'cancelar' };
 
 function parseFecha(tok, hoy) {
   const t = norm(tok);
@@ -67,7 +68,7 @@ function equipoDe(negocio) { return Array.isArray(negocio.equipo) ? negocio.equi
  *  citasCliente    -> [{id,appointment_date,start_time,service,barbero,status}] próximas del cliente
  * @returns {{respuesta:string, accion?:object}}
  */
-function procesar({ texto, telefono, nombre, ahora, negocio, citasDia, citasCliente = [] }) {
+function procesar({ texto, telefono, nombre, ahora, negocio, citasDia, citasCliente = [], estado = null }) {
   const nom = negocio.nombre || 'el negocio';
   const servicios = (negocio.servicios || []);
   const equipo = equipoDe(negocio);
@@ -90,7 +91,7 @@ function procesar({ texto, telefono, nombre, ahora, negocio, citasDia, citasClie
     return { respuesta: 'Tus citas:\n' + prox.map(c => `• ${bonita(c.appointment_date)} ${c.start_time.slice(0, 5)}${c.service ? ' · ' + c.service : ''}${c.barbero ? ' · ' + c.barbero : ''} (cancelar: CANCELAR ${c.id.slice(0, 4)})`).join('\n') };
   }
 
-  if (cmd === 'cancelar') {
+  if (cmd === 'cancelar' && args[0] && norm(args[0]).length >= 4 && /^[0-9a-f]+$/.test(norm(args[0]))) {
     const cod = norm(args[0]);
     if (!cod || cod.length < 4) return { respuesta: 'Dime el código de la cita, por ejemplo: CANCELAR a1b2. Lo ves escribiendo MIS CITAS.' };
     const c = citasCliente.filter(x => x.status === 'scheduled' && x.id.toLowerCase().startsWith(cod));
@@ -142,7 +143,7 @@ function procesar({ texto, telefono, nombre, ahora, negocio, citasDia, citasClie
     };
   }
 
-  return { respuesta: AYUDA(nom) };
+  return conversar({ texto, estado, ctx: { ahora, negocio, citasDia, citasCliente, nombreCliente: nombre, telefono } });
 }
 
 module.exports = { procesar, ahoraMadrid, parseFecha, buscarServicio, SLOT };

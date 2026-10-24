@@ -16,7 +16,7 @@ function q(t) {
     order() { return o; }, maybeSingle() { single = true; return o; },
     then(res, rej) {
       const m = DB[t].filter(r => f.every(x => x(r)));
-      if (op === 'i') { DB[t].push({ id: 'id' + (idn++) + '-0000', ...pay }); return Promise.resolve({ error: null }).then(res, rej); }
+      if (op === 'i') { DB[t].push({ id: 'ab0' + (idn++) + '-0000', ...pay }); return Promise.resolve({ error: null }).then(res, rej); }
       if (op === 'up') { const k = DB[t].findIndex(r => r.phone_number_id === pay.phone_number_id && r.cliente === pay.cliente); if (k >= 0) DB[t][k] = pay; else DB[t].push(pay); return Promise.resolve({ error: null }).then(res, rej); }
       if (op === 'u') { m.forEach(r => Object.assign(r, pay)); return Promise.resolve({ error: null }).then(res, rej); }
       return Promise.resolve({ data: single ? (m[0] || null) : m, error: null }).then(res, rej);
@@ -52,6 +52,17 @@ const msg = (t, from = '34600111222') => ({ from, id: 'm' + Math.random(), text:
   ok(/Reservado/.test(r) && DB.appointments.length === 2, 'el hueco cancelado vuelve a estar libre', r);
   r = await atender('OTRO', msg('hola'), 'X');
   ok(r === null, 'número desconocido: no responde');
+  /* ── Conversación por reglas con memoria de estado ── */
+  DB.appointments.length = 0; DB.asistente_conversaciones.length = 0;
+  r = await atender('PN1', msg('quiero una cita el lunes por la tarde'), 'Pepe');
+  ok(/Horas libres/.test(r) && /Luisa: 15:00/.test(r), 'reglas: un solo servicio, ofrece la tarde del lunes', r);
+  r = await atender('PN1', msg('a las 5'), 'Pepe');
+  ok(/¿Te reservo/.test(r) && DB.appointments.length === 0, 'reglas: pide confirmación sin reservar aún', r);
+  r = await atender('PN1', msg('sí'), 'Pepe');
+  ok(/Reservado/.test(r) && DB.appointments.length === 1 && DB.appointments[0].barbero === 'Luisa' && DB.appointments[0].start_time === '17:00:00', 'reglas: tras el sí reserva', r + JSON.stringify(DB.appointments));
+  r = await atender('PN1', msg('sí'), 'Pepe');
+  ok(DB.appointments.length === 1, 'un segundo sí no duplica la cita', r);
+  DB.asistente_conversaciones.forEach(c => c.updated_at = new Date(Date.now() - 40 * 60 * 1000).toISOString());
   /* ── Modo agente (IA simulada) ── */
   const { crearLLMSimulado } = require('../api/_llm.js');
   DB.appointments.length = 0;

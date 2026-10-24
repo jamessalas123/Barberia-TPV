@@ -69,7 +69,12 @@ async function atender(phoneNumberId, m, nombreCliente, opts = {}) {
     } catch (e) { console.error('[meta-webhook] agente falló, uso comandos:', e && e.message); }
   }
 
-  const r = procesar({ texto, telefono: m.from, nombre: nombreCliente, ahora, negocio, citasDia: f => porDia[f] || [], citasCliente: mias || [] });
+  /* Modo comandos + conversación por reglas: el estado (datos a medio rellenar) se guarda 30 min */
+  const { data: conv } = await db.from('asistente_conversaciones').select('mensajes,updated_at').eq('phone_number_id', phoneNumberId).eq('cliente', m.from).maybeSingle();
+  const reciente = conv && conv.updated_at && (Date.now() - new Date(conv.updated_at).getTime()) < 30 * 60 * 1000;
+  const estado = reciente && conv.mensajes && !Array.isArray(conv.mensajes) ? conv.mensajes.estado || null : null;
+  const r = procesar({ texto, telefono: m.from, nombre: nombreCliente, ahora, negocio, citasDia: f => porDia[f] || [], citasCliente: mias || [], estado });
+  await db.from('asistente_conversaciones').upsert({ phone_number_id: phoneNumberId, cliente: m.from, mensajes: { estado: r.estado || null }, updated_at: new Date().toISOString() });
   if (r.accion && r.accion.tipo === 'crear') {
     const res = await crearCita(r.accion.cita);
     if (!res.ok) return res.motivo === 'no se pudo guardar' ? 'No he podido guardar la cita. Inténtalo de nuevo en unos minutos.' : 'Justo se acaba de ocupar ese hueco 😕 Escribe HUECOS para ver las horas libres.';
@@ -173,7 +178,11 @@ module.exports = Object.assign(async (req, res) => {
         const phoneNumberId = v.metadata && v.metadata.phone_number_id;
         console.log('[meta-webhook] cambio campo=' + cambio.field + ' mensajes=' + (v.messages || []).length + ' estados=' + (v.statuses || []).length);
         for (const m of v.messages || []) {
-          if (m.type !== 'text' || !phoneNumberId) continue;
+          if (!phoneNumberId) continue;
+          if (m.type !== 'text') {
+            if (['audio', 'voice', 'image', 'video', 'document', 'sticker'].includes(m.type)) await enviarTexto(phoneNumberId, m.from, 'Por ahora solo entiendo mensajes de texto 🙂 ¿Me lo puedes escribir?');
+            continue;
+          }
           if (vistos.has(m.id)) continue;
           vistos.add(m.id); if (vistos.size > 500) vistos.clear();
           const nombreCliente = ((v.contacts || [])[0] || {}).profile && v.contacts[0].profile.name;
