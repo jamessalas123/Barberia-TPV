@@ -145,4 +145,4 @@ function procesar({ texto, telefono, nombre, ahora, negocio, citasDia, citasClie
   return { respuesta: AYUDA(nom) };
 }
 
-module.exports = { procesar, ahoraMadrid, parseFecha, SLOT };
+module.exports = { procesar, ahoraMadrid, parseFecha, buscarServicio, SLOT };
