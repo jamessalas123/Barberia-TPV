@@ -1570,7 +1570,7 @@ const ICON_GEAR=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
    Sesión gestionada por Supabase (persistente, multi-dispositivo).
    ══════════════════════════════════════════════════════════════ */
 
-let sess=null,user=null,profile=null,pg='agenda',dt=today(),rsExt=0,reExt=0,ctab=null,cper='hoy',meth='efectivo',cmeth=null,cvermas=false;
+let sess=null,user=null,profile=null,pg='agenda',dt=(()=>{try{const v=sessionStorage.getItem('agenda_dt');if(/^\d{4}-\d{2}-\d{2}$/.test(v||''))return v;}catch(e){}return today();})(),rsExt=0,reExt=0,ctab=null,cper='hoy',meth='efectivo',cmeth=null,cvermas=false;
 let charts={};
 
 function toast(m,k='info'){
@@ -2839,7 +2839,7 @@ async function pgAgenda(el){
   </div><div id="mr"></div>`;
 }
 
-function chDate(v){dt=v;loadPg();}
+function chDate(v){dt=v;try{sessionStorage.setItem('agenda_dt',v);}catch(e){}loadPg();}
 function abrirSelectorFecha(){
   const inp=document.getElementById('agendar-input-real');
   if(!inp)return;
