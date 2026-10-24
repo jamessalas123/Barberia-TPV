@@ -1733,6 +1733,7 @@ async function draw(){
   if(!sessionCheckInterval){
     sessionCheckInterval=setInterval(verificarSesionUnica,45000);
   }
+  iniciarAgendaAuto();
 
   const trialVencido=profile.plan_status==='trial'&&profile.trial_ends_at&&new Date(profile.trial_ends_at)<new Date();
   const bloqueado=profile.plan_status==='cancelled'||profile.plan_status==='past_due'||trialVencido;
@@ -2704,10 +2705,34 @@ async function asisEqOk(){
 }
 
 /* ── AGENDA ───────────────────────────────────────────────────── */
+/* Refresco automático: si una cita cambia desde fuera (p. ej. el asistente de WhatsApp reserva o cancela),
+   la agenda abierta se actualiza sola. Solo repinta si algo cambió y no hay ventana ni campo en uso. */
+const agSig=(rows)=>JSON.stringify((rows||[]).map(a=>[a.id,a.status,a.start_time,a.client_name,a.barbero,a.price]));
+let agendaAutoTimer=null,agendaAutoBusy=false;
+async function agendaAutoCheck(){
+  if(agendaAutoBusy||pg!=='agenda'||document.visibilityState!=='visible'||!user)return;
+  const mr=document.getElementById('mr');
+  if(mr&&mr.innerHTML.trim())return;
+  const ae=document.activeElement;
+  if(ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)&&ae.id!=='agendar-input-real')return;
+  agendaAutoBusy=true;
+  try{
+    const fecha=dt;
+    const{data,error}=await sb.from('appointments').select('id,status,start_time,client_name,barbero,price').eq('appointment_date',fecha).neq('status','cancelled').eq('user_id',user.id).order('start_time');
+    if(!error&&pg==='agenda'&&fecha===dt&&window._agSig&&agSig(data)!==window._agSig){await loadPg();}
+  }catch(e){}
+  agendaAutoBusy=false;
+}
+function iniciarAgendaAuto(){
+  if(agendaAutoTimer)return;
+  agendaAutoTimer=setInterval(agendaAutoCheck,8000);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')agendaAutoCheck();});
+}
 async function pgAgenda(el){
   const esIndividual=profile&&profile.tipo_cuenta==='individual';
   const{data}=await sb.from('appointments').select('*').eq('appointment_date',dt).neq('status','cancelled').eq('user_id',user.id).order('start_time');
   const appts=data||[];
+  window._agSig=agSig(appts);
   const byT={};appts.forEach(a=>{const k=a.start_time.slice(0,5);(byT[k]=byT[k]||[]).push(a);});
   window._byT=byT;
   const hd=horarioDia(dt);
