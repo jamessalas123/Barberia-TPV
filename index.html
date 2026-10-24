@@ -2706,7 +2706,7 @@ async function asisEqOk(){
 /* ── AGENDA ───────────────────────────────────────────────────── */
 async function pgAgenda(el){
   const esIndividual=profile&&profile.tipo_cuenta==='individual';
-  const{data}=await sb.from('appointments').select('*').eq('appointment_date',dt).eq('user_id',user.id).order('start_time');
+  const{data}=await sb.from('appointments').select('*').eq('appointment_date',dt).neq('status','cancelled').eq('user_id',user.id).order('start_time');
   const appts=data||[];
   const byT={};appts.forEach(a=>{const k=a.start_time.slice(0,5);(byT[k]=byT[k]||[]).push(a);});
   window._byT=byT;
