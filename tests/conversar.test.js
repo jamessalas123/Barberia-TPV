@@ -88,4 +88,29 @@ ok(/persona/.test(r.respuesta) && !r.accion, 'persona');
 // comandos antiguos siguen funcionando
 r = chat()('reservar 1 lunes 16:00 pedro');
 ok(r.accion && r.accion.tipo === 'crear', 'comando antiguo directo sigue funcionando', r.respuesta);
+// ── Casos reales de la prueba de James (24-oct) ──
+const neg3 = { ...negocio, servicios: [{ nombre: 'depilacion', precio: 50, duracion_min: 45 }, { nombre: 'Corte de cabello', precio: 20, duracion_min: 60 }, { nombre: 'masaje corporal', precio: 20, duracion_min: 60 }] };
+const ahora2 = { fecha: hoy, min: 10 * 60 + 20 };
+function chat2() { let estado = null; return (texto) => { const r = procesar({ texto, telefono: '34600111222', nombre: 'Pepe', ahora: ahora2, negocio: neg3, citasDia: f => citasMap[f] || [], citasCliente: [], estado }); estado = r.estado; return r; }; }
+c = chat2();
+r = c('Reservar');
+ok(/¿Qué servicio quieres\?/.test(r.respuesta), 'real: "Reservar" a secas pregunta el servicio', r.respuesta);
+c = chat2();
+r = c('Hola tienes cita para hoy');
+ok(/¿Qué servicio quieres\?/.test(r.respuesta), 'real: "tienes cita para hoy"', r.respuesta);
+r = c('Corte de cabello');
+ok(/Horas libres/.test(r.respuesta) && /Luisa: 10:30/.test(r.respuesta) && /Pedro: 10:30/.test(r.respuesta), 'real: tras el servicio enseña las horas de hoy', r.respuesta);
+r = c('Con Luisa 11:00');
+ok(/¿Te reservo Corte de cabello/.test(r.respuesta) && /11:00/.test(r.respuesta) && /con Luisa/.test(r.respuesta), 'real: "Con Luisa 11:00" → confirma', r.respuesta);
+r = c('sí');
+ok(r.accion && r.accion.cita.start_time === '11:00:00' && r.accion.cita.barbero === 'Luisa' && r.accion.cita.appointment_date === hoy, 'real: reserva hoy 11:00 con Luisa', JSON.stringify(r));
+c = chat2();
+c('quiero cita hoy corte de cabello');
+r = c('11:00');
+ok(/a las 11:00/i.test(r.respuesta) && /¿Con quién|puedo con Luisa o Pedro/.test(r.respuesta), 'real: "11:00" solo → pregunta con quién', r.respuesta);
+r = c('con Pedro');
+ok(/¿Te reservo/.test(r.respuesta) && /Pedro/.test(r.respuesta), 'real: "con Pedro" → confirma', r.respuesta);
+ok(extraerHora('el lunes a las 10:30 con luisa') === '10:30', 'hora 10:30 tras "a las"');
+r = chat2()('reservar corte de cabello mañana');
+ok(/cerrados/.test(r.respuesta), 'real: "reservar corte de cabello mañana" (domingo cerrado)', r.respuesta);
 process.exit(fallos);

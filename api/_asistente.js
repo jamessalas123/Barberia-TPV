@@ -103,7 +103,7 @@ function procesar({ texto, telefono, nombre, ahora, negocio, citasDia, citasClie
     const reservar = cmd === 'reservar';
     if (!servicios.length) return { respuesta: 'Aún no hay servicios configurados.' };
     const serv = buscarServicio(servicios, args[0]);
-    if (!serv) return { respuesta: `No reconozco el servicio. Escribe SERVICIOS para ver la lista y usa su número, por ejemplo: ${reservar ? 'RESERVAR 1 mañana 10:30' : 'HUECOS 1 mañana'}.` };
+    if (!serv) return conversar({ texto, estado, ctx: { ahora, negocio, citasDia, citasCliente, nombreCliente: nombre, telefono } });
     const resto = args.slice(1);
     let fecha = hoy, hora = null, prof = null;
     const sobrantes = [];
@@ -112,11 +112,12 @@ function procesar({ texto, telefono, nombre, ahora, negocio, citasDia, citasClie
       else if (parseFecha(t, hoy)) fecha = parseFecha(t, hoy);
       else sobrantes.push(t);
     }
-    if (reservar && !hora) return { respuesta: 'Indica la hora, por ejemplo: RESERVAR 1 mañana 10:30. Mira las horas con HUECOS.' };
+    const NL = () => conversar({ texto: (reservar ? 'quiero reservar ' : 'horas libres ') + serv.nombre + ' ' + resto.join(' '), estado, ctx: { ahora, negocio, citasDia, citasCliente, nombreCliente: nombre, telefono } });
+    if (reservar && !hora) return NL();
     if (sobrantes.length) {
       const q = norm(sobrantes.join(' '));
       prof = equipo.find(p => norm(p).startsWith(q)) || null;
-      if (!prof) return { respuesta: `No reconozco "${sobrantes.join(' ')}". ${equipo.length ? 'Profesionales: ' + equipo.join(', ') + '.' : ''}` };
+      if (!prof) return NL();
     }
     if (fecha < hoy) return { respuesta: 'Esa fecha ya pasó. Prueba con hoy, mañana o una fecha como 25/10.' };
     if (fecha > sumaDias(hoy, MAX_DIAS)) return { respuesta: `Solo se puede reservar con hasta ${MAX_DIAS} días de antelación.` };

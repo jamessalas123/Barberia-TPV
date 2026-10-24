@@ -24,7 +24,7 @@ ok(!r.accion && /no está libre/.test(r.respuesta), 'no reserva hueco ocupado');
 r = p('reservar 1 hoy 10:30');
 ok(!r.accion && /¿Con quién\?/.test(r.respuesta), 'pide profesional si hay varios');
 r = p('reservar 1 hoy');
-ok(!r.accion && /hora/.test(r.respuesta), 'pide la hora');
+ok(!r.accion && /Horas libres|hora/.test(r.respuesta), 'sin hora: enseña las horas libres', r.respuesta);
 r = p('reservar 1 ayer 10:00');
 ok(!r.accion, 'fecha no reconocida no reserva', r.respuesta);
 r = p('reservar 1 20/10/2026 10:00 luisa');
@@ -32,9 +32,9 @@ ok(!r.accion && /ya pas/.test(r.respuesta), 'fecha pasada');
 r = p('reservar 1 01/05 10:00 luisa', {});
 ok(!r.accion && /antelación/.test(r.respuesta), 'demasiado lejos', r.respuesta);
 r = p('huecos 9 hoy');
-ok(/No reconozco el servicio/.test(r.respuesta), 'servicio inexistente');
+ok(/¿Qué servicio quieres\?/.test(r.respuesta), 'servicio inexistente → pregunta cuál');
 r = p('huecos 1 pepito');
-ok(/No reconozco/.test(r.respuesta), 'palabra desconocida');
+ok(!r.accion && /Horas libres|¿Qué|¿Para qué día|hora/.test(r.respuesta), 'palabra desconocida no rompe ni reserva', r.respuesta);
 r = p('huecos masaje 26/10'); // domingo cerrado (2026-10-25 es domingo; 26 lunes)
 ok(/Masaje corporal/.test(r.respuesta) && /09:00/.test(r.respuesta), 'busca servicio por nombre');
 r = p('huecos 1 mañana'); // domingo cerrado

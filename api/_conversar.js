@@ -7,7 +7,9 @@
 const { huecosLibres, horarioDia } = require('./_huecos.js');
 
 const MAX_DIAS = 60;
-const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[¿?¡!.,;:()"“”]/g, ' ').replace(/\s+/g, ' ').trim();
+const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  .replace(/(\d)[:.](\d)/g, '$1\u0001$2')           // protege 10:30 y 10.30
+  .replace(/[¿?¡!.,;:()"“”]/g, ' ').replace(/\u0001/g, ':').replace(/\s+/g, ' ').trim();
 const pad = (n) => String(n).padStart(2, '0');
 const hhmm = (min) => pad(Math.floor(min / 60)) + ':' + pad(min % 60);
 const aMin = (h) => { const [a, b] = String(h).split(':'); return (+a) * 60 + (+b || 0); };
@@ -106,8 +108,9 @@ function intencion(t) {
   if (/\b(cancel|anul|borra)/.test(t) && !/\b(cuando|cuanto)\b/.test(t)) return 'cancelar';
   if (/\b(mis citas|mi cita|que citas|cuando tengo|tengo cita|tengo alguna cita|cita tengo|proxima cita)\b/.test(t)) return 'mis_citas';
   if (/\b(servicios|precios?|tarifas?|cuanto (cuesta|vale|cobran|es)|que (ofrecen|ofrecéis|ofreceis|hacen|haceis|tienen|tenéis|teneis)|carta)\b/.test(t)) return 'servicios';
+  if (/\b(tienes|teneis|tienen|hay|queda|quedan|tendrias|tendriais) (alguna |algun |una )?(cita|hueco|hora|libre)/.test(t)) return 'huecos';
   if (/\b(horas?|huecos?|hueco|disponib|libres?|que hay|cuando (puedo|podria|tienen|tenéis)|a que hora|que horarios?)\b/.test(t)) return 'huecos';
-  if (/\b(cita|reserv|agend|apunt|necesito|quiero|quisiera|pedir|podria|puedo|hora para|turno)\b/.test(t)) return 'reservar';
+  if (/\b(cita|citas|reserv\w*|agend\w*|apunt\w*|necesito|quiero|quisiera|pedir|podria|puedo|hora para|turno)\b/.test(t)) return 'reservar';
   if (/^(hola|buenas|buenos dias|buenas tardes|buenas noches|hey|ey|saludos|que tal)\b/.test(t)) return 'saludo';
   if (/^(gracias|muchas gracias|ok gracias|genial gracias|vale gracias)\b/.test(t)) return 'gracias';
   return null;
