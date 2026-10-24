@@ -2819,6 +2819,7 @@ function abrirSelectorFecha(){
   const inp=document.getElementById('agendar-input-real');
   if(!inp)return;
   inp.focus();
+  try{ if(typeof inp.showPicker==='function'){ inp.showPicker(); return; } }catch(e){}
   inp.click();
 }
 function expUp(){rsExt+=SLOT;loadPg();}
