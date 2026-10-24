@@ -1433,11 +1433,15 @@ body.pg-asis [style*="oklch(0.55 0.17 255"],body.pg-asis .pg-title~*{--ac:#6D28D
 .caja-tab-gastos.on{border-color:#B5391B!important;background:color-mix(in srgb,#B5391B 14%,#fff)!important}
 .caja-tab-gastos.on .caja-tab-lbl{color:#8C2A12!important}
 .caja-th-gastos .caja-hero-v{color:#8C2A12!important;text-shadow:none!important}.caja-th-gastos .period-pill.on{color:#8C2A12!important;border-color:#8C2A12!important}
-#av-bar{position:fixed;top:.55rem;left:76px;right:.55rem;z-index:9000;display:flex;align-items:center;justify-content:space-between;gap:.6rem;background:#6D28D9;color:#fff;border:0;border-radius:999px;padding:.6rem 1.1rem;font-weight:800;font-size:.9rem;box-shadow:0 6px 20px rgba(109,40,217,.35);cursor:pointer;width:auto;height:auto;text-align:left}
-#av-bar i{white-space:nowrap;flex:none;font-style:normal;background:#fff;color:#4C1D95;border-radius:999px;padding:.2rem .7rem;font-size:.8rem}
+#av-bar{position:fixed;top:.6rem;left:76px;z-index:9000;display:flex;align-items:center;gap:.6rem;background:#fff;color:#0F1720;border:1px solid #DDD0F7;border-left:4px solid #6D28D9;border-radius:.9rem;padding:.45rem .8rem .45rem .5rem;box-shadow:0 8px 22px rgba(76,29,149,.18);cursor:pointer;width:auto;height:auto;text-align:left;max-width:calc(100vw - 90px)}
+#av-bar .av-ic{position:relative;display:flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:.65rem;background:#EFE9FD;font-size:1rem;flex:none}
+#av-bar .av-n{position:absolute;top:-.4rem;right:-.45rem;min-width:1.1rem;height:1.1rem;padding:0 .25rem;border-radius:999px;background:#6D28D9;color:#fff;font:800 .68rem/1.1rem system-ui,sans-serif;text-align:center;border:2px solid #fff;box-sizing:content-box}
+#av-bar .av-t{display:flex;flex-direction:column;line-height:1.15}
+#av-bar .av-t b{font-size:.8rem;font-weight:800;color:#0F1720}
+#av-bar .av-t em{font-style:normal;font-size:.7rem;font-weight:700;color:#6D28D9}
 #av-bar.av-pulse{animation:avp 1s ease-in-out 3}
-@keyframes avp{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
-body.has-av .main{padding-top:3.6rem}
+@keyframes avp{0%,100%{box-shadow:0 8px 22px rgba(76,29,149,.18)}50%{box-shadow:0 0 0 5px rgba(109,40,217,.22),0 8px 22px rgba(76,29,149,.28)}}
+body.has-av .main{padding-top:3.4rem}
 #av-modal{position:fixed;inset:0;z-index:9500;background:rgba(15,23,32,.45);display:flex;align-items:flex-start;justify-content:center;padding:4rem .8rem 1rem;overflow:auto}
 .av-panel{background:#fff;border:2px solid #6D28D9;border-radius:1.2rem;padding:1rem 1.1rem;max-width:34rem;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25)}
 .av-head{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.4rem;color:#4C1D95}
@@ -2785,7 +2789,7 @@ function avPintar(){
   document.title=(n?'('+n+') ':'')+AV_TITULO;
   if(!n){if(b)b.remove();document.body.classList.remove('has-av');const m=document.getElementById('av-modal');if(m)m.remove();avPrevN=0;return;}
   if(!b){b=document.createElement('button');b.id='av-bar';b.type='button';b.onclick=avAbrir;document.body.appendChild(b);}
-  b.innerHTML=`<span>🔔 ${n===1?'1 cliente espera':n+' clientes esperan'} que lo atiendas</span><i>Ver ›</i>`;
+  b.innerHTML=`<span class="av-ic">🔔<span class="av-n">${n}</span></span><span class="av-t"><b>${n===1?'Cliente esperando':'Clientes esperando'}</b><em>Atender ›</em></span>`;
   b.classList.toggle('av-pulse',n>avPrevN);
   avPrevN=n;
   document.body.classList.add('has-av');
