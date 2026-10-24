@@ -1433,6 +1433,13 @@ body.pg-asis [style*="oklch(0.55 0.17 255"],body.pg-asis .pg-title~*{--ac:#6D28D
 .caja-tab-gastos.on{border-color:#B5391B!important;background:color-mix(in srgb,#B5391B 14%,#fff)!important}
 .caja-tab-gastos.on .caja-tab-lbl{color:#8C2A12!important}
 .caja-th-gastos .caja-hero-v{color:#8C2A12!important;text-shadow:none!important}.caja-th-gastos .period-pill.on{color:#8C2A12!important;border-color:#8C2A12!important}
+.av-box{border:2px solid #6D28D9;border-left:6px solid #6D28D9;background:#F3EEFD;border-radius:1rem;padding:.8rem 1rem;margin:.2rem 0 .9rem}
+.av-t{font-weight:900;color:#4C1D95;margin-bottom:.5rem;font-size:.95rem}
+.av-row{display:flex;align-items:center;gap:.5rem;padding:.45rem 0;border-top:1px solid #DDD0F7;flex-wrap:wrap}
+.av-x{flex:1;min-width:10rem;display:flex;flex-direction:column;color:#0F1720}
+.av-x span{font-size:.78rem;color:#52647A;font-weight:700}.av-x small{font-size:.78rem;color:#52647A;margin-top:.15rem}
+.av-wa{background:#0A7F5A;color:#fff;border-radius:999px;padding:.4rem .9rem;font-weight:800;font-size:.8rem;text-decoration:none}
+.av-ok{background:#fff;color:#4C1D95;border:2px solid #6D28D9;border-radius:999px;padding:.35rem .8rem;font-weight:800;font-size:.8rem;cursor:pointer;width:auto;height:auto}
 </style>
 <script>
 const SB_URL="https://vtmegxkarrnofgepqdky.supabase.co";
@@ -2744,7 +2751,10 @@ async function agendaAutoCheck(){
   try{
     const fecha=dt;
     const{data,error}=await sb.from('appointments').select('id,status,start_time,client_name,barbero,price').eq('appointment_date',fecha).neq('status','cancelled').eq('user_id',user.id).order('start_time');
-    if(!error&&pg==='agenda'&&fecha===dt&&window._agSig&&agSig(data)!==window._agSig){await loadPg();}
+    let avIds=null;
+    try{const r2=await sb.from('avisos_dueno').select('id').eq('leido',false).order('created_at',{ascending:false}).limit(5);if(!r2.error)avIds=(r2.data||[]).map(a=>a.id).join(',');}catch(e){}
+    const cambioAv=avIds!==null&&window._avSig!==undefined&&avIds!==window._avSig;
+    if(!error&&pg==='agenda'&&fecha===dt&&window._agSig&&(agSig(data)!==window._agSig||cambioAv)){await loadPg();}
   }catch(e){}
   agendaAutoBusy=false;
 }
@@ -2753,11 +2763,19 @@ function iniciarAgendaAuto(){
   agendaAutoTimer=setInterval(agendaAutoCheck,8000);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')agendaAutoCheck();});
 }
+async function avMarcar(id){
+  const{error}=await sb.from('avisos_dueno').update({leido:true}).eq('id',id);
+  if(error)return toast('No se pudo marcar como atendido','error');
+  loadPg();
+}
 async function pgAgenda(el){
   const esIndividual=profile&&profile.tipo_cuenta==='individual';
   const{data}=await sb.from('appointments').select('*').eq('appointment_date',dt).neq('status','cancelled').eq('user_id',user.id).order('start_time');
   const appts=data||[];
   window._agSig=agSig(appts);
+  let avisos=[];
+  try{const{data:av,error:avErr}=await sb.from('avisos_dueno').select('id,cliente,cliente_nombre,mensaje,created_at').eq('leido',false).order('created_at',{ascending:false}).limit(5);if(!avErr)avisos=av||[];}catch(e){}
+  window._avSig=avisos.map(a=>a.id).join(',');
   const byT={};appts.forEach(a=>{const k=a.start_time.slice(0,5);(byT[k]=byT[k]||[]).push(a);});
   window._byT=byT;
   const hd=horarioDia(dt);
@@ -2845,6 +2863,14 @@ async function pgAgenda(el){
         <input type="date" id="agendar-input-real" class="agendar-input" value="${dt}" onchange="chDate(this.value)" aria-label="Seleccionar fecha"/>
       </div>
     </div>
+    ${avisos.length?`<div class="av-box">
+      <div class="av-t">🔔 ${avisos.length===1?'Un cliente quiere':avisos.length+' clientes quieren'} hablar con una persona</div>
+      ${avisos.map(a=>`<div class="av-row">
+        <div class="av-x"><b>${esc(a.cliente_nombre||'Cliente')}</b> <span>+${esc(a.cliente||'')}</span><small>${esc((a.mensaje||'').slice(0,120))}</small></div>
+        <a class="av-wa" href="https://wa.me/${encodeURIComponent(a.cliente||'')}" target="_blank" rel="noopener">WhatsApp</a>
+        <button class="av-ok" onclick="avMarcar(${Number(a.id)})">✓ Atendido</button>
+      </div>`).join('')}
+    </div>`:''}
     <div class="dz-total"><small>${dt===today()?'COBRADO HOY':'COBRADO ESE DÍA'}</small><b>${eur(totCob)}</b></div>
     <div class="legend">
       <div class="leg">

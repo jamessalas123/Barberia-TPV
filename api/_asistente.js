@@ -56,7 +56,7 @@ function buscarServicio(servicios, tok) {
   const t = norm(tok);
   return servicios.find(s => norm(s.nombre).startsWith(t)) || servicios.find(s => norm(s.nombre).includes(t)) || null;
 }
-const AYUDA = (nombre) => `Hola 👋 Soy el asistente virtual de ${nombre}. Puedo ayudarte con tu cita:\n\n• SERVICIOS – ver lo que ofrecemos\n• HUECOS 1 mañana – horas libres (servicio 1, mañana)\n• RESERVAR 1 mañana 10:30 – reservar\n• MIS CITAS – ver tus próximas citas\n• CANCELAR código – cancelar una cita\n• PERSONA – hablar con una persona`;
+const AYUDA = (nombre) => `Hola 👋 Soy el asistente virtual de ${nombre}. Puedo ayudarte con tu cita:\n\n• SERVICIOS – ver lo que ofrecemos\n• HUECOS 1 mañana – horas libres (servicio 1, mañana)\n• RESERVAR 1 mañana 10:30 – reservar\n• MIS CITAS – ver tus próximas citas\n• CANCELAR código – cancelar una cita\n• PERSONA – que te contacte una persona`;
 
 function equipoDe(negocio) { return Array.isArray(negocio.equipo) ? negocio.equipo.filter(Boolean) : []; }
 
@@ -78,7 +78,6 @@ function procesar({ texto, telefono, nombre, ahora, negocio, citasDia, citasClie
   const args = tokens.slice(1).filter(t => !RELLENO.has(norm(t)));
   const hoy = ahora.fecha;
 
-  if (cmd === 'persona') return { respuesta: `De momento no puedo avisar a una persona desde aquí. Contacta directamente con ${nom}. Gracias por tu paciencia 🙏` };
 
   if (cmd === 'servicios') {
     if (!servicios.length) return { respuesta: 'Aún no hay servicios configurados.' };

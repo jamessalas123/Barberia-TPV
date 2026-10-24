@@ -84,7 +84,7 @@ ok(/¿Te reservo Depilación/.test(r.respuesta) && !/ con /.test(r.respuesta), '
 r = chat()('asdfgh');
 ok(/No estoy seguro/.test(r.respuesta), 'no entiende → ayuda amable');
 r = chat()('quiero hablar con una persona');
-ok(/persona/.test(r.respuesta) && !r.accion, 'persona');
+ok(r.accion && r.accion.tipo === 'avisar' && /aviso a/.test(r.respuesta), 'persona → avisa al dueño', r.respuesta);
 // comandos antiguos siguen funcionando
 r = chat()('reservar 1 lunes 16:00 pedro');
 ok(r.accion && r.accion.tipo === 'crear', 'comando antiguo directo sigue funcionando', r.respuesta);

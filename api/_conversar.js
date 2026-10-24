@@ -150,7 +150,7 @@ function conversar({ texto, estado, ctx }) {
   const hayDatos = fecha || hora || sv || prof || franja.desde || franja.hasta;
   if (!intent && !estado && [fecha, hora, sv && sv.i !== undefined].filter(Boolean).length >= 2) intent = 'reservar';
 
-  if (intent === 'persona') return R(`De momento no puedo avisar a una persona desde aquí. Contacta directamente con ${nom}. Gracias por tu paciencia 🙏`, null);
+  if (intent === 'persona') return R(`Vale, aviso a ${nom} para que te contacten lo antes posible 🙏 Mientras tanto, si quieres, puedo seguir ayudándote con tus citas.`, null, { tipo: 'avisar', motivo: String(texto || '').slice(0, 300) });
   if (intent === 'gracias' && !e.confirmar && !e.intent) return R('¡Perfecto! Aquí estoy para lo que necesites 😊', null);
   if (intent === 'servicios') {
     if (!servicios.length) return R('Aún no hay servicios configurados.', null);
@@ -236,7 +236,7 @@ function conversar({ texto, estado, ctx }) {
   }
 
   if (intent === 'saludo') return R(`¡Hola! 👋 Soy el asistente virtual de ${nom}. Puedo ayudarte a pedir cita, ver horas libres, consultar tus citas o cancelarlas. Escríbeme con tus palabras, por ejemplo: "quiero una cita mañana por la tarde". ¿Qué necesitas?`, null);
-  return R(`No estoy seguro de haberte entendido 🙈 Puedo ayudarte con:\n• Pedir una cita ("quiero una cita el viernes")\n• Ver horas libres ("¿qué horas hay mañana?")\n• Ver o cancelar tus citas\n• Ver servicios y precios\nSi prefieres hablar con una persona, contacta directamente con ${nom}.`, null);
+  return R(`No estoy seguro de haberte entendido 🙈 Puedo ayudarte con:\n• Pedir una cita ("quiero una cita el viernes")\n• Ver horas libres ("¿qué horas hay mañana?")\n• Ver o cancelar tus citas\n• Ver servicios y precios\nSi prefieres hablar con una persona, escribe PERSONA y aviso a ${nom}.`, null);
 }
 
 module.exports = { conversar, extraerFecha, extraerHora, extraerFranja, norm };

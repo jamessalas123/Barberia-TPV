@@ -45,7 +45,7 @@ r = p('cancelar a1b2', { citasCliente: mias });
 ok(r.accion && r.accion.tipo === 'cancelar' && r.accion.id === 'a1b2c3d4-0000', 'cancelar');
 r = p('cancelar zzzz', { citasCliente: mias });
 ok(!r.accion, 'cancelar código ajeno no hace nada');
-ok(/persona/i.test(p('persona').respuesta), 'persona');
+ok(p('persona').accion && p('persona').accion.tipo === 'avisar', 'persona → avisa al dueño');
 // negocio individual (sin equipo)
 const ind = { ...negocio, equipo: [] };
 r = p('reservar 2 hoy 11:00', { negocio: ind });

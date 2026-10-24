@@ -18,6 +18,7 @@ const { correrAgente, historialCompacto } = require('./_agente.js');
 const { herramientas, instrucciones } = require('./_agente_citas.js');
 const { crearLLMAnthropic } = require('./_llm.js');
 
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const MAX_TEXTO = 1000;          // caracteres máximos que leemos de un mensaje
 const MEMORIA_HORAS = 24;        // la conversación se olvida pasadas estas horas
 
@@ -61,11 +62,38 @@ async function atender(phoneNumberId, m, nombreCliente, opts = {}) {
     return { ok: true };
   };
 
+  /* Avisa al dueño (en la app y por correo) de que un cliente pide hablar con una persona. Evita repetir en 2 h. */
+  const avisarDueno = async ({ motivo }) => {
+    const desde = new Date(Date.now() - 2 * 3600 * 1000).toISOString();
+    const { data: previo } = await db.from('avisos_dueno').select('id').eq('user_id', uid).eq('cliente', m.from).eq('leido', false).gte('created_at', desde).limit(1);
+    if (previo && previo.length) return { ok: true, repetido: true };
+    const { error } = await db.from('avisos_dueno').insert({ user_id: uid, tipo: 'persona', cliente: m.from, cliente_nombre: nombreCliente || null, mensaje: motivo || texto });
+    if (error) { console.error('[meta-webhook] no se pudo guardar el aviso', error.message); return { ok: false }; }
+    try {
+      if (process.env.RESEND_API_KEY) {
+        const { data: u } = await db.auth.admin.getUserById(uid);
+        const correo = u && u.user && u.user.email;
+        if (correo) {
+          await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              from: 'Caja digital <noreply@notificaciones.escaliadigital.com>', to: [correo],
+              subject: `🔔 Un cliente quiere hablar con una persona${nombreCliente ? ': ' + nombreCliente : ''}`,
+              html: `<p>Un cliente ha pedido hablar con una persona por WhatsApp.</p><p><b>Cliente:</b> ${esc(nombreCliente || 'sin nombre')} (+${esc(m.from)})</p><p><b>Mensaje:</b> ${esc(motivo || texto)}</p><p><a href="https://wa.me/${esc(m.from)}">Abrir el chat en WhatsApp</a></p>`
+            })
+          });
+        }
+      }
+    } catch (e) { console.error('[meta-webhook] el correo de aviso falló', e && e.message); }
+    return { ok: true };
+  };
+
   /* Modo agente (IA): solo si hay clave de IA (o una IA inyectada en pruebas). Si falla, seguimos con los comandos. */
   const llm = opts.llm || (process.env.ANTHROPIC_API_KEY ? crearLLMAnthropic({ apiKey: process.env.ANTHROPIC_API_KEY, modelo: process.env.AGENTE_MODELO || undefined }) : null);
   if (llm) {
     try {
-      return await atenderConIA({ db, uid, llm, phoneNumberId, m, texto, nombreCliente, ahora, negocio, porDia, mias: mias || [], crearCita, cancelarCita });
+      return await atenderConIA({ db, uid, llm, phoneNumberId, m, texto, nombreCliente, ahora, negocio, porDia, mias: mias || [], crearCita, cancelarCita, avisarDueno });
     } catch (e) { console.error('[meta-webhook] agente falló, uso comandos:', e && e.message); }
   }
 
@@ -79,6 +107,11 @@ async function atender(phoneNumberId, m, nombreCliente, opts = {}) {
     const res = await crearCita(r.accion.cita);
     if (!res.ok) return res.motivo === 'no se pudo guardar' ? 'No he podido guardar la cita. Inténtalo de nuevo en unos minutos.' : 'Justo se acaba de ocupar ese hueco 😕 Escribe HUECOS para ver las horas libres.';
   }
+  if (r.accion && r.accion.tipo === 'avisar') {
+    const res = await avisarDueno({ motivo: r.accion.motivo });
+    if (!res.ok) return `Ahora mismo no he podido avisar a ${negocio.nombre || 'el negocio'}. Por favor, contacta con ellos directamente. Gracias 🙏`;
+    if (res.repetido) return 'Ya he avisado, te contactarán en cuanto puedan 🙏';
+  }
   if (r.accion && r.accion.tipo === 'cancelar') {
     const res = await cancelarCita(r.accion.id);
     if (!res.ok) return 'No he podido cancelar la cita. Inténtalo de nuevo en unos minutos.';
@@ -86,11 +119,11 @@ async function atender(phoneNumberId, m, nombreCliente, opts = {}) {
   return r.respuesta;
 }
 
-async function atenderConIA({ db, uid, llm, phoneNumberId, m, texto, nombreCliente, ahora, negocio, porDia, mias, crearCita, cancelarCita }) {
+async function atenderConIA({ db, uid, llm, phoneNumberId, m, texto, nombreCliente, ahora, negocio, porDia, mias, crearCita, cancelarCita, avisarDueno }) {
   const { data: conv } = await db.from('asistente_conversaciones').select('mensajes,updated_at').eq('phone_number_id', phoneNumberId).eq('cliente', m.from).maybeSingle();
   const vigente = conv && conv.updated_at && (Date.now() - new Date(conv.updated_at).getTime()) < MEMORIA_HORAS * 3600 * 1000;
   const historial = vigente && Array.isArray(conv.mensajes) ? conv.mensajes : [];
-  const ctx = { ahora, negocio, telefono: m.from, nombreCliente, citasDia: f => porDia[f] || [], citasCliente: () => mias, crearCita, cancelarCita };
+  const ctx = { ahora, negocio, telefono: m.from, nombreCliente, citasDia: f => porDia[f] || [], citasCliente: () => mias, crearCita, cancelarCita, avisarDueno };
   const registrar = async ({ herramienta, args, resultado }) => {
     await db.from('agente_registro').insert({ user_id: uid, canal: 'whatsapp', cliente: m.from, herramienta, args, resultado });
   };
