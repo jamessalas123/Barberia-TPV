@@ -2496,6 +2496,7 @@ function asisPasos(){
   const cfg=asisCfg();
   const nServ=(_servicios||[]).length;
   const p=[
+    {id:'negocio',t:'Nombre del negocio',s:'Cómo se presenta tu asistente a los clientes',ok:!!(cfg.nombre_negocio&&String(cfg.nombre_negocio).trim())},
     {id:'servicios',t:'Servicios y duración',s:'Qué ofreces y cuánto dura cada uno',ok:!!cfg.servicios_ok&&nServ>0},
     {id:'horario',t:'Horario de apertura',s:'Qué días y a qué horas atiendes',ok:!!profile.horario}
   ];
@@ -2506,6 +2507,7 @@ function asisIr(v){_as.vista=v;_as.form=null;_as.cd=false;_as.eqTxt='';loadPg();
 
 async function pgAsistente(el){
   if(_servicios===null)await cargarServicios();
+  if(_as.vista==='negocio')return asisVistaNegocio(el);
   if(_as.vista==='servicios')return asisVistaServicios(el);
   if(_as.vista==='horario')return asisVistaHorario(el);
   if(_as.vista==='equipo')return asisVistaEquipo(el);
@@ -2516,7 +2518,7 @@ function asisVistaLista(el){
   const pasos=asisPasos();
   const listos=pasos.filter(p=>p.ok).length;
   const todos=listos===pasos.length;
-  const iconos={servicios:'🏷️',horario:'🕐',equipo:'👥'};
+  const iconos={negocio:'🏪',servicios:'🏷️',horario:'🕐',equipo:'👥'};
   const filas=pasos.map(p=>`<button class="caja-box" onclick="asisIr('${p.id}')"><span>${iconos[p.id]} ${p.t}</span><i class="caja-box-n${p.ok?' ok':''}">${p.ok?'Listo ✓':'Pendiente'} ›</i></button>`).join('');
   const conectar=`<div class="caja-box" style="cursor:default${todos?'':';opacity:.5'}"><span>💬 Conectar WhatsApp Business</span><i class="caja-box-n${todos?'':' ok'}">${todos?'Próximamente':'Bloqueado'}</i></div>`;
   const nota=todos?`<div class="caja-lock">¡Todo listo por tu parte! Tus datos quedan guardados. Estamos terminando la conexión con WhatsApp Business y te avisaremos cuando puedas activarla.</div>`:'';
@@ -2531,6 +2533,29 @@ function asisVistaLista(el){
     </div>
     ${filas}${conectar}${nota}
   </div>`;
+}
+
+/* ── Paso: nombre del negocio ─────────────────────────────────── */
+function asisVistaNegocio(el){
+  const actual=String(asisCfg().nombre_negocio||'');
+  const ej=esc(actual||'Uñas y Uñas');
+  el.innerHTML=`<div class="page caja-th caja-th-asis">
+    <button class="asis-back" onclick="asisIr('lista')">‹ Asistente</button>
+    <div class="caja-head"><h1 class="pg-title" style="margin:0">Nombre del negocio</h1></div>
+    <p class="asis-sub">Así se presentará tu asistente a los clientes por WhatsApp.</p>
+    <div class="svc-form">
+      <label class="m-label">¿Cómo se llama tu negocio?</label>
+      <input id="asn-n" class="m-input" placeholder="Ej: Uñas y Uñas" maxlength="60" value="${esc(actual)}" oninput="document.getElementById('asn-ej').textContent=(this.value.trim()||'Uñas y Uñas')"/>
+      <p class="asis-sub" style="margin:.75rem 0 0">Verán: «Hola 👋 Soy el asistente virtual de <b id="asn-ej">${ej}</b>».</p>
+      <div class="svc-btns" style="margin-top:1rem"><button class="svc-save" onclick="asisNegocioGuardar()">Guardar</button></div>
+    </div>
+  </div>`;
+  setTimeout(()=>document.getElementById('asn-n')?.focus(),60);
+}
+async function asisNegocioGuardar(){
+  const n=(document.getElementById('asn-n')?.value||'').replace(/\s+/g,' ').trim();
+  if(n.length<2)return toast('Escribe el nombre de tu negocio','error');
+  if(await asisGuardarCfg({nombre_negocio:n})){toast('Nombre guardado ✓','success');asisIr('lista');}
 }
 
 /* ── Paso: servicios y duración ───────────────────────────────── */

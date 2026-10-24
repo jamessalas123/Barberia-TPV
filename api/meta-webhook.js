@@ -37,7 +37,7 @@ async function atender(phoneNumberId, m, nombreCliente) {
   const servicios = (servs || []).filter(s => { const k = String(s.nombre).toLowerCase().trim(); if (vistosNombre.has(k)) return false; vistosNombre.add(k); return true; });
   const porDia = {};
   (citas || []).forEach(c => (porDia[c.appointment_date] = porDia[c.appointment_date] || []).push(c));
-  const negocio = { nombre: perfil && perfil.nombre, horario: perfil && perfil.horario, equipo: (perfil && perfil.asistente && perfil.asistente.equipo) || [], servicios };
+  const negocio = { nombre: perfil && perfil.asistente && perfil.asistente.nombre_negocio, horario: perfil && perfil.horario, equipo: (perfil && perfil.asistente && perfil.asistente.equipo) || [], servicios };
   const r = procesar({ texto: m.text.body, telefono: m.from, nombre: nombreCliente, ahora, negocio, citasDia: f => porDia[f] || [], citasCliente: mias || [] });
 
   if (r.accion && r.accion.tipo === 'crear') {

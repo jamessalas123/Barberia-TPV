@@ -2,7 +2,7 @@
 const Module = require('module');
 const DB = {
   asistente_numeros: [{ phone_number_id: 'PN1', user_id: 'U1' }],
-  profiles: [{ id: 'U1', nombre: 'Estética Luisa', horario: null, asistente: { equipo: ['Luisa'] } }],
+  profiles: [{ id: 'U1', nombre: 'Dueño', horario: null, asistente: { equipo: ['Luisa'], nombre_negocio: 'Uñas y Uñas' } }],
   servicios: [{ user_id: 'U1', nombre: 'Depilación', precio: 50, duracion_min: 45 }, { user_id: 'U1', nombre: 'Depilación', precio: 50, duracion_min: 45 }],
   appointments: []
 };
@@ -32,6 +32,8 @@ const msg = (t, from = '34600111222') => ({ from, id: 'm' + Math.random(), text:
   const mañana = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
   let r = await atender('PN1', msg('servicios'), 'Pepe');
   ok(/1\. Depilación/.test(r) && !/2\./.test(r), 'servicios sin duplicados', r);
+  r = await atender('PN1', msg('hola'), 'Pepe');
+  ok(/asistente virtual de Uñas y Uñas/.test(r) && !/Dueño/.test(r), 'se presenta con el nombre del negocio', r);
   r = await atender('PN1', msg('reservar 1 mañana 11:00'), 'Pepe');
   ok(/Reservado/.test(r) && DB.appointments.length === 1 && DB.appointments[0].notes === 'wa:34600111222' && DB.appointments[0].status === 'scheduled', 'reserva crea la cita', r);
   r = await atender('PN1', msg('reservar 1 mañana 11:00', '34699999999'), 'Ana');
