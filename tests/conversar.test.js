@@ -113,4 +113,5 @@ ok(/¿Te reservo/.test(r.respuesta) && /Pedro/.test(r.respuesta), 'real: "con Pe
 ok(extraerHora('el lunes a las 10:30 con luisa') === '10:30', 'hora 10:30 tras "a las"');
 r = chat2()('reservar corte de cabello mañana');
 ok(/cerrados/.test(r.respuesta), 'real: "reservar corte de cabello mañana" (domingo cerrado)', r.respuesta);
+for (const f of ['Ok', 'Gracias', 'Perfecto', 'vale gracias', 'hasta luego']) { const rr = chat()(f); ok(/Aquí estoy/.test(rr.respuesta), 'cortesía: ' + f, rr.respuesta); }
 process.exit(fallos);

@@ -112,7 +112,7 @@ function intencion(t) {
   if (/\b(horas?|huecos?|hueco|disponib|libres?|que hay|cuando (puedo|podria|tienen|tenéis)|a que hora|que horarios?)\b/.test(t)) return 'huecos';
   if (/\b(cita|citas|reserv\w*|agend\w*|apunt\w*|necesito|quiero|quisiera|pedir|podria|puedo|hora para|turno)\b/.test(t)) return 'reservar';
   if (/^(hola|buenas|buenos dias|buenas tardes|buenas noches|hey|ey|saludos|que tal)\b/.test(t)) return 'saludo';
-  if (/^(gracias|muchas gracias|ok gracias|genial gracias|vale gracias)\b/.test(t)) return 'gracias';
+  if (/^(gracias|muchas gracias|ok|okay|vale|perfecto|genial|listo|de acuerdo|estupendo|muy bien|hasta luego|hasta pronto|adios|chao|nos vemos|buen dia|buenas noches)( .*)?$/.test(t)) return 'gracias';
   return null;
 }
 
@@ -151,7 +151,7 @@ function conversar({ texto, estado, ctx }) {
   if (!intent && !estado && [fecha, hora, sv && sv.i !== undefined].filter(Boolean).length >= 2) intent = 'reservar';
 
   if (intent === 'persona') return R(`De momento no puedo avisar a una persona desde aquí. Contacta directamente con ${nom}. Gracias por tu paciencia 🙏`, null);
-  if (intent === 'gracias' && !estado) return R('¡A ti! Aquí estoy para lo que necesites 😊', null);
+  if (intent === 'gracias' && !e.confirmar && !e.intent) return R('¡Perfecto! Aquí estoy para lo que necesites 😊', null);
   if (intent === 'servicios') {
     if (!servicios.length) return R('Aún no hay servicios configurados.', null);
     return R('Esto es lo que ofrecemos:\n' + servicios.map(s => `• ${s.nombre} · ${s.duracion_min || 30} min · ${Number(s.precio)} €`).join('\n') + '\n\n¿Quieres que te busque hueco?', null);
