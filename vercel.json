@@ -35,5 +35,11 @@
       "path": "/api/recordatorios",
       "schedule": "0 16 * * *"
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/demo",
+      "destination": "/demo.html"
+    }
   ]
 }
