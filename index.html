@@ -1451,6 +1451,9 @@ body.has-av .main{padding-top:3.4rem}
 .av-x span{font-size:.78rem;color:#52647A;font-weight:700}.av-x small{font-size:.8rem;color:#52647A;margin-top:.15rem}
 .av-wa{background:#0A7F5A;color:#fff;border-radius:999px;padding:.4rem .9rem;font-weight:800;font-size:.8rem;text-decoration:none}
 .av-ok{background:#fff;color:#4C1D95;border:2px solid #6D28D9;border-radius:999px;padding:.35rem .8rem;font-weight:800;font-size:.8rem;cursor:pointer;width:auto;height:auto}
+.dm-day{display:inline-flex;align-items:center;gap:.25rem;margin:.15rem .6rem .15rem 0;font-weight:800;font-size:.85rem;color:var(--foreground)}
+.svc-form textarea.m-input{min-height:5.5rem;resize:vertical;font-family:inherit;width:100%;margin-top:.3rem}
+.svc-save[disabled]{opacity:.6}
 </style>
 <script>
 const SB_URL="https://vtmegxkarrnofgepqdky.supabase.co";
@@ -2530,6 +2533,8 @@ async function pgAsistente(el){
   if(_as.vista==='servicios')return asisVistaServicios(el);
   if(_as.vista==='horario')return asisVistaHorario(el);
   if(_as.vista==='equipo')return asisVistaEquipo(el);
+  if(_as.vista==='demos')return asisVistaDemos(el);
+  if(_as.vista==='demoNueva')return asisVistaDemoNueva(el);
   return asisVistaLista(el);
 }
 
@@ -2539,6 +2544,7 @@ function asisVistaLista(el){
   const todos=listos===pasos.length;
   const iconos={negocio:'🏪',servicios:'🏷️',horario:'🕐',equipo:'👥'};
   const filas=pasos.map(p=>`<button class="caja-box" onclick="asisIr('${p.id}')"><span>${iconos[p.id]} ${p.t}</span><i class="caja-box-n${p.ok?' ok':''}">${p.ok?'Listo ✓':'Pendiente'} ›</i></button>`).join('');
+  const filaDemos=`<button class="caja-box" onclick="asisIr('demos')"><span>🎯 Demos para enseñar a otros negocios</span><i class="caja-box-n ok">Abrir ›</i></button>`;
   const conectar=`<div class="caja-box" style="cursor:default${todos?'':';opacity:.5'}"><span>💬 Conectar WhatsApp Business</span><i class="caja-box-n${todos?'':' ok'}">${todos?'Próximamente':'Bloqueado'}</i></div>`;
   const nota=todos?`<div class="caja-lock">¡Todo listo por tu parte! Tus datos quedan guardados. Estamos terminando la conexión con WhatsApp Business y te avisaremos cuando puedas activarla.</div>`:'';
   el.innerHTML=`<div class="page caja-th caja-th-asis">
@@ -2550,8 +2556,119 @@ function asisVistaLista(el){
       <div class="caja-hero-v">${listos} de ${pasos.length}</div>
       <div class="caja-hero-f">Si deseas usar el asistente virtual, agrega tus servicios y su duración. Así podrá agendar citas con tus clientes desde tu WhatsApp Business.</div>
     </div>
-    ${filas}${conectar}${nota}
+    ${filas}${conectar}${nota}${filaDemos}
   </div>`;
+}
+
+/* ── Demos para enseñar el asistente a otros negocios ─────────────── */
+let _dm={datos:null,url:'',cargando:false,creada:null,aviso:''};
+const DM_DIAS=[[1,'L'],[2,'M'],[3,'X'],[4,'J'],[5,'V'],[6,'S'],[0,'D']];
+const dmLink=(c)=>location.origin+'/demo?c='+c;
+function dmSlug(n){return String(n||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,28)||'negocio';}
+function dmCopiar(t){try{navigator.clipboard.writeText(t).then(()=>toast('Enlace copiado ✓','success'),()=>toast(t));}catch(e){toast(t);}}
+async function asisVistaDemos(el){
+  el.innerHTML=`<div class="page caja-th caja-th-asis"><button class="asis-back" onclick="asisIr('lista')">‹ Asistente</button><div class="caja-head"><h1 class="pg-title" style="margin:0">Demos</h1></div><p class="asis-sub">Cargando…</p></div>`;
+  const{data,error}=await sb.from('demos').select('codigo,nombre,activa,expira_at').order('created_at',{ascending:false});
+  if(_as.vista!=='demos')return;
+  const lista=error?[]:(data||[]);
+  const dias=(f)=>Math.ceil((new Date(f).getTime()-Date.now())/86400000);
+  const filas=lista.map(d=>{
+    const cad=dias(d.expira_at);const vivo=d.activa&&cad>0;
+    return `<div class="svc-form" style="margin-bottom:.75rem">
+      <div class="svc-form-t">${esc(d.nombre)}</div>
+      <p class="asis-sub" style="margin:.1rem 0 .5rem">${vivo?`Activa · caduca en ${cad} día${cad===1?'':'s'}`:(d.activa?'Caducada':'Desactivada')}</p>
+      <div class="svc-btns" style="flex-wrap:wrap;gap:.4rem">
+        <button class="svc-save" onclick="dmCopiar(dmLink('${esc(d.codigo)}'))">Copiar enlace</button>
+        <button class="svc-save" style="background:transparent;color:var(--foreground);border:1.5px solid currentColor" onclick="window.open(dmLink('${esc(d.codigo)}'),'_blank')">Probar</button>
+        <button class="svc-save" style="background:transparent;color:var(--foreground);border:1.5px solid currentColor" onclick="dmActivar('${esc(d.codigo)}',${d.activa?'false':'true'})">${d.activa?'Desactivar':'Activar'}</button>
+        <button class="svc-save" style="background:transparent;color:#B5391B;border:1.5px solid #B5391B" onclick="dmBorrar('${esc(d.codigo)}')">Eliminar</button>
+      </div></div>`;}).join('');
+  el.innerHTML=`<div class="page caja-th caja-th-asis">
+    <button class="asis-back" onclick="asisIr('lista')">‹ Asistente</button>
+    <div class="caja-head"><h1 class="pg-title" style="margin:0">Demos</h1></div>
+    <p class="asis-sub">Crea un asistente de muestra con los datos de otro negocio y mándale el enlace para que lo pruebe. Las citas son de prueba: no tocan ninguna agenda real.</p>
+    <button class="caja-box" onclick="dmNueva()"><span>➕ Crear una demo nueva</span><i class="caja-box-n ok">Empezar ›</i></button>
+    ${error?'<p class="asis-sub">No se pudieron cargar las demos.</p>':filas||'<p class="asis-sub" style="margin-top:1rem">Aún no has creado ninguna demo.</p>'}
+  </div>`;
+}
+async function dmActivar(c,v){const{error}=await sb.from('demos').update({activa:v}).eq('codigo',c);if(error)return toast('No se pudo cambiar','error');loadPg();}
+async function dmBorrar(c){if(!confirm('¿Eliminar esta demo? El enlace dejará de funcionar.'))return;const{error}=await sb.from('demos').delete().eq('codigo',c);if(error)return toast('No se pudo eliminar','error');loadPg();}
+function dmNueva(){_dm={datos:{nombre:'',descripcion:'',servicios:[],horario:null,equipo:[],faq:[]},url:'',cargando:false,creada:null,aviso:''};asisIr('demoNueva');}
+async function dmAnalizar(){
+  const url=(document.getElementById('dn-url')?.value||'').trim();
+  if(!/^https?:\/\//i.test(url)&&url)document.getElementById('dn-url').value='https://'+url;
+  const u=(document.getElementById('dn-url')?.value||'').trim();
+  if(!u)return toast('Pega la dirección de la web','error');
+  _dm.url=u;_dm.cargando=true;dmLeerForm();loadPg();
+  try{
+    const{data:s}=await sb.auth.getSession();
+    const r=await fetch('/api/demo-analizar',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+((s&&s.session&&s.session.access_token)||'')},body:JSON.stringify({url:u})});
+    const j=await r.json();
+    _dm.cargando=false;
+    if(!r.ok){_dm.aviso=j.error||'No se pudo analizar la web.';}
+    else{_dm.datos=j.datos;_dm.aviso=(j.datos.servicios||[]).length?'Datos leídos de la web. Revísalos antes de crear la demo: la IA puede equivocarse.':'La web no tenía servicios claros. Rellénalos a mano.';}
+  }catch(e){_dm.cargando=false;_dm.aviso='Sin conexión. Inténtalo de nuevo.';}
+  loadPg();
+}
+function dmLeerForm(){
+  const v=(id)=>document.getElementById(id);if(!v('dn-n'))return;
+  const d=_dm.datos;d.nombre=v('dn-n').value;d.descripcion=v('dn-d').value;
+  d.servicios=v('dn-s').value.split('\n').map(l=>l.split('|').map(x=>x.trim())).filter(a=>a[0]).map(a=>({nombre:a[0],precio:a[1]===''||a[1]==null||isNaN(+a[1].replace(',','.'))?null:+a[1].replace(',','.'),duracion_min:+a[2]||30}));
+  d.equipo=v('dn-e').value.split(',').map(x=>x.trim()).filter(Boolean);
+  d.faq=v('dn-f').value.split('\n').map(l=>{const i=l.indexOf('|');return i<0?null:{p:l.slice(0,i).trim(),r:l.slice(i+1).trim()};}).filter(f=>f&&f.p&&f.r);
+  const dias=DM_DIAS.filter(([n])=>v('dn-h'+n)?.checked).map(([n])=>n);
+  const a=v('dn-ha').value,c=v('dn-hc').value;
+  if(dias.length&&a<c){d.horario={};dias.forEach(n=>d.horario[n]={a,c});}else d.horario=null;
+}
+function asisVistaDemoNueva(el){
+  const d=_dm.datos||{};
+  if(_dm.creada){
+    el.innerHTML=`<div class="page caja-th caja-th-asis"><button class="asis-back" onclick="asisIr('demos')">‹ Demos</button><div class="caja-head"><h1 class="pg-title" style="margin:0">¡Demo creada!</h1></div>
+      <div class="svc-form"><p class="asis-sub" style="margin:0 0 .6rem">Mándale este enlace al dueño. Se abre en el móvil, sin instalar nada. Caduca en 7 días.</p>
+      <input class="m-input" readonly value="${esc(dmLink(_dm.creada))}" onclick="this.select()"/>
+      <div class="svc-btns" style="margin-top:.8rem;gap:.4rem;flex-wrap:wrap"><button class="svc-save" onclick="dmCopiar(dmLink('${esc(_dm.creada)}'))">Copiar enlace</button><button class="svc-save" style="background:transparent;color:var(--foreground);border:1.5px solid currentColor" onclick="window.open(dmLink('${esc(_dm.creada)}'),'_blank')">Probar yo</button></div></div></div>`;
+    return;
+  }
+  const h=d.horario||{1:{a:'09:00',c:'20:00'},2:{a:'09:00',c:'20:00'},3:{a:'09:00',c:'20:00'},4:{a:'09:00',c:'20:00'},5:{a:'09:00',c:'20:00'}};
+  const ref=Object.values(h)[0]||{a:'09:00',c:'20:00'};
+  const opt=(sel)=>HORAS_OPC.map(x=>`<option value="${x}"${x===sel?' selected':''}>${x}</option>`).join('');
+  const servTxt=(d.servicios||[]).map(s=>`${s.nombre} | ${s.precio==null?'':s.precio} | ${s.duracion_min||30}`).join('\n');
+  const faqTxt=(d.faq||[]).map(f=>`${f.p} | ${f.r}`).join('\n');
+  el.innerHTML=`<div class="page caja-th caja-th-asis">
+    <button class="asis-back" onclick="asisIr('demos')">‹ Demos</button>
+    <div class="caja-head"><h1 class="pg-title" style="margin:0">Nueva demo</h1></div>
+    <div class="svc-form">
+      <label class="m-label">1. Web del negocio (opcional)</label>
+      <input id="dn-url" class="m-input" placeholder="www.negocio.es" value="${esc(_dm.url)}" inputmode="url" autocapitalize="off"/>
+      <div class="svc-btns" style="margin-top:.6rem"><button class="svc-save" ${_dm.cargando?'disabled':''} onclick="dmAnalizar()">${_dm.cargando?'Leyendo la web…':'Leer la web y rellenar'}</button></div>
+      ${_dm.aviso?`<p class="asis-sub" style="margin:.7rem 0 0">${esc(_dm.aviso)}</p>`:''}
+    </div>
+    <div class="svc-form" style="margin-top:.75rem">
+      <label class="m-label">2. Datos del negocio</label>
+      <input id="dn-n" class="m-input" placeholder="Nombre del negocio" maxlength="80" value="${esc(d.nombre||'')}"/>
+      <textarea id="dn-d" class="m-input" placeholder="Breve descripción y dónde está (opcional)" maxlength="300" style="min-height:3.5rem" >${esc(d.descripcion||'')}</textarea>
+      <label class="m-label" style="margin-top:.7rem">Servicios (uno por línea: nombre | precio | minutos)</label>
+      <textarea id="dn-s" class="m-input" placeholder="Corte mujer | 22 | 45">${esc(servTxt)}</textarea>
+      <label class="m-label" style="margin-top:.7rem">Profesionales (separados por comas, opcional)</label>
+      <input id="dn-e" class="m-input" placeholder="Lola, Marta" value="${esc((d.equipo||[]).join(', '))}"/>
+      <label class="m-label" style="margin-top:.7rem">Horario</label>
+      <div>${DM_DIAS.map(([n,l])=>`<label class="dm-day"><input type="checkbox" id="dn-h${n}"${h[n]?' checked':''}/>${l}</label>`).join('')}</div>
+      <div style="display:flex;gap:.5rem;margin-top:.4rem"><select id="dn-ha" class="m-input">${opt(ref.a)}</select><select id="dn-hc" class="m-input">${opt(ref.c)}</select></div>
+      <label class="m-label" style="margin-top:.7rem">Preguntas frecuentes (una por línea: pregunta | respuesta)</label>
+      <textarea id="dn-f" class="m-input" placeholder="¿Aceptáis tarjeta? | Sí, tarjeta y efectivo.">${esc(faqTxt)}</textarea>
+      <div class="svc-btns" style="margin-top:1rem"><button class="svc-save" onclick="dmCrear()">Crear demo</button></div>
+    </div>
+  </div>`;
+}
+async function dmCrear(){
+  dmLeerForm();const d=_dm.datos;
+  if(d.nombre.trim().length<2)return toast('Escribe el nombre del negocio','error');
+  if(!d.servicios.length)return toast('Añade al menos un servicio','error');
+  const codigo=dmSlug(d.nombre)+'-'+Math.random().toString(16).slice(2,6);
+  const config={descripcion:d.descripcion.trim()||undefined,servicios:d.servicios,equipo:d.equipo,horario:d.horario,faq:d.faq};
+  const{error}=await sb.from('demos').insert({codigo,user_id:user.id,nombre:d.nombre.trim().slice(0,80),config});
+  if(error)return toast('No se pudo crear la demo','error');
+  _dm.creada=codigo;loadPg();
 }
 
 /* ── Paso: nombre del negocio ─────────────────────────────────── */
