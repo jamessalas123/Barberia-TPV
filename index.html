@@ -1451,6 +1451,15 @@ body.has-av .main{padding-top:3.4rem}
 .av-x span{font-size:.78rem;color:#52647A;font-weight:700}.av-x small{font-size:.8rem;color:#52647A;margin-top:.15rem}
 .av-wa{background:#0A7F5A;color:#fff;border-radius:999px;padding:.4rem .9rem;font-weight:800;font-size:.8rem;text-decoration:none}
 .av-ok{background:#fff;color:#4C1D95;border:2px solid #6D28D9;border-radius:999px;padding:.35rem .8rem;font-weight:800;font-size:.8rem;cursor:pointer;width:auto;height:auto}
+.bq-btn{width:100%;height:46px;border-radius:var(--radius-xl);background:transparent;border:1.5px dashed #52647A;color:#2D3F54;font-weight:800;font-size:.9rem;margin:.1rem 0 .7rem;cursor:pointer;touch-action:manipulation}
+.bq-btn:hover{background:rgba(45,63,84,.06)}
+.slot.blocked{background:repeating-linear-gradient(45deg,#EEF1F5,#EEF1F5 9px,#E1E7EE 9px,#E1E7EE 18px);border:1.5px solid #8FA0B3}
+.slot.blocked .slot-time{color:#52647A}
+.slot.blocked .dz-lbl{color:#2D3F54}
+.bq-chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.7rem}
+.bq-chip{background:#fff;border:1.5px solid #8FA0B3;color:#2D3F54;border-radius:999px;padding:.4rem .85rem;font-size:.82rem;font-weight:800;cursor:pointer;width:auto;height:auto}
+.bq-chip.on{background:#2D3F54;color:#fff;border-color:#2D3F54}
+.bq-chk{display:flex;align-items:center;gap:.5rem;font-weight:800;font-size:.9rem;margin:.2rem 0 .8rem;color:var(--foreground)}
 </style>
 <script>
 const SB_URL="https://vtmegxkarrnofgepqdky.supabase.co";
@@ -2830,6 +2839,11 @@ async function pgAgenda(el){
   const esIndividual=profile&&profile.tipo_cuenta==='individual';
   const{data}=await sb.from('appointments').select('*').eq('appointment_date',dt).neq('status','cancelled').eq('user_id',user.id).order('start_time');
   const appts=data||[];
+  let bloqs=[];
+  try{const{data:bq,error:bqe}=await sb.from('bloqueos').select('*').eq('user_id',user.id).lte('fecha',dt).gte('fecha_fin',dt).order('hora_desde',{ascending:true,nullsFirst:true});if(!bqe)bloqs=bq||[];}catch(e){}
+  window._bloqs=bloqs;
+  const bqCubre=(b,min)=>!b.hora_desde||!b.hora_hasta||(min>=hhmmAMin(b.hora_desde)&&min<hhmmAMin(b.hora_hasta));
+  const bqVistos=new Set();
   window._agSig=agSig(appts);
   const byT={};appts.forEach(a=>{const k=a.start_time.slice(0,5);(byT[k]=byT[k]||[]).push(a);});
   window._byT=byT;
@@ -2842,10 +2856,24 @@ async function pgAgenda(el){
 
   const slotsHtml=slots.map(t=>{
     const items=byT[t]||[];
+    const tm=hhmmAMin(t);
+    const bqT=bloqs.filter(b=>bqCubre(b,tm));
+    const bqTodos=bqT.find(b=>!b.profesional);
+    if(items.length===0&&bqTodos){
+      const primero=!bqVistos.has(bqTodos.id);bqVistos.add(bqTodos.id);
+      const rango=bqTodos.hora_desde?`${bqTodos.hora_desde.slice(0,5)}–${bqTodos.hora_hasta.slice(0,5)}`:'Todo el día';
+      return`
+    <div class="slot blocked">
+      <div class="slot-time">${t}</div>
+      <div class="slot-body"><div class="dz-lbl">⏸ Bloqueado</div><span class="slot-sub-free">${esc(bqTodos.motivo||'No disponible')}${primero?' · '+rango:''}</span></div>
+      <div class="slot-actions">${primero?`<button class="btn-ver" onclick="bqQuitar('${bqTodos.id}')">Quitar</button>`:''}</div>
+    </div>`;
+    }
+    const bqPros=bqT.filter(b=>b.profesional).map(b=>b.profesional);
     if(items.length===0)return`
     <div class="slot free">
       <div class="slot-time">${t}</div>
-      <div class="slot-body"><span class="slot-name">Libre</span> <span class="slot-sub-free">· toca para añadir</span></div>
+      <div class="slot-body"><span class="slot-name">Libre</span> <span class="slot-sub-free">· toca para añadir</span>${bqPros.length?`<div class="slot-sub-free" style="margin-top:.15rem">⏸ No disponible: ${esc([...new Set(bqPros)].join(', '))}</div>`:''}</div>
       <div class="slot-actions">
         <button class="btn-plus" onclick="openNew('${t}')" aria-label="Añadir cita">${ICON_PLUS}</button>
       </div>
@@ -2893,7 +2921,7 @@ async function pgAgenda(el){
     </div>`;
   }).join('');
 
-  const nLibre=slots.filter(t=>!(byT[t]||[]).length).length;
+  const nLibre=slots.filter(t=>!(byT[t]||[]).length&&!bloqs.some(b=>!b.profesional&&bqCubre(b,hhmmAMin(t)))).length;
   const nOcup=slots.filter(t=>(byT[t]||[]).some(a=>a.status!=='completed')).length;
   const nCob=slots.filter(t=>{const it=byT[t]||[];return it.length&&it.every(a=>a.status==='completed');}).length;
   const totCob=Object.values(byT).flat().filter(a=>a.status==='completed').reduce((t,a)=>t+(Number(a.price)||0),0);
@@ -2929,6 +2957,8 @@ async function pgAgenda(el){
         <div class="dot" style="background:var(--primary)"></div>Cobrado · ${nCob}
       </div>
     </div>
+    <button class="bq-btn" onclick="bqAbrir()">⏸ Bloquear tiempo</button>
+    ${bloqs.some(b=>!b.hora_desde)?`<div class="agenda-cerrado">⏸ ${bloqs.filter(b=>!b.hora_desde).map(b=>esc(b.motivo||'Día bloqueado')+(b.profesional?' ('+esc(b.profesional)+')':'')).join(' · ')}. Nadie podrá reservar${bloqs.some(b=>!b.hora_desde&&!b.profesional)?' ese día':' con esa persona'}.</div>`:''}
     ${hd===null?'<div class="agenda-cerrado">Según tu horario, este día tu negocio está cerrado. Puedes añadir citas igualmente.</div>':''}
     <button class="expand-btn" onclick="expUp()">↑ Adelantar horario · desde ${minAHHMM(desde)}</button>
     ${slotsHtml}
@@ -2952,6 +2982,74 @@ function toggleAnonimo(){
   if(!campo)return;
   campo.value=(campo.value.trim()==='Cliente anónimo')?'':'Cliente anónimo';
 }
+
+/* ── Bloquear tiempo (cita médica, descanso, vacaciones…) ────────── */
+let _bq={motivo:'Cita médica'};
+function bqAbrir(){
+  _bq={motivo:'Cita médica'};
+  const equipo=(!(profile&&profile.tipo_cuenta==='individual')?(asisCfg().equipo||[]):[]).filter(Boolean);
+  const opt=(sel)=>HORAS_OPC.map(x=>`<option value="${x}"${x===sel?' selected':''}>${x}</option>`).join('');
+  const chips=['Cita médica','Descanso','Diligencia','Vacaciones','Otro'].map(m=>`<button type="button" class="bq-chip${m===_bq.motivo?' on':''}" onclick="bqMotivo(this)">${m}</button>`).join('');
+  document.getElementById('mr').innerHTML=`
+  <div class="overlay" onclick="closeM()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-body">
+        <button class="modal-close" onclick="closeM()">✕</button>
+        <div class="m-tag">Agenda</div>
+        <div class="m-title">Bloquear tiempo</div>
+        <div class="m-sub">Nadie podrá reservar en ese tiempo, ni tampoco el asistente de WhatsApp.</div>
+        <label class="m-label">Motivo</label>
+        <div class="bq-chips">${chips}</div>
+        <input id="bq-m" class="m-input" placeholder="Escribe el motivo (opcional)" maxlength="60" style="display:none"/>
+        <label class="m-label">Desde el día</label>
+        <input id="bq-f1" type="date" class="m-input" value="${dt}"/>
+        <label class="m-label">Hasta el día <span style="font-weight:400;color:var(--muted-foreground)">(para varios días)</span></label>
+        <input id="bq-f2" type="date" class="m-input" value="${dt}"/>
+        <label class="bq-chk"><input type="checkbox" id="bq-td" onchange="document.getElementById('bq-h').style.display=this.checked?'none':'flex'"/> Todo el día</label>
+        <div id="bq-h" style="display:flex;gap:.5rem;margin-bottom:.875rem">
+          <div style="flex:1"><label class="m-label">Desde</label><select id="bq-d" class="m-input">${opt('10:00')}</select></div>
+          <div style="flex:1"><label class="m-label">Hasta</label><select id="bq-a" class="m-input">${opt('11:00')}</select></div>
+        </div>
+        ${equipo.length?`<label class="m-label">Quién no está disponible</label>
+        <select id="bq-p" class="m-input"><option value="">Todo el negocio</option>${equipo.map(e=>`<option value="${esc(e)}">${esc(e)}</option>`).join('')}</select>`:''}
+      </div>
+      <div class="modal-actions"><button class="m-btn" onclick="bqGuardar()">Bloquear</button></div>
+    </div>
+  </div>`;
+}
+function bqMotivo(btn){
+  document.querySelectorAll('.bq-chip').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  _bq.motivo=btn.textContent;
+  const i=document.getElementById('bq-m');i.style.display=_bq.motivo==='Otro'?'block':'none';if(_bq.motivo==='Otro')i.focus();
+  if(_bq.motivo==='Vacaciones'){const c=document.getElementById('bq-td');c.checked=true;c.onchange();}
+}
+async function bqGuardar(){
+  const f1=document.getElementById('bq-f1').value,f2=document.getElementById('bq-f2').value||f1;
+  if(!f1)return toast('Elige el día','error');
+  if(f2<f1)return toast('El último día no puede ser anterior al primero','error');
+  const todo=document.getElementById('bq-td').checked;
+  const d=document.getElementById('bq-d').value,a=document.getElementById('bq-a').value;
+  if(!todo&&hhmmAMin(a)<=hhmmAMin(d))return toast('La hora final debe ser posterior a la inicial','error');
+  const pro=document.getElementById('bq-p')?.value||null;
+  let motivo=_bq.motivo==='Otro'?(document.getElementById('bq-m').value||'').trim():_bq.motivo;
+  motivo=(motivo||'No disponible').slice(0,60);
+  /* Aviso si ya hay citas dentro: no se borran, solo se avisa */
+  try{
+    const{data:ya}=await sb.from('appointments').select('start_time,duration_minutes,appointment_date,barbero').eq('user_id',user.id).neq('status','cancelled').gte('appointment_date',f1).lte('appointment_date',f2);
+    const n=(ya||[]).filter(c=>(!pro||!c.barbero||c.barbero===pro)&&(todo||(hhmmAMin(c.start_time)<hhmmAMin(a)&&hhmmAMin(c.start_time)+(c.duration_minutes||30)>hhmmAMin(d)))).length;
+    if(n&&!confirm(`Ya hay ${n} cita${n===1?'':'s'} en ese tiempo. No se borrarán. ¿Bloquear igualmente?`))return;
+  }catch(e){}
+  const{error}=await sb.from('bloqueos').insert({user_id:user.id,fecha:f1,fecha_fin:f2,hora_desde:todo?null:d+':00',hora_hasta:todo?null:a+':00',profesional:pro,motivo});
+  if(error)return toast(traducirError(error.message),'error');
+  toast('Tiempo bloqueado ✓','success');closeM();loadPg();
+}
+async function bqQuitar(id){
+  if(!confirm('¿Quitar este bloqueo? Volverá a poder reservarse.'))return;
+  const{error}=await sb.from('bloqueos').delete().eq('id',id);
+  if(error)return toast('No se pudo quitar','error');
+  toast('Bloqueo quitado','success');loadPg();
+}
+
 function openNew(t){
   const esIndividual=profile&&profile.tipo_cuenta==='individual';
   const campoBarbero=esIndividual?'':`

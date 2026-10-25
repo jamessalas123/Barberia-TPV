@@ -36,7 +36,8 @@ function extraerFecha(t, hoy) {
     let y = m[3] ? +m[3] : +hoy.slice(0, 4); if (y < 100) y += 2000;
     let f = `${y}-${pad(m[2])}-${pad(m[1])}`;
     if (!m[3] && f < hoy) f = `${y + 1}-${pad(m[2])}-${pad(m[1])}`;
-    return new Date(f + 'T12:00:00Z').toISOString().slice(0, 10) === f ? f : null;
+    const dd = new Date(f + 'T12:00:00Z');
+    return !isNaN(dd) && dd.toISOString().slice(0, 10) === f ? f : null;
   }
   m = t.match(/\b(?:el dia|el|dia)\s+(\d{1,2})\b(?!\s*(?:h|horas|:))/);
   if (m && +m[1] >= 1 && +m[1] <= 31) {

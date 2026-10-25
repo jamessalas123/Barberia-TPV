@@ -51,4 +51,31 @@ function huecosLibres({ fecha, duracion, horario, citas = [], profesional = null
   return out;
 }
 
-module.exports = { huecosLibres, horarioDia, SLOT };
+/* ── Bloqueos de tiempo (cita médica, descanso, vacaciones…) ─────────────────────────────
+ * Un bloqueo = {fecha, fecha_fin, hora_desde|null, hora_hasta|null, profesional|null, motivo}.
+ * Sin horas = todo el día. Con horas = esas horas cada día del rango. profesional null = todo el negocio.
+ * Se convierten en "citas" ficticias para que huecosLibres las trate como ocupado.
+ */
+const sumaDiasISO = (f, n) => { const d = new Date(f + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+
+function bloqueosComoCitas(bloqueos, fecha) {
+  return (bloqueos || [])
+    .filter(b => b && b.fecha <= fecha && b.fecha_fin >= fecha)
+    .map(b => {
+      const todoDia = !b.hora_desde || !b.hora_hasta;
+      const s = todoDia ? 0 : aMin(b.hora_desde), e = todoDia ? 24 * 60 : aMin(b.hora_hasta);
+      return { start_time: aHHMM(s) + ':00', duration_minutes: Math.max(1, e - s), status: 'scheduled', barbero: b.profesional || null, bloqueo: true, motivo: b.motivo || null };
+    });
+}
+
+/* Mapa fecha -> citas ficticias para un rango (tope de días para no pasarse) */
+function bloqueosPorDia(bloqueos, desde, hasta) {
+  const out = {};
+  for (let f = desde, i = 0; f <= hasta && i < 70; f = sumaDiasISO(f, 1), i++) {
+    const c = bloqueosComoCitas(bloqueos, f);
+    if (c.length) out[f] = c;
+  }
+  return out;
+}
+
+module.exports = { huecosLibres, horarioDia, SLOT, bloqueosComoCitas, bloqueosPorDia };

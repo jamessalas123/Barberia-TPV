@@ -4,7 +4,7 @@ const DB = {
   asistente_numeros: [{ phone_number_id: 'PN1', user_id: 'U1' }],
   profiles: [{ id: 'U1', nombre: 'Dueño', horario: null, asistente: { equipo: ['Luisa'], nombre_negocio: 'Uñas y Uñas' } }],
   servicios: [{ user_id: 'U1', nombre: 'Depilación', precio: 50, duracion_min: 45 }, { user_id: 'U1', nombre: 'Depilación', precio: 50, duracion_min: 45 }],
-  appointments: [], asistente_conversaciones: [], agente_registro: [], avisos_dueno: []
+  appointments: [], asistente_conversaciones: [], agente_registro: [], avisos_dueno: [], bloqueos: []
 };
 let idn = 1;
 function q(t) {
@@ -114,5 +114,20 @@ const msg = (t, from = '34600111222') => ({ from, id: 'm' + Math.random(), text:
   llm = crearLLMSimulado([(p) => { vistos2.push(p.messages.length); return T('hola'); }]);
   await atender('PN1', msg('hola de nuevo'), 'Pepe', { llm });
   ok(vistos2[0] === 1, 'conversación caducada se olvida', String(vistos2[0]));
+  /* ── Bloqueos de tiempo del dueño ── */
+  DB.appointments.length = 0; DB.asistente_conversaciones.length = 0;
+  const diaB = new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10);
+  const diaTxt = diaB.slice(8, 10) + '/' + diaB.slice(5, 7) + '/' + diaB.slice(0, 4);
+  DB.bloqueos.push({ user_id: 'U1', fecha: diaB, fecha_fin: diaB, hora_desde: '11:00:00', hora_hasta: '12:30:00', profesional: null, motivo: 'Cita médica' });
+  r = await atender('PN1', msg('reservar 1 ' + diaTxt + ' 11:30'), 'Pepe');
+  ok(!/Reservado/.test(r) && DB.appointments.length === 0, 'no reserva dentro de un bloqueo', r);
+  r = await atender('PN1', msg('reservar 1 ' + diaTxt + ' 13:00'), 'Pepe');
+  ok(/Reservado/.test(r) && DB.appointments.length === 1, 'sí reserva fuera del bloqueo', r);
+  DB.bloqueos.length = 0; DB.bloqueos.push({ user_id: 'U1', fecha: diaB, fecha_fin: diaB, hora_desde: null, hora_hasta: null, profesional: null, motivo: 'Vacaciones' });
+  DB.appointments.length = 0;
+  r = await atender('PN1', msg('reservar 1 ' + diaTxt + ' 17:00'), 'Pepe');
+  ok(!/Reservado/.test(r) && DB.appointments.length === 0, 'día completo bloqueado: no reserva', r);
+  r = await atender('PN1', msg('reservar 1 15/13 11:00'), 'Pepe');
+  ok(typeof r === 'string' && r.length > 0, 'una fecha imposible (15/13) no rompe el bot', String(r));
   process.exit(fallos);
 })();

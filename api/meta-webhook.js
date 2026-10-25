@@ -13,7 +13,7 @@
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 const { procesar, ahoraMadrid } = require('./_asistente.js');
-const { huecosLibres } = require('./_huecos.js');
+const { huecosLibres, bloqueosComoCitas, bloqueosPorDia } = require('./_huecos.js');
 const { correrAgente, historialCompacto } = require('./_agente.js');
 const { herramientas, instrucciones } = require('./_agente_citas.js');
 const { crearLLMAnthropic } = require('./_llm.js');
@@ -34,22 +34,26 @@ async function atender(phoneNumberId, m, nombreCliente, opts = {}) {
   const uid = num.user_id;
   const ahora = ahoraMadrid();
   const tope = sumaDias(ahora.fecha, 61);
-  const [{ data: perfil }, { data: servs }, { data: citas }, { data: mias }] = await Promise.all([
+  const [{ data: perfil }, { data: servs }, { data: citas }, { data: mias }, { data: bloqs }] = await Promise.all([
     db.from('profiles').select('nombre,horario,asistente').eq('id', uid).maybeSingle(),
     db.from('servicios').select('nombre,precio,duracion_min').eq('user_id', uid).order('created_at', { ascending: true }),
     db.from('appointments').select('appointment_date,start_time,duration_minutes,status,barbero').eq('user_id', uid).neq('status', 'cancelled').gte('appointment_date', ahora.fecha).lte('appointment_date', tope),
-    db.from('appointments').select('id,appointment_date,start_time,service,barbero,status').eq('user_id', uid).eq('notes', 'wa:' + m.from).eq('status', 'scheduled').gte('appointment_date', ahora.fecha).order('appointment_date').order('start_time')
+    db.from('appointments').select('id,appointment_date,start_time,service,barbero,status').eq('user_id', uid).eq('notes', 'wa:' + m.from).eq('status', 'scheduled').gte('appointment_date', ahora.fecha).order('appointment_date').order('start_time'),
+    db.from('bloqueos').select('fecha,fecha_fin,hora_desde,hora_hasta,profesional,motivo').eq('user_id', uid).gte('fecha_fin', ahora.fecha).lte('fecha', tope)
   ]);
   const vistosNombre = new Set();
   const servicios = (servs || []).filter(s => { const k = String(s.nombre).toLowerCase().trim(); if (vistosNombre.has(k)) return false; vistosNombre.add(k); return true; });
   const porDia = {};
   (citas || []).forEach(c => (porDia[c.appointment_date] = porDia[c.appointment_date] || []).push(c));
+  /* Bloqueos de tiempo del dueño: cuentan como ocupado (si la tabla falla, bloqs es null y no se aplican) */
+  Object.entries(bloqueosPorDia(bloqs || [], ahora.fecha, tope)).forEach(([f, l]) => (porDia[f] = (porDia[f] || []).concat(l)));
   const negocio = { nombre: perfil && perfil.asistente && perfil.asistente.nombre_negocio, horario: perfil && perfil.horario, equipo: (perfil && perfil.asistente && perfil.asistente.equipo) || [], servicios };
   const texto = String(m.text.body || '').slice(0, MAX_TEXTO);
   const crearCita = async (c) => {
     /* Comprobación final contra la base de datos (por si otro cliente reservó justo antes) */
     const { data: hoyCitas } = await db.from('appointments').select('start_time,duration_minutes,status,barbero').eq('user_id', uid).eq('appointment_date', c.appointment_date).neq('status', 'cancelled');
-    const libres = huecosLibres({ fecha: c.appointment_date, duracion: c.duration_minutes, horario: negocio.horario, citas: hoyCitas || [], profesional: c.barbero, ahora });
+    const { data: hoyBloqs } = await db.from('bloqueos').select('fecha,fecha_fin,hora_desde,hora_hasta,profesional,motivo').eq('user_id', uid).lte('fecha', c.appointment_date).gte('fecha_fin', c.appointment_date);
+    const libres = huecosLibres({ fecha: c.appointment_date, duracion: c.duration_minutes, horario: negocio.horario, citas: (hoyCitas || []).concat(bloqueosComoCitas(hoyBloqs || [], c.appointment_date)), profesional: c.barbero, ahora });
     if (!libres.includes(c.start_time.slice(0, 5))) return { ok: false, motivo: 'justo se acaba de ocupar ese hueco' };
     const { error } = await db.from('appointments').insert({ ...c, user_id: uid });
     if (error) { console.error('[meta-webhook] no se pudo crear la cita', error.message); return { ok: false, motivo: 'no se pudo guardar' }; }
