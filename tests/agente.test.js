@@ -79,5 +79,6 @@ const run = (ctx, llm, msg, hist = []) => correrAgente({ llm, sistema: instrucci
   // 10. Instrucciones incluyen nombre y fecha
   const ins = instrucciones(nuevoCtx());
   ok(/Uñas y Uñas/.test(ins) && /2026-10-24/.test(ins) && !/Escalia/.test(ins), 'instrucciones con negocio y fecha, sin Escalia');
+  ok(/SOLO la herramienta avisar_persona/.test(ins) && /No menciones citas/.test(ins), 'instrucciones: al pedir persona solo avisar y despedirse');
   process.exit(fallos);
 })();
